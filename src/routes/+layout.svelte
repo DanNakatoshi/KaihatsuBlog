@@ -2,14 +2,18 @@
 	import '../app.css';
 	import Header from '$lib/wireframe/Header.svelte';
 
-	let { children } = $props();
+
+	let { children, data } = $props();
+	console.log(data)
+
 </script>
 
-<div class="relative z-0 grid min-h-screen grid-rows-[auto,1fr,auto] items-start">
+
+<div class="">
 
 	<Header />
 
-	<div class="grid grid-cols-1 md:grid-cols-[auto_1fr] ">
+	<div class="">
 		{@render children()}
 	</div>
 	
