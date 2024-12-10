@@ -5,8 +5,9 @@
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-    import { ListFilter } from 'lucide-svelte';
-
+	import { ListFilter } from 'lucide-svelte';
+	import { categorizeCategories } from '$lib/store/articleData.svelte.js';
+	import { effect } from 'zod';
 	// import * as Popover from '$lib/components/ui/popover/index.js';
 	// import * as Command from '$lib/components/ui/command/index.js';
 	// import * as Form from '$lib/components/ui/form';
@@ -14,31 +15,43 @@
 	// import Check from 'lucide-svelte/icons/check';
 	// import { cn } from '$lib/utils.js';
 
-	let { data } = $props()
-	let articles = [{ id: 1 }, { id: 2 }];
+	let { data } = $props();
+
+	const { mainCat, childCat, grandChildCat } = categorizeCategories(data.categories);
+
+	console.log(childCat);
+
+	let articles = data.posts;
 	let sortByVal = $state('最新順');
+	// let selectedMainCat = $state('記事');
+	let selectedMainCatId = $state('9');
+
 
 </script>
 
 <!-- <Button>Click me</Button> -->
 
 <div class="flex w-full flex-col items-center">
-	<Tabs.Root value="article" class="w-[400px] p-1">
+	<Tabs.Root value={selectedMainCatId} class="w-[400px] p-1">
 		<div class="flex justify-center">
 			<Tabs.List>
-				<Tabs.Trigger value="article">記事</Tabs.Trigger>
-				<Tabs.Trigger value="series">シリーズ</Tabs.Trigger>
+				{#each mainCat as cat (cat.id)}
+					<Tabs.Trigger value={cat.id}>{cat.name}</Tabs.Trigger>
+				{/each}
 			</Tabs.List>
 		</div>
 
 		<ToggleGroup.Root size="sm" type="multiple" class="my-2 gap-2">
+			<!-- {#if }
+                
+            {/if} -->
 			<ToggleGroup.Item value="a">ブログ</ToggleGroup.Item>
 			<ToggleGroup.Item value="b">テクニカル</ToggleGroup.Item>
 		</ToggleGroup.Root>
 
 		<Input type="text" placeholder="検索" class="max-w-md" />
 
-		<div class="flex justify-between my-2">
+		<div class="my-2 flex justify-between">
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
 					<Button variant="outline" builders={[builder]}>{sortByVal}</Button>
@@ -51,27 +64,26 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
-            <Button size="sm">
-                <ListFilter />
-            </Button>
+			<Button size="sm">
+				<ListFilter />
+			</Button>
 		</div>
-
-
 
 		<Tabs.Content value="article">
 			<div class="grid gap-2">
-				{#each articles as article}
+				{#each articles as article (article.id)}
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Card Title</Card.Title>
-							<Card.Description>Card Description</Card.Description>
+							<Card.Title>{article.title.rendered}</Card.Title>
+							{@html article.excerpt.rendered}
+							<Card.Description></Card.Description>
 						</Card.Header>
-						<Card.Content>
+						<!-- <Card.Content>
 							<p>
 								Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nesciunt ex quod quidem.
 								Voluptates ea minus odio, maiores numquam quis dolorum!
 							</p>
-						</Card.Content>
+						</Card.Content> -->
 						<Card.Footer>
 							<Button class="w-full">読む</Button>
 						</Card.Footer>

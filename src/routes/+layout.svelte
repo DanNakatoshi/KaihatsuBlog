@@ -4,7 +4,7 @@
 
 
 	let { children, data } = $props();
-	console.log(data)
+	// console.log(data.categories)
 
 </script>
 
@@ -14,7 +14,8 @@
 	<Header />
 
 	<div class="">
-		{@render children()}
+		{@render children(data)}
 	</div>
 	
 </div>
+
