@@ -3,11 +3,13 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
+    import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { ListFilter } from 'lucide-svelte';
 	import { categorizeCategories } from '$lib/store/articleData.svelte.js';
-	import { effect } from 'zod';
+	import { goto } from '$app/navigation';
+	// import { effect } from 'zod';
 	// import * as Popover from '$lib/components/ui/popover/index.js';
 	// import * as Command from '$lib/components/ui/command/index.js';
 	// import * as Form from '$lib/components/ui/form';
@@ -17,22 +19,37 @@
 
 	let { data } = $props();
 
-	const { mainCat, childCat, grandChildCat } = categorizeCategories(data.categories);
+	const { mainCat, childCat, grandChildCat, childCatIds } = categorizeCategories(data.categories);
 
-	console.log(childCat);
+	// console.log(childCat);
 
 	let articles = data.posts;
+	let tags = data.tags;
+	// console.log(tags);
 	let sortByVal = $state('最新順');
 	// let selectedMainCat = $state('記事');
-	let selectedMainCatId = $state('9');
+	let selectedMainCatId = $state('20');
+	let selectedChildCatId = $state(childCatIds);
 
+	// Tags related
+	const tagMap = new Map(tags.map((tag) => [tag.id, tag.name]));
 
+	// console.log(tagMap)
+	function getTagNames(tagIds) {
+		return tagIds.map((tagId) => tagMap.get(tagId) || 'Unknown');
+	}
+
+	// End Tags
+
+	function handleReadButton(slug) {
+		goto(`articles/${slug}`);
+	}
 </script>
 
 <!-- <Button>Click me</Button> -->
 
 <div class="flex w-full flex-col items-center">
-	<Tabs.Root value={selectedMainCatId} class="w-[400px] p-1">
+	<Tabs.Root bind:value={selectedMainCatId} class="w-[400px] p-1">
 		<div class="flex justify-center">
 			<Tabs.List>
 				{#each mainCat as cat (cat.id)}
@@ -40,13 +57,12 @@
 				{/each}
 			</Tabs.List>
 		</div>
-
-		<ToggleGroup.Root size="sm" type="multiple" class="my-2 gap-2">
-			<!-- {#if }
-                
-            {/if} -->
-			<ToggleGroup.Item value="a">ブログ</ToggleGroup.Item>
-			<ToggleGroup.Item value="b">テクニカル</ToggleGroup.Item>
+		<ToggleGroup.Root size="sm" type="multiple" bind:value={selectedChildCatId} class="my-2 gap-2">
+			{#each childCat as cat (cat.id)}
+				{#if cat.parent == selectedMainCatId}
+					<ToggleGroup.Item value={cat.id}>{cat.name}</ToggleGroup.Item>
+				{/if}
+			{/each}
 		</ToggleGroup.Root>
 
 		<Input type="text" placeholder="検索" class="max-w-md" />
@@ -69,29 +85,38 @@
 			</Button>
 		</div>
 
-		<Tabs.Content value="article">
+		<Tabs.Content value="9">
 			<div class="grid gap-2">
 				{#each articles as article (article.id)}
 					<Card.Root>
 						<Card.Header>
 							<Card.Title>{article.title.rendered}</Card.Title>
-							{@html article.excerpt.rendered}
-							<Card.Description></Card.Description>
+							<Card.Description class="py-1"
+								>
+                                <div class="mb-1">
+                                更新日：{new Date(article.modified).toLocaleDateString()}
+                                </div>
+                                <div class="flex gap-1">
+                                    {#each getTagNames(article.tags) as tagName}
+                                    <Badge>{tagName}</Badge>
+                                    {/each}
+                                </div>
+							</Card.Description>
+
+							<!-- <Card.Description class="py-1">{JSON.stringify(article)}</Card.Description> -->
 						</Card.Header>
-						<!-- <Card.Content>
-							<p>
-								Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nesciunt ex quod quidem.
-								Voluptates ea minus odio, maiores numquam quis dolorum!
-							</p>
-						</Card.Content> -->
-						<Card.Footer>
-							<Button class="w-full">読む</Button>
+						<!-- {JSON.stringify(article.slug)} -->
+						<Card.Content>
+							{article.yoast_head_json.description}
+						</Card.Content>
+						<Card.Footer class="flex justify-end">
+							<Button class="" onclick={() => handleReadButton(article.slug)}>読む</Button>
 						</Card.Footer>
 					</Card.Root>
 				{/each}
 			</div>
 		</Tabs.Content>
 
-		<Tabs.Content value="series">Change your password here.</Tabs.Content>
+		<Tabs.Content value="5">Change your password here.</Tabs.Content>
 	</Tabs.Root>
 </div>

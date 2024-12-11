@@ -20,6 +20,7 @@ export function categorizeCategories(categories) {
   const mainCat = [];
   const childCat = [];
   const grandChildCat = [];
+  const childCatIds = [];
 
   // Iterate over each category
   categories.forEach((category) => {
@@ -36,6 +37,9 @@ export function categorizeCategories(categories) {
       // Child categories are those with exactly 4 parts (e.g., 'series/technical')
       else if (parts.length === 5) {
           childCat.push(category);
+          childCatIds.push(category.id)
+          console.log(childCatIds)
+
       } 
       // Grandchild categories are those with exactly 5 parts (e.g., 'series/technical/svelte5-for-beginners')
       else if (parts.length === 6) {
@@ -47,6 +51,7 @@ export function categorizeCategories(categories) {
   return {
       mainCat,
       childCat,
-      grandChildCat
+      grandChildCat,
+      childCatIds
   };
 }
