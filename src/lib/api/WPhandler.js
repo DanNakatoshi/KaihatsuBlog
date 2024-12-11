@@ -2,7 +2,9 @@
 export async function fetchWordPressData(postsPerPage = 10) {
     const baseUrl = "https://kaihatsunosho.com";
     const postsUrl = `${baseUrl}/wp-json/wp/v2/posts?per_page=${postsPerPage}`;
-    const categoriesUrl = `${baseUrl}/wp-json/wp/v2/categories`;
+    // const categoriesUrl = `${baseUrl}/wp-json/wp/v2/categories?orderby=slug&order=asc`;
+    const categoriesUrl = `${baseUrl}/wp-json/wp/v2/categories?_fields=id,name,link,count,parent&orderby=slug&order=asc`;
+
     const tagsUrl = `${baseUrl}/wp-json/wp/v2/tags?_fields=id,name,slug,count`;
 
   

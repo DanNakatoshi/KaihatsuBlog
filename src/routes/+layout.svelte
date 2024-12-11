@@ -9,7 +9,7 @@
 </script>
 
 
-<div class="">
+<div class="container">
 
 	<Header />
 
