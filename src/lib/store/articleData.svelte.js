@@ -51,7 +51,6 @@ export function categorizeCategories(categories) {
 			groupedChildCats[cat.parent] = [];
 		}
 		groupedChildCats[cat.parent].push(cat);
-    console.log(groupedChildCats)
 	});
 
 
