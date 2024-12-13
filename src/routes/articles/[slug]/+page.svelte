@@ -46,7 +46,7 @@
 			</Card.Footer>
 		</Card.Root>
 	</div>
-	<!-- {JSON.stringify(post)} -->
+	{JSON.stringify(post.content.rendered)}
 </div>
 
 <style>

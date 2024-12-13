@@ -1,111 +1,87 @@
 // DELETE IF NOT NEED
 function createArticleData() {
 	let articleData = $state([]);
+	let selectedCategoryFilters = $state([])
 	return {
+		// Getters
 		get articleData() {
 			return articleData;
 		},
+		get selectedCategoryFilters() {
+			return selectedCategoryFilters;
+		},
+		// Setters
 		setArticleData(newData) {
 			articleData = newData;
 		},
+		setCategoryData(newCategories) {
+			categoryData = newCategories;
+		},
+
+		// Methods for Article Management
 		addArticle(newArticle) {
 			articleData = [...articleData, newArticle];
-		}
+		},
+		// removeArticle(articleId) {
+		// 	articleData = articleData.filter(article => article.id !== articleId);
+		// },
+		filterArticlesByCategory(category) {
+			return articleData.filter(article => 
+				selectedCategoryFilters.length === 0 || 
+				selectedCategoryFilters.includes(article.category)
+			);
+		},
 	};
 }
 
 export const articleMgr = createArticleData();
 
 
+export function createFilterData() {
+	let selectedCategoryFilters = $state([])
+	return {
+		// Getters
+		get selectedCategoryFilters() {
+			return selectedCategoryFilters;
+		},
+		// Setters
+		setCategoryData(newCategories) {
+			categoryData = newCategories;
+		},
+
+		// Methods for Article Management
+		filterArticlesByCategory(category) {
+			return articleData.filter(article => 
+				selectedCategoryFilters.length === 0 || 
+				selectedCategoryFilters.includes(article.category)
+			);
+		},
+	};
+}
+export const filterMgr = createFilterData();
+
+
 
 export function categorizeCategories(categories) {
-	const mainCats = [];
-	const childCats = [];
-	const grandchildCats = [];
-	const childCatNames = [];
-	const groupedChildCats = {};
 
-	// Iterate over each category
+	const langCats = [];
+	const seriesCats = [];
+
 	categories.forEach((category) => {
-		// Check if category is a main category (no parent or parent is 0)
-		if (category.parent === 0 || category.parent === null) {
-			if (category.name !== 'Uncategorized') {
-				mainCats.push(category);
+
+		if (category.parent != 0) {
+			if (category.link.includes('2-programming-language')) {
+				langCats.push(category);
+			} else if (category.link.includes('3-series')) {
+				seriesCats.push(category);
 			}
 		}
-		// Check if category is a child category (has a parent)
-		else if (category.parent > 0) {
-			childCats.push(category);
-			childCatNames.push(category.name);
-		}
-		// Grandchild categories (can be identified based on another logic)
-		// If needed, can check for categories with multiple nested parents
-		else if (category.parent) {
-			grandchildCats.push(category);
-		}
-	});
 
-	// Group child categories by their parent
-	childCats.forEach((cat) => {
-		if (!groupedChildCats[cat.parent]) {
-			groupedChildCats[cat.parent] = [];
-		}
-		groupedChildCats[cat.parent].push(cat);
 	});
-
 
 	return {
-		mainCats,
-		childCats,
-		grandchildCats,
-		childCatNames,
-		groupedChildCats
+		langCats,
+		seriesCats
 	};
 }
 
-// export function categorizeCategories(categories) {
-// 	const mainCats = [];
-// 	const childCats = [];
-// 	const grandchildCats = [];
-// 	const childCatNames = [];
-// 	const groupedChildCats = {};
-
-// 	// Iterate over each category
-// 	categories.forEach((category) => {
-// 		const parts = category.link.split('/').filter(Boolean); // Split the link by '/'
-
-// 		// category.id = String(category.id); // Convert parent to a string
-
-// 		if (parts.length === 4) {
-// 			if (category.name !== 'Uncategorized') {
-// 				mainCats.push(category);
-// 			}
-// 		}
-// 		// Child categories are those with exactly 4 parts (e.g., 'series/technical')
-// 		else if (parts.length === 5) {
-// 			childCats.push(category);
-// 			childCatNames.push(category.name);
-// 		}
-// 		// Grandchild categories are those with exactly 5 parts (e.g., 'series/technical/svelte5-for-beginners')
-// 		else if (parts.length === 6) {
-// 			grandchildCats.push(category);
-// 		}
-// 	});
-
-// 	childCats.forEach((cat) => {
-// 		if (!groupedChildCats[cat.parent]) {
-// 			groupedChildCats[cat.parent] = [];
-// 		}
-// 		groupedChildCats[cat.parent].push(cat);
-// 	});
-
-//   console.log(groupedChildCats)
-// 	// Return the categorized lists
-// 	return {
-// 		mainCats,
-// 		childCats,
-// 		grandchildCats,
-// 		childCatNames,
-// 		groupedChildCats
-// 	};
-// }
