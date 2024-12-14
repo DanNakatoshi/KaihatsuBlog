@@ -1,4 +1,19 @@
 // DELETE IF NOT NEED
+
+export const mainCategoryInfo = [
+	{
+		name:"エッセイ",
+		slug: "essay",
+		id: 21,
+	},
+	{
+		name:"開発ログ",
+		slug: "technical",
+		id: 22
+	}
+]
+
+
 function createArticleData() {
 	let articleData = $state([]);
 	let selectedCategoryFilters = $state([])
