@@ -41,7 +41,6 @@
 			}
 		}
 
-		// Further filter by searchInputValue
 		if (searchInputValue) {
 			const searchTerm = searchInputValue.toLowerCase();
 			filteredPosts = filteredPosts.filter((post) => {
@@ -92,12 +91,25 @@
 	</div>
 </div>
 
-<div class="grid grid-cols-12 gap-4 auto-rows-[1fr]">
+<div class="grid grid-cols-12 gap-4">
 	{#each filterPostsByCategory() as post (post.id)}
+		<!-- {getTagNames(post.tags)} -->
+		<!-- {(post.tags)} -->
+		<!-- {JSON.stringify(post)} -->
 		<div class="col-span-12 sm:col-span-6 lg:col-span-4">
-			<div class="break-inside-avoid ">
-				<ArticleCard {post} />
+			<div class="break-inside-avoid">
+				<ArticleCard {post} tags={getTagNames(post.tags)}/>
 			</div>
 		</div>
 	{/each}
 </div>
+
+<!-- <div class="columns-1 md:columns-2 lg:columns-3 gap-6">
+	{#each filterPostsByCategory() as post (post.id)}
+		<div class="col-span-12 md:col-span-6 lg:col-span-4">
+			<div class="break-inside-avoid mb-6 ">
+				<ArticleCard {post} />
+			</div>
+		</div>
+	{/each}
+</div> -->

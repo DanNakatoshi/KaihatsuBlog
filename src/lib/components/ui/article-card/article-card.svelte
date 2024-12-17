@@ -5,7 +5,7 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 
-	let { post } = $props();
+	let { post, tags } = $props();
 
 	// function getMainCategoryName() {
 	// 	const category = post.categories
@@ -19,18 +19,31 @@
 	}
 </script>
 
-<Card.Root>
+<Card.Root class=" ">
 	<Card.Header>
 		<!-- {JSON.stringify(post)} -->
-		<Card.Title class="flex flex-wrap items-center gap-2"
-			>{post.title.rendered}
+		<Card.Title class="flex flex-wrap items-center gap-2">
+
+			{post.title.rendered}
+        </Card.Title>
+
 			<!-- <Badge variant="secondary">{getMainCategoryName()}</Badge> -->
-		</Card.Title>
 	</Card.Header>
-	<Card.Content>
+	<Card.Content class="">
 		{post.yoast_head_json.description}
+
+		<div class="flex flex-wrap justify-start gap-2 pt-2">
+			{#each tags as tag (tag)}
+				<span class="text-xs font-bold">
+					#{tag}
+				</span>
+			{/each}
+		</div>
 	</Card.Content>
+
 	<Card.Footer class="flex justify-end">
-		<Button class="" onclick={() => handleReadButton(post.slug)}>読む</Button>
+		<Button class="" onclick={() => handleReadButton(post.slug)}>
+            <span class="font-bold">読む</span>
+        </Button>
 	</Card.Footer>
 </Card.Root>

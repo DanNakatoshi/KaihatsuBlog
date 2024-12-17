@@ -1,4 +1,6 @@
 <script>
+	import '$lib/styles/wp-articles.css';
+	//   import '../../lib/styles/wp-styles.css';
 	import * as Card from '$lib/components/ui/card';
 	import 'prismjs/themes/prism-twilight.min.css';
 	import { onMount } from 'svelte';
@@ -10,6 +12,8 @@
 
 	onMount(() => {
 		isClient = true;
+
+		// import('$lib/styles/wp-styles.css');
 		if (isClient) {
 			import('prismjs').then((Prism) => {
 				import('prismjs/components/prism-javascript'); // For JavaScript syntax highlighting, for example
@@ -19,8 +23,8 @@
 	});
 </script>
 
-<div class="container max-w-full w-full mx-auto px-0 ">
-	<div class="grid grid-cols-12 gap-2 w-full">
+<div class="container mx-auto w-full max-w-full px-0">
+	<div class="grid w-full grid-cols-12 gap-2">
 		<Card.Root class="col-span-12 md:col-span-9 ">
 			<Card.Header>
 				<Card.Title>{post.title.rendered}</Card.Title>
@@ -48,8 +52,3 @@
 	</div>
 	{JSON.stringify(post.content.rendered)}
 </div>
-
-<style>
-
-
-</style>
