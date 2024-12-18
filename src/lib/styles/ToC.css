@@ -1,0 +1,38 @@
+/* ToL */
+#toc ul {
+	@apply list-none pl-0 text-sm; /* Ensure all text is small */
+}
+
+#toc ul .toc-item {
+	@apply overflow-hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#toc ul .toc-item.level-1 {
+	@apply ml-0 font-bold; /* Adjust margin and weight */
+}
+
+#toc ul .toc-item.level-2 {
+	@apply ml-2 font-semibold; /* Adjust margin and weight */
+}
+
+#toc ul .toc-item.level-3 {
+	@apply ml-4 font-medium; /* Adjust margin and weight */
+}
+
+#toc ul .toc-item.level-4 {
+	@apply ml-6 font-normal; /* Adjust margin and weight */
+}
+
+#toc ul .toc-item.level-5 {
+	@apply ml-8 font-light; /* Adjust margin and weight */
+}
+
+.toc-link {
+	@apply text-blue-500 hover:text-blue-700;
+	display: inline-block;
+	width: 100%; /* Ensure that the link occupies the full width of the parent element */
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
