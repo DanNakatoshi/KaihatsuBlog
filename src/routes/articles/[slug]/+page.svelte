@@ -6,9 +6,7 @@
 	import { onMount } from 'svelte';
 	import { generateTableOfContents } from '$lib/helper/createToc.js';
 	import Prism from 'prismjs';
-	// import 'prismjs/components/prism-javascript'; // Add other languages as needed
 
-	// Prism.highlightAll();
 	let { data } = $props();
 	let isClient = $state(false);
 
@@ -30,19 +28,20 @@
 	onMount(() => {
 		isClient = true;
 		toc = generateTableOfContents(post.content.rendered);
-
 		if (isClient) {
-			console.log(post);
-
 			import('prismjs').then((Prism) => {
 				import('prismjs/components/prism-javascript'); // For JavaScript syntax highlighting, for example
+				import('prismjs/components/prism-python'); // For Python syntax highlighting
+				import('prismjs/components/prism-css'); // For CSS syntax highlighting
+				import('prismjs/components/prism-markup'); // For HTML syntax highlighting
+				import('prismjs/components/prism-nginx');
 				Prism.highlightAll();
 			});
 		}
 	});
 </script>
 
-<div class="">
+<div class="container mx-auto">
 	<div class="grid grid-cols-12 gap-2">
 		<Card.Root class="col-span-12 md:col-span-9 ">
 			<Card.Header>
@@ -56,42 +55,38 @@
 				<!--  -->
 			</Card.Footer>
 		</Card.Root>
-		<Card.Root class="col-span-12 md:col-span-3">
-			<Card.Header>
-				<!-- <Card.Title>ToC</Card.Title> -->
-				<Card.Description>
-					{#if toc.length > 0}
-						{@render tocSnippet()}
-					{:else}
-						No Table of Contents available.
-					{/if}
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<p>Card Content</p>
-			</Card.Content>
-			<Card.Footer>
-				<p>Card Footer</p>
-			</Card.Footer>
-		</Card.Root>
+
+		<div class="sticky top-4 col-span-12 max-h-screen md:col-span-3">
+			<Card.Root class="col-span-12 md:col-span-3 ">
+				<Card.Header>
+					<Card.Title>目次ナビ</Card.Title>
+					<Card.Description class="pb-4">
+						{#if toc.length > 0}
+							{@render tocSnippet()}
+						{:else}
+							No Table of Contents available.
+						{/if}
+					</Card.Description>
+				</Card.Header>
+			</Card.Root>
+		</div>
 	</div>
 	<!-- {JSON.stringify(post.content.rendered)} -->
 </div>
 
 {#snippet tocSnippet()}
-  <h2 class="mb-2 text-sm font-bold">目次ナビ</h2>
-  <ul id="toc" class="flex max-w-full flex-col items-start">
-    {#each toc as item (item.text)}
-      <li class="w-full">
-        <button
-          onclick={() => scrollToHeading(item.text)}
-          class="text-left hover:underline overflow-hidden w-full"
-        >
-          <span class="truncate block w-full">
-            {item.text}
-          </span>
-        </button>
-      </li>
-    {/each}
-  </ul>
+	<ul id="toc" class="flex max-w-full flex-col items-start">
+		{#each toc as item (item.text)}
+			<li class="w-full">
+				<button
+					onclick={() => scrollToHeading(item.text)}
+					class="w-full overflow-hidden text-left hover:underline"
+				>
+					<span class="block w-full truncate">
+						{item.text}
+					</span>
+				</button>
+			</li>
+		{/each}
+	</ul>
 {/snippet}
