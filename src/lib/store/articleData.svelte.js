@@ -13,6 +13,45 @@ export const mainCategoryInfo = [
 	}
 ]
 
+function createTagsData() {
+	let tagsData = $state([]);
+	let tagMap = new Map();
+
+	function updateTagMap() {
+		tagMap = new Map(tagsData.map((tag) => [tag.id, tag.name]));
+	}
+
+	function getTagNames(tagIds) {
+		return tagIds.map((tagId) => tagMap.get(tagId) || 'Unknown');
+	}
+
+	return {
+		get tagsData() {
+			return tagsData;
+		},
+		setTagsData(newData) {
+			tagsData.splice(0, tagsData.length, ...newData); // Update reactive state
+			updateTagMap(); // Refresh the map
+		},
+		getTagNames,
+	}
+}
+export const tagMgr = createTagsData();
+
+function createSeriesData() {
+	let seriesData = $state([]);
+
+	return {
+		get seriesData() {
+			return seriesData;
+		},
+		setSeriesData(newData) {
+			seriesData = newData;
+		},
+	}
+}
+export const seriesMgr = createSeriesData();
+
 
 function createArticleData() {
 	let articleData = $state([]);

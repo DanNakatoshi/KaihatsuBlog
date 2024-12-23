@@ -8,12 +8,13 @@ import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
 export async function load() {
   try {
-    const { posts, categories, tags } = await fetchWordPressData(10); // Adjust postsPerPage as needed
-    return { posts, categories, tags };
+    const { posts, series, categories, tags } = await fetchWordPressData(10); // Adjust postsPerPage as needed
+    return { posts, series, categories, tags };
   } catch (error) {
     console.error('Error in +layout.server.js load function:', error);
     return {
       posts: [],
+      series: [],
       categories: [],
       tags: [],
       error: 'Failed to load data from WordPress.',

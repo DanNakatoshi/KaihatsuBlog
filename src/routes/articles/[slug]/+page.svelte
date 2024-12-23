@@ -30,23 +30,24 @@
 		toc = generateTableOfContents(post.content.rendered);
 		if (isClient) {
 			import('prismjs').then((Prism) => {
-				import('prismjs/components/prism-javascript'); // For JavaScript syntax highlighting, for example
-				import('prismjs/components/prism-python'); // For Python syntax highlighting
-				import('prismjs/components/prism-css'); // For CSS syntax highlighting
-				import('prismjs/components/prism-markup'); // For HTML syntax highlighting
+				import('prismjs/components/prism-javascript'); 
+				import('prismjs/components/prism-python'); 
+				import('prismjs/components/prism-css'); 
+				import('prismjs/components/prism-markup'); 
 				import('prismjs/components/prism-nginx');
+				// import('prismjs/components/prism-php'); 
 				Prism.highlightAll();
 			});
 		}
 	});
 </script>
 
-<div class="container mx-auto">
+<div class=" ">
 	<div class="grid grid-cols-12 gap-2">
 		<Card.Root class="col-span-12 md:col-span-9 ">
 			<Card.Header>
 				<Card.Title>{post.title.rendered}</Card.Title>
-				<Card.Description>Card Description</Card.Description>
+				<!-- <Card.Description>Card Description</Card.Description> -->
 			</Card.Header>
 			<Card.Content>
 				{@html post.content.rendered}

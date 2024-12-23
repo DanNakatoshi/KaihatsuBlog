@@ -7,29 +7,24 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { ListFilter } from 'lucide-svelte';
-	import { categorizeCategories } from '$lib/store/articleData.svelte.js';
 	import { goto } from '$app/navigation';
 	import CategoryFilter from '$lib/components/ui/category/category-filter.svelte';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
+	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 	let { data } = $props();
 
-	const { langCats, seriesCats } = categorizeCategories(data.categories);
-
-	let posts = data.posts;
 	let activeTab = $state('ALL');
-	let tags = data.tags;
 	let sortByVal = $state('最新順');
 	let searchInputValue = $state('');
 
-	const tagMap = new Map(tags.map((tag) => [tag.id, tag.name]));
 
-	function getTagNames(tagIds) {
-		return tagIds.map((tagId) => tagMap.get(tagId) || 'Unknown');
-	}
+
+
+
 
 	function filterPostsByCategory() {
-		let filteredPosts = posts;
+		let filteredPosts = articleMgr.articleData;
 
 		// Filter by activeTab (category)
 		if (activeTab !== 'ALL') {
@@ -91,20 +86,17 @@
 	</div>
 </div>
 
-<div class="grid grid-cols-12 gap-4">
+<!-- <div class="grid grid-cols-12 gap-4">
 	{#each filterPostsByCategory() as post (post.id)}
-		<!-- {getTagNames(post.tags)} -->
-		<!-- {(post.tags)} -->
-		<!-- {JSON.stringify(post)} -->
 		<div class="col-span-12 sm:col-span-6 lg:col-span-4">
 			<div class="break-inside-avoid">
-				<ArticleCard {post} tags={getTagNames(post.tags)}/>
+				<ArticleCard {post}  />
 			</div>
 		</div>
 	{/each}
-</div>
+</div> -->
 
-<!-- <div class="columns-1 md:columns-2 lg:columns-3 gap-6">
+<div class="columns-1 md:columns-2 lg:columns-3 gap-2 md:gap-4">
 	{#each filterPostsByCategory() as post (post.id)}
 		<div class="col-span-12 md:col-span-6 lg:col-span-4">
 			<div class="break-inside-avoid mb-6 ">
@@ -112,4 +104,4 @@
 			</div>
 		</div>
 	{/each}
-</div> -->
+</div>
