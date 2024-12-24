@@ -34,6 +34,6 @@
 	"dependencies": {
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
-		"prismjs": "^1.29.0"
+		"highlight.js": "^11.11.0"
 	}
 }

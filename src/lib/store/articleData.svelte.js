@@ -1,4 +1,5 @@
 // DELETE IF NOT NEED
+import { goto } from '$app/navigation';
 
 export const mainCategoryInfo = [
 	{
@@ -56,7 +57,13 @@ export const seriesMgr = createSeriesData();
 function createArticleData() {
 	let articleData = $state([]);
 	let selectedCategoryFilters = $state([])
+
+	function handleReadButton(slug, seriesId = null) {
+		const url = seriesId ? `articles/${slug}?seriesId=${seriesId}` : `articles/${slug}`;
+		goto(url);
+	}
 	return {
+		handleReadButton,
 		// Getters
 		get articleData() {
 			return articleData;
