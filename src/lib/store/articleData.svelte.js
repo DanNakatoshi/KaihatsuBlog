@@ -59,9 +59,10 @@ function createArticleData() {
 	let selectedCategoryFilters = $state([])
 
 	function handleReadButton(slug, seriesId = null) {
-		const url = seriesId ? `articles/${slug}?seriesId=${seriesId}` : `articles/${slug}`;
+		const url = seriesId ? `/articles/${slug}?seriesId=${seriesId}` : `/articles/${slug}`;
 		goto(url);
 	}
+	
 	return {
 		handleReadButton,
 		// Getters
