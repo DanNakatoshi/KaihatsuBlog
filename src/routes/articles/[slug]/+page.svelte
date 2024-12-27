@@ -1,14 +1,10 @@
 <script>
+	// Style
 	import '$lib/styles/wp-articles.css';
 	import '$lib/styles/ToC.css';
-	import * as Card from '$lib/components/ui/card';
-	// import 'prismjs/themes/prism-twilight.min.css';
-	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
-	import { onMount, tick } from 'svelte'; // Import `tick`
-	import { generateTableOfContents } from '$lib/helper/createToc.js';
-	// import Prism from 'prismjs';
 
 	// Highlight.js
+	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
 	import hljs from 'highlight.js/lib/core';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import python from 'highlight.js/lib/languages/python';
@@ -17,45 +13,43 @@
 	import nginx from 'highlight.js/lib/languages/nginx';
 	import php from 'highlight.js/lib/languages/php';
 
+	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
+	import * as Card from '$lib/components/ui/card';
+
+	// Helper
+	import { generateTableOfContents } from '$lib/helper/createToc.js';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 	import { fetchSinglePost, fetchSeriesById } from '$lib/api/WPhandler.js';
+
+	// Svelte
+	import { onMount, tick } from 'svelte'; // Import `tick`
 	import { page } from '$app/stores';
 
+	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
-
 	let post = $state(data.post);
-	let seriesId = $state(data.seriesId);
-	let seriesDescription = $state(data.seriesData.series);
+	let seriesDetails = $state(data.seriesData.series);
 	let seriesPosts = $state(data.seriesData.posts);
-
-	// let currentUrl = $page.url;
-	// let pathname = $page.url.pathname;
-	let urlSlug = $state($page.params.slug);
-	let urlSeriesId = $page.url.searchParams.get('seriesId');
-
-	// console.log(slug)
-	// console.log(urlSeriesId)
-
 	let toc = $state([]);
+	let urlSlug = $state($page.params.slug);
+	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
 
 	function scrollToHeading(text) {
-		const heading = Array.from(document.querySelectorAll('h1, h2, h3')).find(
-			(el) => el.textContent.trim() === text
-		);
-
-		if (heading) {
-			heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			heading.focus({ preventScroll: true }); // Optional for accessibility
-		}
+		document
+			.querySelectorAll('h1, h2, h3')
+			.forEach(
+				(el) =>
+					el.textContent.trim() === text &&
+					el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			);
 	}
 
 	async function fetchPost(slug) {
 		try {
 			post = await fetchSinglePost(slug); // Fetch new post
 			toc = generateTableOfContents(post?.content?.rendered || ''); // Update ToC
-
 			// Wait for the DOM to update before applying syntax highlighting
 			await tick();
 			highlightSyntax(); // Highlight the newly fetched post
@@ -64,30 +58,28 @@
 		}
 	}
 
+	function displayRelatedSeries() {
+		if (!post.series || !data.series) {
+			return [];
+		}
+		const relatedSeries = post.series.map((seriesId) => data.series[seriesId]).filter(Boolean);
+		return relatedSeries;
+	}
+
 	async function fetchSeries(seriesId) {
 		try {
 			if (seriesId) {
-				// seriesPosts = await fetchSeriesById(seriesId);
-				// console.log('Series fetched successfully:', seriesPosts);
+				seriesPosts = await fetchSeriesById(seriesId);
+				// console.log(seriesPosts)
+				seriesDetails = seriesPosts?.series;
+				seriesPosts = seriesPosts?.posts;
+				// console.log($page.url.searchParams.get('seriesId'))
+				// seriesId = $page.url.searchParams.get('seriesId')
 			}
 		} catch (error) {
-			console.error('Error fetching series:', error);
+			// console.error('Error fetching series:', error);
 		}
 	}
-
-	// function highlightSyntax() {
-	// 	document.querySelectorAll('pre code').forEach((block) => {
-	// 		if (block.dataset.highlighted) {
-	// 			delete block.dataset.highlighted;
-	// 			console.log(block.dataset.highlighted)
-	// 			console.log("highlighted code deleted")
-
-	// 		}
-	// 		hljs.highlightElement(block);
-	// 		// block.dataset.highlighted = 'yes';
-	// 	});
-	// 	console.log("highlighted")
-	// }
 
 	function highlightSyntax() {
 		const blocks = document.querySelectorAll('pre code');
@@ -97,18 +89,17 @@
 				// console.log('Highlighted block:', block); // Debugging output
 			});
 		} else {
-			console.warn('No code blocks found to highlight.');
+			// console.warn('No code blocks found to highlight.');
 		}
 	}
 
 	$effect(() => {
 		const currentSlug = $page.params.slug;
 		const currentSeriesId = $page.url.searchParams.get('seriesId');
-
 		if (urlSlug !== currentSlug || urlSeriesId !== currentSeriesId) {
 			urlSlug = currentSlug;
 			urlSeriesId = currentSeriesId;
-
+			// seriesId = currentSeriesId
 			// Fetch updated data
 			if (urlSlug) fetchPost(urlSlug);
 			if (urlSeriesId) fetchSeries(urlSeriesId);
@@ -132,41 +123,54 @@
 	});
 </script>
 
-<!-- {JSON.stringify(seriesPosts)} -->
-
 {#if post}
 	<div class=" ">
 		<div class="grid grid-cols-12 gap-2">
 			<Card.Root class="col-span-12 md:col-span-9 ">
 				<Card.Header>
-					<Card.Title>{post.title.rendered}</Card.Title>
+					<Card.Title class="mb-4">{post.title.rendered}</Card.Title>
 					<!-- <Card.Description> -->
-					{#if seriesId}
+					{#if urlSeriesId}
 						<div class="mt-2 rounded bg-secondary p-2">
 							<h4 class=" px-2 py-1 text-xs text-yellow-300">
-								シリーズ: <strong>{seriesDescription.name}</strong>
+								シリーズ: <strong>{seriesDetails?.name}</strong>
 							</h4>
-
-							{seriesDescription.description}
+							{seriesDetails?.description}
 							<div class="flex flex-col items-start justify-start">
 								{#each seriesPosts as seriesPost, index (seriesPost.id)}
-									<div>
+									<div class="w-full overflow-hidden flex items-center">
+										{#if seriesPost.slug == post.slug}
+										<span class="text-sm ">
+											👉
+										</span>
+										{/if}
 										<Button
 											variant="link"
-											onclick={() => articleMgr.handleReadButton(seriesPost.slug, seriesId)}
+											onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
 										>
-											{index + 1}: {seriesPost.title}
+											<span class={ seriesPost.slug == post.slug ? ' text-yellow-300' : '' }>{seriesPost.title}</span>
 										</Button>
-										{#if seriesPost.slug == post.slug}
-											👈いまここ
-										{/if}
+							
 									</div>
 								{/each}
 							</div>
 						</div>
-					{:else}
-						maybe
+					{:else if post.series.length > 0}
+						<div class="mt-2 rounded bg-secondary p-2">
+							<p class="text-sm p-2 text-gray-300">
+								シリーズを表示
+							</p>
+							<div class="flex flex-row flex-wrap gap-2">
+								{#each displayRelatedSeries() as series (series.series_ID)}
+									<Button onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}>
+										{series.ser_name}
+									</Button>
+								{/each}
+							</div>
+							<ul></ul>
+						</div>
 					{/if}
+
 					<!-- </Card.Description> -->
 				</Card.Header>
 				<Card.Content>

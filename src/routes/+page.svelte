@@ -18,35 +18,44 @@
 	let sortByVal = $state('最新順');
 	let searchInputValue = $state('');
 
-
-
-
-
-
 	function filterPostsByCategory() {
-		let filteredPosts = articleMgr.articleData;
+    let filteredPosts = [...articleMgr.articleData]; // Create a shallow copy to avoid mutation
 
-		// Filter by activeTab (category)
-		if (activeTab !== 'ALL') {
-			const category = mainCategoryInfo.find((category) => category.name === activeTab);
-			if (category) {
-				filteredPosts = filteredPosts.filter((post) => post.categories.includes(category.id));
-			} else {
-				return []; // No posts for the active tab
-			}
-		}
+    // Filter by activeTab (category)
+    if (activeTab !== 'ALL') {
+        const category = mainCategoryInfo.find((category) => category.name === activeTab);
+        if (category) {
+            filteredPosts = filteredPosts.filter((post) => post.categories.includes(category.id));
+        } else {
+            return []; // No posts for the active tab
+        }
+    }
 
-		if (searchInputValue) {
-			const searchTerm = searchInputValue.toLowerCase();
-			filteredPosts = filteredPosts.filter((post) => {
-				const title = post.title?.rendered?.toLowerCase() || '';
-				const description = post.yoast_head_json?.description?.toLowerCase() || '';
-				return title.includes(searchTerm) || description.includes(searchTerm);
-			});
-		}
+    // Filter by search input
+    if (searchInputValue) {
+        const searchTerm = searchInputValue.toLowerCase();
+        filteredPosts = filteredPosts.filter((post) => {
+            const title = post.title?.rendered?.toLowerCase() || '';
+            const description = post.yoast_head_json?.description?.toLowerCase() || '';
+            return title.includes(searchTerm) || description.includes(searchTerm);
+        });
+    }
 
-		return filteredPosts;
-	}
+    if (sortByVal === '最新順') {
+        filteredPosts = [...filteredPosts].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB.getTime() - dateA.getTime(); // Newest first
+        });
+    } else if (sortByVal === '更新順') {
+        filteredPosts = [...filteredPosts].sort((a, b) => {
+            const dateA = new Date(a.modified);
+            const dateB = new Date(b.modified);
+            return dateB.getTime() - dateA.getTime(); // Most recently modified first
+        });
+    }
+    return filteredPosts;
+}
 </script>
 
 <div id="searchbox" class="flex flex-col items-center gap-2">
@@ -56,11 +65,6 @@
 			<Tabs.Trigger value="開発ログ" class="min-w-16">開発ログ</Tabs.Trigger>
 			<Tabs.Trigger value="エッセイ" class="min-w-16">エッセイ</Tabs.Trigger>
 		</Tabs.List>
-
-		<!-- <Tabs.Content value="開発ログ">
-			<CategoryFilter filterName="言語ごと" filterOptions={langCats} />
-			<CategoryFilter filterName="シリーズ" filterOptions={seriesCats} />
-		</Tabs.Content> -->
 	</Tabs.Root>
 
 	<div>
@@ -73,8 +77,8 @@
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="">
 					<DropdownMenu.RadioGroup bind:value={sortByVal}>
-						<DropdownMenu.RadioItem value="最新順">最新順</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="人気順">人気順</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="最新順">公開日が最新順</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="更新順">更新日が最新順</DropdownMenu.RadioItem>
 					</DropdownMenu.RadioGroup>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
@@ -96,10 +100,10 @@
 	{/each}
 </div> -->
 
-<div class="columns-1 md:columns-2 lg:columns-3 gap-2 md:gap-4">
+<div class="columns-1 gap-2 md:columns-2 md:gap-4 lg:columns-3">
 	{#each filterPostsByCategory() as post (post.id)}
 		<div class="col-span-12 md:col-span-6 lg:col-span-4">
-			<div class="break-inside-avoid mb-6 ">
+			<div class="mb-6 break-inside-avoid">
 				<ArticleCard {post} />
 			</div>
 		</div>
