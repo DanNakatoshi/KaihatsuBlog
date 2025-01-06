@@ -1,5 +1,5 @@
 <script>
-	import { Menu } from 'lucide-svelte';
+	import { Menu, Bell } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
 	import { goto } from '$app/navigation';
@@ -21,7 +21,9 @@
 			<span class="font-extrabold">あさめしコード</span>
 		</Button>
 
-		<div></div>
+		<Button size="sm" variant="ghost">
+			<Bell size={ICON_SIZES.SMALL} />
+		</Button>
 	</div>
 </header>
 
