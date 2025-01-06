@@ -27,10 +27,13 @@
 	// console.log(post.series)
 </script>
 
-<Card.Root class=" ">
+<Card.Root class=" " >
 	<Card.Header>
 		<Card.Title class="flex flex-wrap items-center gap-2">
-			{post.title.rendered}
+			<button  onclick={() => articleMgr.handleReadButton(post.slug)} class="text-left leading-tight hover:text-primary">
+				<span class="font-semibold ">{post.title.rendered}</span>
+			</button>
+			<!-- {post.title.rendered} -->
 		</Card.Title>
 		<div>
 			<Badge variant="secondary" class="text-gray-400">
@@ -73,8 +76,8 @@
 				</Button>
 			</div>
 		{/each}
-		<Button class="" onclick={() => articleMgr.handleReadButton(post.slug)}>
+		<!-- <Button class="" onclick={() => articleMgr.handleReadButton(post.slug)}>
 			<span class="font-bold">読む</span>
-		</Button>
+		</Button> -->
 	</Card.Footer>
 </Card.Root>

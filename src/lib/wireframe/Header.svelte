@@ -1,11 +1,23 @@
 <script>
+	// ICON
 	import { Menu, Bell } from 'lucide-svelte';
+	// import Sun from "lucide-svelte/icons/sun";
+	// import Moon from "lucide-svelte/icons/moon";
+
+	// Theme color swicher
+	// import { toggleMode } from "mode-watcher";
+
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
 	import { goto } from '$app/navigation';
 	import { X } from 'lucide-svelte';
 
 	let isMenuOpen = $state(false);
+
+
+	function closeMenu() {
+		isMenuOpen = false
+	}
 </script>
 
 {#if isMenuOpen}
@@ -39,10 +51,10 @@
 			onclick={() => (isMenuOpen = false)}><X size="12" strokeWidth={6} /></Button
 		>
 		<h2 class="text-lg font-semibold">Menu</h2>
-		<ul class="mt-4 space-y-2">
-			<li><a href="#home" class="block py-2">Home</a></li>
-			<li><a href="#about" class="block py-2">About</a></li>
-			<li><a href="#contact" class="block py-2">Contact</a></li>
-		</ul>
+		<div class="mt-6 flex flex-col items-start gap-3">
+			<Button variant="link" onclick={() => {goto('/'); closeMenu();}}>HOME</Button>
+			<Button variant="link" onclick={() => {goto('/about'); closeMenu();}}>ABOUT</Button>
+			<Button variant="link" onclick={() => {goto('/privacypolicy'); closeMenu();}}>PRIVACY POLICY</Button>
+		</div>
 	</div>
 </div>
