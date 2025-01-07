@@ -21,7 +21,7 @@
 </script>
 
 {#if isMenuOpen}
-	<div class="fixed inset-0 z-10 bg-black bg-opacity-50" onclick={() => (isMenuOpen = false)}></div>
+	<button class="fixed inset-0 z-10 bg-black bg-opacity-50" onclick={() => (isMenuOpen = false)} aria-label="close menu"></button>
 {/if}
 
 <header>

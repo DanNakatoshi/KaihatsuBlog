@@ -12,6 +12,8 @@
 	import xml from 'highlight.js/lib/languages/xml';
 	import nginx from 'highlight.js/lib/languages/nginx';
 	import php from 'highlight.js/lib/languages/php';
+	import bash from 'highlight.js/lib/languages/bash';
+
 
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -117,6 +119,7 @@
 			hljs.registerLanguage('xml', xml);
 			hljs.registerLanguage('nginx', nginx);
 			hljs.registerLanguage('php', php);
+			hljs.registerLanguage('bash', bash);
 
 			highlightSyntax();
 		}
