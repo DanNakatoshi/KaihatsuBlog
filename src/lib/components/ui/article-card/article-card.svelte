@@ -68,7 +68,7 @@
 				<span
 					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow-300 opacity-80"
 				>
-					シリーズ
+					シリーズで読む
 				</span>
 				<!-- Button content -->
 				<Button variant="outline" onclick={() => articleMgr.handleReadButton(post.slug, series.id)}>

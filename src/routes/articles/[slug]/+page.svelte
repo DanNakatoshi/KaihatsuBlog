@@ -14,7 +14,6 @@
 	import php from 'highlight.js/lib/languages/php';
 	import bash from 'highlight.js/lib/languages/bash';
 
-
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -38,26 +37,24 @@
 	let urlSlug = $state($page.params.slug);
 	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
 
-
-
 	function generateTableOfContents(articleContent) {
-    if (typeof articleContent !== 'string' || !articleContent.trim()) {
-      console.warn('Invalid article content provided');
-      return [];
-    }
-  
-    // Parse the HTML content to extract headings
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(articleContent, 'text/html');
-    const headings = doc.querySelectorAll('h1, h2, h3');
-  
-    // Build the ToC without modifying the original HTML
-    return Array.from(headings).map((heading) => ({
-      text: heading.textContent.trim(),
-      level: parseInt(heading.tagName[1], 10), // Extract heading level (e.g., 1 for <h1>)
-    }));
-  }
-  
+		if (typeof articleContent !== 'string' || !articleContent.trim()) {
+			console.warn('Invalid article content provided');
+			return [];
+		}
+
+		// Parse the HTML content to extract headings
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(articleContent, 'text/html');
+		const headings = doc.querySelectorAll('h1, h2, h3');
+
+		// Build the ToC without modifying the original HTML
+		return Array.from(headings).map((heading) => ({
+			text: heading.textContent.trim(),
+			level: parseInt(heading.tagName[1], 10) // Extract heading level (e.g., 1 for <h1>)
+		}));
+	}
+
 	function scrollToHeading(text) {
 		document
 			.querySelectorAll('h1, h2, h3')
@@ -153,44 +150,48 @@
 				<Card.Header>
 					<Card.Title class="mb-4">{post.title.rendered}</Card.Title>
 					<!-- <Card.Description> -->
+					<div class="flex flex-wrap gap-4">
+						{#each displayRelatedSeries() as series (series.series_ID)}
+							<div class="relative">
+								<span
+									class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow-300 opacity-80"
+								>
+									シリーズで読む
+								</span>
+								<!-- Button content -->
+								<Button
+									class={series.series_ID == urlSeriesId ? 'text-primary' : ''}
+									variant="outline"
+									onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
+								>
+									<span class="font-bold">{series.ser_name}</span>
+								</Button>
+							</div>
+						{/each}
+					</div>
 					{#if urlSeriesId}
 						<div class="mt-2 rounded bg-secondary p-2">
-							<h4 class=" px-2 py-1 text-xs text-yellow-300">
+							<!-- <h4 class=" px-2 py-1 text-xs text-yellow-300">
 								シリーズ: <strong>{seriesDetails?.name}</strong>
-							</h4>
+							</h4> -->
 							{seriesDetails?.description}
 							<div class="flex flex-col items-start justify-start">
 								{#each seriesPosts as seriesPost, index (seriesPost.id)}
-									<div class="w-full overflow-hidden flex items-center">
-										{#if seriesPost.slug == post.slug}
-										<span class="text-sm ">
-											👉
-										</span>
-										{/if}
+									<div class="flex w-full items-center overflow-hidden">
+										<!-- {#if seriesPost.slug == post.slug}
+											<span class="text-sm">👉</span>
+										{/if} -->
 										<Button
 											variant="link"
 											onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
 										>
-											<span class={ seriesPost.slug == post.slug ? ' text-yellow-300' : '' }>{seriesPost.title}</span>
+											<span class={seriesPost.slug == post.slug ? ' text-primary' : 'text-gray-300'}
+												>{index + 1}. {seriesPost.title}</span
+											>
 										</Button>
-							
 									</div>
 								{/each}
 							</div>
-						</div>
-					{:else if post.series.length > 0}
-						<div class="mt-2 rounded bg-secondary p-2">
-							<p class="text-sm p-2 text-gray-300">
-								シリーズを表示
-							</p>
-							<div class="flex flex-row flex-wrap gap-2">
-								{#each displayRelatedSeries() as series (series.series_ID)}
-									<Button onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}>
-										{series.ser_name}
-									</Button>
-								{/each}
-							</div>
-							<ul></ul>
 						</div>
 					{/if}
 
@@ -239,3 +240,4 @@
 		{/each}
 	</ul>
 {/snippet}
+
