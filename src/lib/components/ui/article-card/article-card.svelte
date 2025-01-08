@@ -20,11 +20,6 @@
 			.filter((series) => series !== null); // Filter out null values
 	}
 
-	// function handleReadButton(slug, seriesId = null) {
-	// 	const url = seriesId ? `articles/${slug}?seriesId=${seriesId}` : `articles/${slug}`;
-	// 	goto(url);
-	// }
-	// console.log(post.series)
 </script>
 
 <Card.Root class=" " >
@@ -36,10 +31,10 @@
 			<!-- {post.title.rendered} -->
 		</Card.Title>
 		<div>
-			<Badge variant="secondary" class="text-gray-400">
+			<Badge variant="secondary" class="">
 				公開日：{publishedDate}
 			</Badge>
-			<Badge variant="secondary" class="text-gray-400">
+			<Badge variant="secondary" class="">
 				更新日：{modifiedDate}
 			</Badge>
 		</div>
@@ -48,10 +43,10 @@
 		</Card.Description>
 	</Card.Header>
 	<Card.Content class="">
-		<p class="text-gray-300 text-sm">
+		<p class=" text-sm">
 			{post.yoast_head_json.description}
 		</p>
-		<div class="flex flex-wrap justify-start gap-2 pt-2 text-gray-300" >
+		<div class="flex flex-wrap justify-start gap-2 pt-2 " >
 			{#each tagMgr.getTagNames(post.tags) as tag (tag)}
 				<span class="text-xs font-bold">
 					#{tag}
@@ -66,7 +61,7 @@
 		{#each getSeriesNames(post.series) as series (series.id)}
 			<div class="relative">
 				<span
-					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow-300 opacity-80"
+					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-primary "
 				>
 					シリーズで読む
 				</span>
