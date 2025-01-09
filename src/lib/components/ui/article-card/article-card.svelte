@@ -6,10 +6,9 @@
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 	import { Description } from 'formsnap';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
+	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
 
 	let { post } = $props();
-	let publishedDate = new Date(post.date).toLocaleDateString();
-	let modifiedDate = new Date(post.modified).toLocaleDateString();
 
 	function getSeriesNames(seriesIds) {
 		return seriesIds
@@ -28,22 +27,13 @@
 			<button  onclick={() => articleMgr.handleReadButton(post.slug)} class="text-left leading-tight hover:text-primary">
 				<span class="font-semibold ">{post.title.rendered}</span>
 			</button>
-			<!-- {post.title.rendered} -->
 		</Card.Title>
-		<div>
-			<Badge variant="secondary" class="">
-				公開日：{publishedDate}
-			</Badge>
-			<Badge variant="secondary" class="">
-				更新日：{modifiedDate}
-			</Badge>
+		<div class="pt-2">
+			<PublishInfoBadge date={post.date} modified={post.modified}/>
 		</div>
-		<Card.Description>
-			<!-- {post.yoast_head_json.description} -->
-		</Card.Description>
 	</Card.Header>
 	<Card.Content class="">
-		<p class=" text-sm">
+		<p class=" text-sm text-gray-dark">
 			{post.yoast_head_json.description}
 		</p>
 		<div class="flex flex-wrap justify-start gap-2 pt-2 " >
@@ -61,7 +51,7 @@
 		{#each getSeriesNames(post.series) as series (series.id)}
 			<div class="relative">
 				<span
-					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-primary "
+					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow "
 				>
 					シリーズで読む
 				</span>

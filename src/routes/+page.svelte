@@ -100,7 +100,7 @@
 	{/each}
 </div> -->
 
-<div class="columns-1 gap-2 md:columns-2 md:gap-4 lg:columns-3">
+<div class="columns-1 gap-2 md:columns-2 xl:columns-3 md:gap-4">
 	{#each filterPostsByCategory() as post (post.id)}
 		<div class="col-span-12 md:col-span-6 lg:col-span-4">
 			<div class="mb-6 break-inside-avoid">

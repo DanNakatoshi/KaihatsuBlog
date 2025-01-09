@@ -27,6 +27,9 @@
 	import { onMount, tick } from 'svelte'; // Import `tick`
 	import { page } from '$app/stores';
 
+	// Components
+	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
+
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -36,7 +39,7 @@
 	let toc = $state([]);
 	let urlSlug = $state($page.params.slug);
 	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
-
+	let relatedSeries = $state([]);
 	function generateTableOfContents(articleContent) {
 		if (typeof articleContent !== 'string' || !articleContent.trim()) {
 			console.warn('Invalid article content provided');
@@ -78,12 +81,30 @@
 	}
 
 	function displayRelatedSeries() {
-		if (!post.series || !data.series) {
-			return [];
-		}
-		const relatedSeries = post.series.map((seriesId) => data.series[seriesId]).filter(Boolean);
-		return relatedSeries;
+	if (!post.series || !data.series) {
+		return [];
 	}
+
+	const currentSeriesId = urlSeriesId?.toString(); // Safely handle null or undefined
+	const activeSeries = [];
+	const otherSeries = [];
+
+	post.series.forEach((seriesId) => {
+		const series = data.series[seriesId];
+		if (series && series.series_ID != null) {
+			if (series.series_ID.toString() === currentSeriesId) {
+				activeSeries.push(series);
+			} else {
+				otherSeries.push(series);
+			}
+		}
+	});
+
+	return [...activeSeries, ...otherSeries];
+}
+
+
+
 
 	async function fetchSeries(seriesId) {
 		try {
@@ -115,13 +136,17 @@
 	$effect(() => {
 		const currentSlug = $page.params.slug;
 		const currentSeriesId = $page.url.searchParams.get('seriesId');
+
 		if (urlSlug !== currentSlug || urlSeriesId !== currentSeriesId) {
 			urlSlug = currentSlug;
 			urlSeriesId = currentSeriesId;
 			// seriesId = currentSeriesId
 			// Fetch updated data
 			if (urlSlug) fetchPost(urlSlug);
-			if (urlSeriesId) fetchSeries(urlSeriesId);
+			if (urlSeriesId) {
+				fetchSeries(urlSeriesId)
+				displayRelatedSeries()
+			};
 		}
 	});
 
@@ -149,55 +174,57 @@
 			<Card.Root class="col-span-12 md:col-span-9 ">
 				<Card.Header>
 					<Card.Title class="mb-4">{post.title.rendered}</Card.Title>
-					<!-- <Card.Description> -->
-					<div class="flex flex-wrap gap-4">
-						{#each displayRelatedSeries() as series (series.series_ID)}
-							<div class="relative">
-								<span
-									class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow-300 opacity-80"
-								>
-									シリーズで読む
-								</span>
-								<!-- Button content -->
-								<Button
-									class={series.series_ID == urlSeriesId ? 'text-primary' : ''}
-									variant="outline"
-									onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
-								>
-									<span class="font-bold">{series.ser_name}</span>
-								</Button>
-							</div>
-						{/each}
+					<div class="pb-2">
+						<PublishInfoBadge date={post.date} modified={post.modified} />
 					</div>
-					{#if urlSeriesId}
-						<div class="mt-2 rounded bg-secondary p-2">
-							<!-- <h4 class=" px-2 py-1 text-xs text-yellow-300">
-								シリーズ: <strong>{seriesDetails?.name}</strong>
-							</h4> -->
-							{seriesDetails?.description}
-							<div class="flex flex-col items-start justify-start">
-								{#each seriesPosts as seriesPost, index (seriesPost.id)}
-									<div class="flex w-full items-center overflow-hidden">
-										<!-- {#if seriesPost.slug == post.slug}
-											<span class="text-sm">👉</span>
-										{/if} -->
-										<Button
-											variant="link"
-											onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
-										>
-											<span class={seriesPost.slug == post.slug ? ' text-primary' : 'text-gray-300'}
-												>{index + 1}. {seriesPost.title}</span
-											>
-										</Button>
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-
-					<!-- </Card.Description> -->
 				</Card.Header>
 				<Card.Content>
+					<div class="rounded bg-secondary p-2 py-4 mb-4">
+						<div class="mb-4 flex flex-wrap gap-4">
+							{#each displayRelatedSeries() as series (series.series_ID)}
+								<div class="relative">
+									<span
+										class="text-yellow absolute -top-3 left-0 z-10 -rotate-3 whitespace-nowrap px-2 py-1 text-xs font-bold"
+									>
+										{series.series_ID != urlSeriesId ? 'シリーズで読む' : 'このシリーズ'}
+									</span>
+									<Button
+										class={series.series_ID == urlSeriesId ? 'text-primary' : 'text-gray'}
+										variant="outline"
+										onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
+									>
+										<span class="font-bold">{series.ser_name}</span>
+									</Button>
+								</div>
+							{/each}
+						</div>
+						{#if urlSeriesId}
+							<div class="mt-2">
+								<!-- <h4 class=" px-2 py-1 text-xs text-yellow-300">
+								シリーズ: <strong>{seriesDetails?.name}</strong>
+							</h4> -->
+								{seriesDetails?.description}
+								<div class="flex flex-col items-start justify-start">
+									{#each seriesPosts as seriesPost, index (seriesPost.id)}
+										<div class="flex w-full items-center overflow-hidden">
+											<!-- {#if seriesPost.slug == post.slug}
+											<span class="text-sm">👉</span>
+										{/if} -->
+											<Button
+												variant="link"
+												onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
+											>
+												<span class={seriesPost.slug == post.slug ? ' text-primary' : 'text-gray'}
+													>{index + 1}. {seriesPost.title}</span
+												>
+											</Button>
+										</div>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</div>
+
 					{@html post.content.rendered}
 				</Card.Content>
 				<Card.Footer>

@@ -186,7 +186,7 @@ a:hover {
 .wp-block-image img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px; /* Optional rounded corners */
+  border-radius: 7px; /* Optional rounded corners */
   margin: 0 auto;
   display: block;
 }
