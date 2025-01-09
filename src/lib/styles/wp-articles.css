@@ -1,7 +1,4 @@
 /* POST SPACING */
-.wp-block-heading {
-  margin-bottom: 1rem; /* Adjust spacing between headings and content */
-}
 
 .wp-block-paragraph {
   margin-top: 0.5rem;
@@ -36,8 +33,11 @@
 }
 
 .wp-block-heading {
-  padding-top: 1rem; /* Adjust the padding as needed */
+  padding: 1rem 0.5rem 0.5rem 0.5rem; /* Add consistent padding */
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
+
 
 .wp-article p {
   margin: 16px 0;
@@ -240,3 +240,4 @@ a:hover {
   color: #fff;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
+

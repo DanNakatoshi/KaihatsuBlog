@@ -73,6 +73,8 @@
 		--color-gray-light: #f3f4f6; /* Very light gray for backgrounds */
 		--color-gray: #6b7280; /* Neutral gray for text */
 		--color-gray-dark: #374151; /* Darker gray for headings or emphasized text */
+    --underline-color-light: hsl(50, 70%, 45%); /* Light theme color */
+    --underline-color-dark: hsl(50, 80%, 65%);  /* Dark theme color */
 
 		--background: 0 0% 100%; /* Light mode background */
 		--foreground: 240 10% 10%; /* Softer black for text in light mode */
@@ -229,5 +231,60 @@
 
 .text-gray-dark {
   color: var(--color-gray-dark);
+}
+
+/* Animation */
+.tracking-in-expand {
+	animation: tracking-in-expand 0.7s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+}
+
+
+ @keyframes tracking-in-expand {
+  0% {
+    letter-spacing: -0.5em;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+/* Animation for heading on scroll */
+
+
+.heading-container {
+  position: relative;
+  display: inline-block; /* Inline for fitting the text width */
+}
+
+.heading-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0; /* Always aligned at the bottom */
+  left: 0;
+  width: 0; /* Start with no width */
+  height: 4px; /* Adjust the height of the underline */
+  background-color: #333; /* Color of the underline */
+  border-radius: 999px; /* Fully round the ends of the underline */
+  background-color: var(--underline-color-light); /* Light theme color */
+  animation: underline-stretch 0.5s linear forwards; /* Use linear timing for straight movement */
+}
+
+body.dark .heading-container::after {
+  background-color: var(--underline-color-dark); /* Dark theme color */
+}
+
+/* Keyframes for the underline animation */
+@keyframes underline-stretch {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 

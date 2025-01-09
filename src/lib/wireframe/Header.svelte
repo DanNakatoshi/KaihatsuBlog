@@ -59,13 +59,10 @@
 		<Button size="sm" onclick={() => (isMenuOpen = true)}>
 			<Menu size={ICON_SIZES.SMALL} />
 		</Button>
-		<Button variant="ghost" onclick={() => goto('/')}>
-			<span class="font-extrabold">あさめしコード</span>
+		<Button variant="ghost" onclick={() => goto('/')} class="">
+			<span class="font-extrabold tracking-in-expand">あさめしコード</span>
 		</Button>
 
-		<!-- <Button size="sm" variant="ghost">
-			<Bell size={ICON_SIZES.SMALL} />
-		</Button> -->
 		<Button onclick={toggleTheme} variant="outline" size="icon">
 			<Sun
 				class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
