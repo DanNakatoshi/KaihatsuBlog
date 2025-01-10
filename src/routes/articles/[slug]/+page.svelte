@@ -3,6 +3,10 @@
 	import '$lib/styles/wp-articles.css';
 	import '$lib/styles/ToC.css';
 
+// Icons
+import { TableOfContents } from 'lucide-svelte';
+
+
 	// Highlight.js
 	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
 	import hljs from 'highlight.js/lib/core';
@@ -17,18 +21,19 @@
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import * as Drawer from "$lib/components/ui/drawer/index.js";
 
 	// Helper
-	// import { generateTableOfContents } from '$lib/helper/createToC.js';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 	import { fetchSinglePost, fetchSeriesById } from '$lib/api/WPhandler.js';
 
 	// Svelte
-	import { onMount, tick } from 'svelte'; // Import `tick`
+	import { onMount, tick, onDestroy } from 'svelte'; // Import `tick`
 	import { page } from '$app/stores';
 
 	// Components
 	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
+	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
 
 	// Initalize data
 	let { data } = $props();
@@ -59,36 +64,37 @@
 		}));
 	}
 
+	let observer;
 	function observeHeadings() {
-		const headings = document.querySelectorAll(
-			'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
-		);
-
-		// Log found headings for debugging
-		console.log('Headings found:', headings);
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// Heading is visible within the viewport
-						entry.target.classList.add('heading-container');
-						console.log('Class added:', entry.target.textContent);
-					} else {
-						// Heading has completely exited the viewport
-						entry.target.classList.remove('heading-container');
-						console.log('Class removed:', entry.target.textContent);
-					}
-				});
-			},
-			{
-				root: null, // Observe relative to the viewport
-				threshold: 0 // Trigger as soon as any part of the heading is visible or not visible
-			}
-		);
-
-		headings.forEach((heading) => observer.observe(heading));
+	if (observer) {
+		observer.disconnect(); // Disconnect any existing observers
 	}
+
+	const headings = document.querySelectorAll(
+		'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
+	);
+
+	observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				// Add class when the heading is in or above the center of the viewport
+				if (entry.intersectionRatio > 0 && entry.boundingClientRect.top <= window.innerHeight / 2) {
+					entry.target.classList.add('heading-container');
+				} else {
+					entry.target.classList.remove('heading-container');
+				}
+			});
+		},
+		{
+			root: null, // Observe relative to the viewport
+			rootMargin: '0px 0px -50% 0px', // Adjust the bottom margin to trigger when halfway
+			threshold: 0, // Trigger as soon as the element is in view
+		}
+	);
+
+	headings.forEach((heading) => observer.observe(heading));
+}
+
 
 	function scrollToHeading(text) {
 		document
@@ -107,6 +113,7 @@
 			// Wait for the DOM to update before applying syntax highlighting
 			await tick();
 			highlightSyntax(); // Highlight the newly fetched post
+			observeHeadings(); // Re-observe headings
 		} catch (error) {
 			console.error('Error fetching post:', error);
 		}
@@ -172,10 +179,9 @@
 			// seriesId = currentSeriesId
 			// Fetch updated data
 			if (urlSlug) {
-				fetchPost(urlSlug)
+				fetchPost(urlSlug);
 				// observeHeadings();
-
-			};
+			}
 			if (urlSeriesId) {
 				fetchSeries(urlSeriesId);
 				displayRelatedSeries();
@@ -201,6 +207,12 @@
 		}
 		observeHeadings();
 	});
+
+	onDestroy(() => {
+		if (observer) {
+			observer.disconnect();
+		}
+	});
 </script>
 
 {#if post}
@@ -215,51 +227,47 @@
 				</Card.Header>
 				<Card.Content>
 					{#if post.series?.length > 0}
-					<div class="mb-4 rounded bg-secondary p-2 py-4">
-						<div class="mb-4 flex flex-wrap gap-4">
-							{#each displayRelatedSeries() as series (series.series_ID)}
-								<div class="relative">
-									<span
-										class="text-yellow absolute -top-3 left-0 z-10 -rotate-3 whitespace-nowrap px-2 py-1 text-xs font-bold"
-									>
-										{series.series_ID != urlSeriesId ? 'シリーズで読む' : 'このシリーズ'}
-									</span>
-									<Button
-										class={series.series_ID == urlSeriesId ? 'text-primary' : 'text-gray'}
-										variant="outline"
-										onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
-									>
-										<span class="font-bold">{series.ser_name}</span>
-									</Button>
-								</div>
-							{/each}
-						</div>
-						{#if urlSeriesId}
-							<div class="mt-2">
-								<!-- <h4 class=" px-2 py-1 text-xs text-yellow-300">
-								シリーズ: <strong>{seriesDetails?.name}</strong>
-							</h4> -->
-								{seriesDetails?.description}
-								<div class="flex flex-col items-start justify-start">
-									{#each seriesPosts as seriesPost, index (seriesPost.id)}
-										<div class="flex w-full items-center overflow-hidden">
-											<!-- {#if seriesPost.slug == post.slug}
-											<span class="text-sm">👉</span>
-										{/if} -->
-											<Button
-												variant="link"
-												onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
-											>
-												<span class={seriesPost.slug == post.slug ? ' text-primary' : 'text-gray'}
-													>{index + 1}. {seriesPost.title}</span
-												>
-											</Button>
-										</div>
-									{/each}
-								</div>
+						<div class="mb-4 rounded py-4 ">
+							<div class="mb-4 flex flex-wrap gap-4">
+								{#each displayRelatedSeries() as series (series.series_ID)}
+									<div class="relative">
+										<span
+											class="text-yellow absolute -top-3 left-0 z-10 -rotate-3 whitespace-nowrap px-2 py-1 text-xs font-bold"
+										>
+											{series.series_ID != urlSeriesId ? 'シリーズで読む' : 'このシリーズ'}
+										</span>
+										<Button
+											class={series.series_ID == urlSeriesId ? 'text-primary' : 'text-gray'}
+											variant="outline"
+											onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
+										>
+											<span class="font-bold">{series.ser_name}</span>
+										</Button>
+									</div>
+								{/each}
 							</div>
-						{/if}
-					</div>
+							{#if urlSeriesId}
+								<div class="mt-2">
+									{seriesDetails?.description}
+									<div class="flex flex-col flex-wrap items-start justify-start gap-2">
+										{#each seriesPosts as seriesPost, index (seriesPost.id)}
+											<div class="flex w-full items-center ">
+												<button
+													onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
+													class="text-left text-sm hover:underline hover:decoration-2 hover:decoration-primary"
+												>
+													<span class={`whitespace-normal break-word  ${seriesPost.slug == post.slug ? 'text-primary' : 'text-gray'}`}
+														>{index + 1}. {seriesPost.title}</span
+													>
+												</button>
+											</div>
+										{/each}
+										<div class="w-full border-t border-gray my-2"></div>
+
+									</div>
+								</div>
+							{/if}
+						</div>
 					{/if}
 
 					{@html post.content.rendered}
@@ -283,11 +291,55 @@
 					</Card.Header>
 				</Card.Root>
 			</div>
+
+
+			<!-- <div class="col-span-12 md:col-span-6 lg:col-span-4">
+				<div class="mb-6 break-inside-avoid">
+					<ArticleCard {post} />
+				</div>
+			</div> -->
+
+
 		</div>
 		<!-- {JSON.stringify(post.content.rendered)} -->
 	</div>
 {/if}
 
+
+<div class="block sm:hidden">
+	<Drawer.Root>
+		<!-- Fixed button at the bottom center -->
+		<div class="fixed bottom-5 left-1/2 transform -translate-x-1/2">
+			<Drawer.Trigger class="px-4 py-2 rounded-full bg-primary text-white shadow-lg">
+				<TableOfContents />
+			</Drawer.Trigger>
+		</div>
+
+		<!-- Drawer content -->
+		<Drawer.Content>
+			<Drawer.Header>
+				<Drawer.Title>Are you sure absolutely sure?</Drawer.Title>
+				<Drawer.Description>This action cannot be undone.</Drawer.Description>
+			</Drawer.Header>
+
+			<Drawer.Footer>
+				{#if toc.length > 0}
+					{@render tocSnippet()}
+				{:else}
+					<p>No Table of Contents available.</p>
+				{/if}
+
+				<Drawer.Close>C</Drawer.Close>
+			</Drawer.Footer>
+		</Drawer.Content>
+	</Drawer.Root>
+</div>
+
+
+
+
+
+<!-- Table of Contents Snippet -->
 {#snippet tocSnippet()}
 	<ul id="toc" class="flex max-w-full flex-col items-start">
 		{#each toc as item (item.text)}

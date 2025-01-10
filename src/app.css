@@ -69,12 +69,15 @@
 @layer base {
 	:root {
 		--font-primary: 'Noto Sans JP', sans-serif;
-		--color-yellow: #facc15; /* Default yellow for light mode */
+		/* --color-yellow: #facc15;  */
+		--color-yellow: hsl(50, 70%, 45%);
+
 		--color-gray-light: #f3f4f6; /* Very light gray for backgrounds */
 		--color-gray: #6b7280; /* Neutral gray for text */
 		--color-gray-dark: #374151; /* Darker gray for headings or emphasized text */
     --underline-color-light: hsl(50, 70%, 45%); /* Light theme color */
     --underline-color-dark: hsl(50, 80%, 65%);  /* Dark theme color */
+    --border: 240 5.9% 90%; /* Light theme border color */
 
 		--background: 0 0% 100%; /* Light mode background */
 		--foreground: 240 10% 10%; /* Softer black for text in light mode */
@@ -122,6 +125,10 @@
 
 		/* Custom Icon Size */
 		--icon-size-small: 12px;
+
+    --scrollbar-track-color: #f3f3f3;
+    --scrollbar-thumb-color: #888;
+    --scrollbar-thumb-hover-color: #555;
 	}
 
 	.dark {
@@ -129,6 +136,7 @@
 		--color-gray-light: #4b5563; /* Lighter gray for dark mode text */
 		--color-gray: #d1d5db; /* Neutral gray for text in dark mode */
 		--color-gray-dark: #e5e7eb;
+    --border: 240 3.7% 15.9%; /* Dark theme border color */
 
 		--background: 20 14.3% 10%; /* Darker gray background for dark mode */
 		--foreground: 0 0% 80%; /* Softer white for text in dark mode */
@@ -154,9 +162,20 @@
 		--heading-color: 0 0% 90%; /* Softer white for headings */
 		--paragraph-color: 0 0% 75%; /* Neutral gray for paragraphs */
 		--link-color: 210 60% 70%; /* Muted blue for links */
-		--link-hover-color: 210 60% 80%; /* Slightly brighter blue on hover */
-	}
+		--link-hover-color: 210 60% 80%; 
+    
+    --scrollbar-track-color: #2e2e2e;
+    --scrollbar-thumb-color: #555;
+    --scrollbar-thumb-hover-color: #777;	}
 }
+
+@layer utilities {
+  .border-gray {
+    border-color: var(--border);
+  }
+}
+
+
 
 @layer base {
 	* {
@@ -253,9 +272,6 @@
 }
 
 
-/* Animation for heading on scroll */
-
-
 .heading-container {
   position: relative;
   display: inline-block; /* Inline for fitting the text width */
@@ -288,3 +304,49 @@ body.dark .heading-container::after {
   }
 }
 
+
+/* POST */
+.wp-block-separator {
+  height: 1px; /* Default height */
+  margin: 1rem 0; /* Add spacing above and below */
+  background-color: var(--separator-color, #e5e5e5); /* Fallback for light theme */
+  border: none; /* Remove any default borders */
+}
+
+/* Light Theme */
+:root {
+  --separator-color: #e5e5e5; /* Light gray for light theme */
+}
+
+/* Dark Theme */
+body.dark {
+  --separator-color: #333333; /* Dark gray for dark theme */
+}
+
+/* Side Scroll bar */
+/* For WebKit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color, #f3f3f3); /* Background color of the track */
+  border-radius: 8px; /* Optional: Round the edges */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color, #888); /* Color of the thumb */
+  border-radius: 8px; /* Round the edges of the thumb */
+  border: 2px solid transparent; /* Add space around thumb */
+  background-clip: content-box; /* Make the border visible */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color, #555); /* Thumb color on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin; /* Makes the scrollbar thinner */
+  scrollbar-color: var(--scrollbar-thumb-color, #888) var(--scrollbar-track-color, #f3f3f3); /* Thumb and track color */
+}
