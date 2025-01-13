@@ -6,7 +6,6 @@
 // Icons
 import { TableOfContents } from 'lucide-svelte';
 
-
 	// Highlight.js
 	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
 	import hljs from 'highlight.js/lib/core';
@@ -45,6 +44,7 @@ import { TableOfContents } from 'lucide-svelte';
 	let urlSlug = $state($page.params.slug);
 	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
 	let relatedSeries = $state([]);
+	let isOpenDrawer = $state(false);
 
 	function generateTableOfContents(articleContent) {
 		if (typeof articleContent !== 'string' || !articleContent.trim()) {
@@ -96,15 +96,24 @@ import { TableOfContents } from 'lucide-svelte';
 }
 
 
-	function scrollToHeading(text) {
-		document
-			.querySelectorAll('h1, h2, h3')
-			.forEach(
-				(el) =>
-					el.textContent.trim() === text &&
-					el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-			);
-	}
+function scrollToHeading(text) {
+    const heading = Array.from(document.querySelectorAll('h1, h2, h3')).find(
+        (el) => el.textContent.trim() === text
+    );
+
+    if (!heading) {
+        return;
+    }
+
+    if (isOpenDrawer) {
+        isOpenDrawer = false; // Close the drawer
+        setTimeout(() => {
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300); // Adjust delay to match drawer's closing animation
+    } else {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
 
 	async function fetchPost(slug) {
 		try {
@@ -124,7 +133,7 @@ import { TableOfContents } from 'lucide-svelte';
 			return [];
 		}
 
-		const currentSeriesId = urlSeriesId?.toString(); // Safely handle null or undefined
+		const currentSeriesId = urlSeriesId?.toString(); 
 		const activeSeries = [];
 		const otherSeries = [];
 
@@ -146,11 +155,8 @@ import { TableOfContents } from 'lucide-svelte';
 		try {
 			if (seriesId) {
 				seriesPosts = await fetchSeriesById(seriesId);
-				// console.log(seriesPosts)
 				seriesDetails = seriesPosts?.series;
 				seriesPosts = seriesPosts?.posts;
-				// console.log($page.url.searchParams.get('seriesId'))
-				// seriesId = $page.url.searchParams.get('seriesId')
 			}
 		} catch (error) {
 			// console.error('Error fetching series:', error);
@@ -176,16 +182,12 @@ import { TableOfContents } from 'lucide-svelte';
 		if (urlSlug !== currentSlug || urlSeriesId !== currentSeriesId) {
 			urlSlug = currentSlug;
 			urlSeriesId = currentSeriesId;
-			// seriesId = currentSeriesId
-			// Fetch updated data
 			if (urlSlug) {
 				fetchPost(urlSlug);
-				// observeHeadings();
 			}
 			if (urlSeriesId) {
 				fetchSeries(urlSeriesId);
 				displayRelatedSeries();
-				// observeHeadings();
 			}
 		}
 	});
@@ -214,6 +216,27 @@ import { TableOfContents } from 'lucide-svelte';
 		}
 	});
 </script>
+
+<svelte:head>
+	<title>{post.title.rendered} - あさめしコード</title>
+	<meta name="description" content="{post.excerpt.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
+	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+	<link rel="canonical" href={post.link} />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="{post.title.rendered} - あさめしコード" />
+	<meta property="og:description" content="{post.excerpt.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
+	<meta property="og:url" content="{post.link}" />
+	<meta property="og:site_name" content="あさめしコード" />
+	<meta property="article:published_time" content="{post.date}" />
+	<meta property="article:modified_time" content="{post.modified}" />
+	<meta name="author" content="DanNakatoshi" />
+	<!-- <meta property="og:image" content="https://kaihatsunosho.com/wp-content/uploads/2025/01/image-3.png" /> -->
+	<meta property="og:image:width" content="1348" />
+	<meta property="og:image:height" content="1075" />
+</svelte:head>
+
+
 
 {#if post}
 	<div class=" ">
@@ -277,7 +300,7 @@ import { TableOfContents } from 'lucide-svelte';
 				</Card.Footer>
 			</Card.Root>
 
-			<div class="sticky top-4 col-span-12 max-h-screen md:col-span-3">
+			<div class="hidden md:block md:sticky top-4 col-span-12 max-h-screen md:col-span-3">
 				<Card.Root class="col-span-12 md:col-span-3 ">
 					<Card.Header>
 						<Card.Title>目次ナビ</Card.Title>
@@ -306,20 +329,18 @@ import { TableOfContents } from 'lucide-svelte';
 {/if}
 
 
-<div class="block sm:hidden">
-	<Drawer.Root>
-		<!-- Fixed button at the bottom center -->
+<div class="block md:hidden">
+	<Drawer.Root bind:open={isOpenDrawer}>
 		<div class="fixed bottom-5 left-1/2 transform -translate-x-1/2">
 			<Drawer.Trigger class="px-4 py-2 rounded-full bg-primary text-white shadow-lg">
 				<TableOfContents />
 			</Drawer.Trigger>
 		</div>
 
-		<!-- Drawer content -->
 		<Drawer.Content>
 			<Drawer.Header>
-				<Drawer.Title>Are you sure absolutely sure?</Drawer.Title>
-				<Drawer.Description>This action cannot be undone.</Drawer.Description>
+				<Drawer.Title>目次ナビ</Drawer.Title>
+				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 			</Drawer.Header>
 
 			<Drawer.Footer>
@@ -329,7 +350,7 @@ import { TableOfContents } from 'lucide-svelte';
 					<p>No Table of Contents available.</p>
 				{/if}
 
-				<Drawer.Close>C</Drawer.Close>
+				<Drawer.Close>とじる</Drawer.Close>
 			</Drawer.Footer>
 		</Drawer.Content>
 	</Drawer.Root>
