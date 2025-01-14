@@ -248,26 +248,29 @@ function scrollToHeading(text) {
 						<PublishInfoBadge date={post.date} modified={post.modified} />
 					</div>
 				</Card.Header>
+
+
 				<Card.Content>
 					{#if post.series?.length > 0}
 						<div class="mb-4 rounded py-4 ">
-							<div class="mb-4 flex flex-wrap gap-4">
-								{#each displayRelatedSeries() as series (series.series_ID)}
-									<div class="relative">
-										<span
-											class="text-yellow absolute -top-3 left-0 z-10 -rotate-3 whitespace-nowrap px-2 py-1 text-xs font-bold"
-										>
-											{series.series_ID != urlSeriesId ? 'シリーズで読む' : 'このシリーズ'}
-										</span>
-										<Button
-											class={series.series_ID == urlSeriesId ? 'text-primary' : 'text-gray'}
-											variant="outline"
-											onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
-										>
-											<span class="font-bold">{series.ser_name}</span>
-										</Button>
-									</div>
+							<div class="mb-4 flex flex-col flex-wrap gap-4">
+								<span
+									class="text-yellow mb-2   px-2 py-0 text-xs font-bold"
+								>
+								シリーズで読む
+								</span>
+								<div class="flex flex-wrap gap-2">
+
+									{#each displayRelatedSeries() as series (series.series_ID)}
+									<button
+									class="rounded border border-primary p-2 text-left leading-tight hover:bg-primary hover:text-white text-primary {series.series_ID == urlSeriesId ? 'text-white bg-primary' : ''}"
+									
+									onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
+									>
+									<span class="font-bold">{series.ser_name}</span>
+								</button>
 								{/each}
+							</div>
 							</div>
 							{#if urlSeriesId}
 								<div class="mt-2">
@@ -315,16 +318,7 @@ function scrollToHeading(text) {
 				</Card.Root>
 			</div>
 
-
-			<!-- <div class="col-span-12 md:col-span-6 lg:col-span-4">
-				<div class="mb-6 break-inside-avoid">
-					<ArticleCard {post} />
-				</div>
-			</div> -->
-
-
 		</div>
-		<!-- {JSON.stringify(post.content.rendered)} -->
 	</div>
 {/if}
 
@@ -340,7 +334,6 @@ function scrollToHeading(text) {
 		<Drawer.Content>
 			<Drawer.Header>
 				<Drawer.Title>目次ナビ</Drawer.Title>
-				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 			</Drawer.Header>
 
 			<Drawer.Footer>

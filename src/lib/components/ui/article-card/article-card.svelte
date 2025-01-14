@@ -18,49 +18,55 @@
 			})
 			.filter((series) => series !== null); // Filter out null values
 	}
-
 </script>
 
-<Card.Root class=" " >
+<Card.Root class=" ">
 	<Card.Header>
 		<Card.Title class="flex flex-wrap items-center gap-2">
-			<button  onclick={() => articleMgr.handleReadButton(post.slug)} class="text-left leading-tight hover:text-primary">
-				<span class="font-semibold ">{post.title.rendered}</span>
+			<button
+				onclick={() => articleMgr.handleReadButton(post.slug)}
+				class="text-left leading-tight hover:text-primary"
+			>
+				<span class="font-semibold">{post.title.rendered}</span>
 			</button>
 		</Card.Title>
 		<div class="pt-2">
-			<PublishInfoBadge date={post.date} modified={post.modified}/>
+			<PublishInfoBadge date={post.date} modified={post.modified} />
 		</div>
 	</Card.Header>
 	<Card.Content class="">
-		<p class=" text-sm text-gray-dark">
+		<p class=" text-gray-dark text-sm">
 			{post.yoast_head_json.description}
 		</p>
-		<div class="flex flex-wrap justify-start gap-2 pt-2 " >
+		<div class="flex flex-wrap justify-start gap-2 pt-2">
 			{#each tagMgr.getTagNames(post.tags) as tag (tag)}
 				<span class="text-xs font-bold">
 					#{tag}
 				</span>
 			{/each}
 		</div>
-
-
 	</Card.Content>
 
-	<Card.Footer class="flex flex-wrap justify-end gap-2">
-		{#each getSeriesNames(post.series) as series (series.id)}
-			<div class="relative">
-				<span
-					class="absolute -top-3 left-0 z-10 -rotate-3 px-2 py-1 text-xs font-bold text-yellow "
-				>
-					シリーズで読む
-				</span>
-				<!-- Button content -->
-				<Button variant="outline" onclick={() => articleMgr.handleReadButton(post.slug, series.id)}>
-					<span class="font-bold">{series.name}</span>
-				</Button>
-			</div>
-		{/each}
+	<Card.Footer class="flex flex-col">
+		{#if post?.series?.length > 0}
+		<span
+			class="text-yellow mb-2   px-2 py-0 text-xs font-bold"
+		>
+			シリーズで読む
+		</span>
+		<div class="flex flex-wrap justify-end gap-2">
+			{#each getSeriesNames(post.series) as series (series.id)}
+				<div class="relative">
+					<button
+						onclick={() => articleMgr.handleReadButton(post.slug, series.id)}
+						class="rounded border border-primary p-2 text-left leading-tight text-primary hover:bg-primary hover:text-white"
+					>
+						<span class="text-xs font-bold">{series.name}</span>
+					</button>
+				</div>
+			{/each}
+		</div>
+		{/if}
 		<!-- <Button class="" onclick={() => articleMgr.handleReadButton(post.slug)}>
 			<span class="font-bold">読む</span>
 		</Button> -->
