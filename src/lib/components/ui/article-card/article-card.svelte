@@ -59,7 +59,7 @@
 				<div class="relative">
 					<button
 						onclick={() => articleMgr.handleReadButton(post.slug, series.id)}
-						class="rounded border border-primary p-2 text-left leading-tight text-primary hover:bg-primary hover:text-white"
+						class="rounded border border-primary p-2 pt-1 text-left leading-tight text-primary hover:bg-primary hover:text-white"
 					>
 						<span class="text-xs font-bold">{series.name}</span>
 					</button>
@@ -67,8 +67,5 @@
 			{/each}
 		</div>
 		{/if}
-		<!-- <Button class="" onclick={() => articleMgr.handleReadButton(post.slug)}>
-			<span class="font-bold">読む</span>
-		</Button> -->
 	</Card.Footer>
 </Card.Root>
