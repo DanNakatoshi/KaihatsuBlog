@@ -11,13 +11,15 @@
 	import { goto, afterNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
+	// Store
+	import { privacyDrawerManager } from '$lib/store/pageContorol.svelte';
+
 	let { children, data } = $props();
 
 	tagMgr.setTagsData(data.tags);
 	seriesMgr.setSeriesData(data.series);
 	articleMgr.setArticleData(data.posts);
 
-	let isDrawerOpen = $state(false);
 	let isOptedIn = $state(false);
 	let gtagReady = $state(false); // Track if gtag is initialized
 
@@ -34,11 +36,11 @@
 
 			// Set default consent
 			gtag('consent', 'default', {
-				'ad_storage': 'denied',
-				'analytics_storage': 'denied',
-				'ad_user_data': 'denied',
-				'ad_personalization': 'denied',
-				'wait_for_update': 500
+				ad_storage: 'denied',
+				analytics_storage: 'denied',
+				ad_user_data: 'denied',
+				ad_personalization: 'denied',
+				wait_for_update: 500
 			});
 
 			// Load Google Analytics script
@@ -60,14 +62,14 @@
 			const consentGranted = localStorage.getItem('consentGranted');
 			if (consentGranted === 'true') {
 				isOptedIn = true;
-				isDrawerOpen = false;
+				privacyDrawerManager.setDrawerState(false);
 				handleConsentGranted();
 			} else if (consentGranted === 'false') {
 				isOptedIn = false;
-				isDrawerOpen = false;
+				privacyDrawerManager.setDrawerState(false);
 				handleConsentDenied();
 			} else {
-				isDrawerOpen = true; // New user
+				privacyDrawerManager.setDrawerState(true);
 			}
 		}
 	});
@@ -85,13 +87,13 @@
 	function handleConsentGranted() {
 		if (gtagReady) {
 			isOptedIn = true;
-			isDrawerOpen = false;
+			privacyDrawerManager.setDrawerState(false);
 			localStorage.setItem('consentGranted', 'true');
 			window.gtag('consent', 'update', {
-				'ad_storage': 'granted',
-				'analytics_storage': 'granted',
-				'ad_user_data': 'granted',
-				'ad_personalization': 'granted'
+				ad_storage: 'granted',
+				analytics_storage: 'granted',
+				ad_user_data: 'granted',
+				ad_personalization: 'granted'
 			});
 		}
 	}
@@ -99,33 +101,32 @@
 	function handleConsentDenied() {
 		if (gtagReady) {
 			isOptedIn = false;
-			isDrawerOpen = false;
+			privacyDrawerManager.setDrawerState(false);
 			localStorage.setItem('consentGranted', 'false');
 			window.gtag('consent', 'update', {
-				'ad_storage': 'denied',
-				'analytics_storage': 'denied',
-				'ad_user_data': 'denied',
-				'ad_personalization': 'denied'
+				ad_storage: 'denied',
+				analytics_storage: 'denied',
+				ad_user_data: 'denied',
+				ad_personalization: 'denied'
 			});
 		}
 	}
 </script>
 
-<div class="mb-4 sm:container">
+<div class="mb-4 sm:container ">
 	<Header />
-
 	<div class="">
 		{@render children(data)}
 	</div>
 </div>
 
-<Drawer.Root bind:open={isDrawerOpen}>
+<Drawer.Root bind:open={privacyDrawerManager.isDrawerOpen} dismissible={false}>
 	<Drawer.Content>
 		<Drawer.Header>
 			<Drawer.Title>Google Analytics の使用に同意しますか？</Drawer.Title>
 			<Drawer.Description>
 				Google Analytics を使用して、以下の情報を収集・分析します:
-				<ul class="mt-2 list-disc list-inside">
+				<ul class="mt-2 list-inside list-disc text-left">
 					<li>ウェブサイトの利用状況（ページビュー、滞在時間など）</li>
 					<li>デバイス情報（ブラウザ、OSなど）</li>
 					<li>IPアドレスに基づく地域情報（匿名化済み）</li>

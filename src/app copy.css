@@ -126,9 +126,16 @@
 	* {
 		@apply border-border;
 	}
-	body {
+	/* body {
 		@apply bg-background text-foreground;
 		font-family: var(--font-primary);
+		font-size: var(--font-size-base);
+		line-height: var(--line-height-normal);
+	} */
+	body {
+		font-family: var(--font-primary);
+		background-color: var(--background);
+		color: var(--foreground);
 		font-size: var(--font-size-base);
 		line-height: var(--line-height-normal);
 	}
@@ -139,8 +146,8 @@
 	h4,
 	h5,
 	h6 {
-		color: var(--heading-color);
 		font-weight: var(--font-weight-bold);
+		color: var(--heading-color);
 	}
 
 	p {
@@ -163,13 +170,13 @@
 		font-size: var(--font-size-sm);
 	}
 
-	.text-lg {
+	.text-lg, .text-xl {
 		font-size: var(--font-size-lg);
-	}
-
-	.text-xl {
+	  }
+	  
+	  .text-xl {
 		font-size: var(--font-size-xl);
-	}
+	  }
 
 	.text-2xl {
 		font-size: var(--font-size-2xl);

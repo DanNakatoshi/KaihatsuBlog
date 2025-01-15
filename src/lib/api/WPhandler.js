@@ -18,7 +18,10 @@ async function fetchWordPressAPI(endpoint, params = {}) {
 }
 
 export async function fetchWordPressData(postsPerPage = 10) {
-	const posts = await fetchWordPressAPI('/wp/v2/posts', { per_page: postsPerPage });
+	const posts = await fetchWordPressAPI('/wp/v2/posts', {
+		per_page: postsPerPage,
+		_fields: 'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories'
+	});
 	const series = await fetchWordPressAPI('/publishpress/v1/series');
 	const categories = await fetchWordPressAPI('/wp/v2/categories', { _fields: 'id,name,link,count,parent,slug', orderby: 'slug', order: 'asc' });
 	const tags = await fetchWordPressAPI('/wp/v2/tags', { _fields: 'id,name,slug,count' });

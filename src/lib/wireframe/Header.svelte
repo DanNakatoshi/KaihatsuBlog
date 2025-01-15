@@ -60,7 +60,7 @@
 			<Menu size={ICON_SIZES.SMALL} />
 		</Button>
 		<Button variant="ghost" onclick={() => goto('/')} class="">
-			<span class="font-extrabold tracking-in-expand">あさめしコード</span>
+			<span class="font-extrabold">あさめしコード</span>
 		</Button>
 
 		<Button onclick={toggleTheme} variant="outline" size="icon">
