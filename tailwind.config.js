@@ -56,8 +56,8 @@ const config = {
 				sm: "calc(var(--radius) - 4px)"
 			},
 			fontFamily: {
-				sans: [...fontFamily.sans]
-			}
+				primary: ['Noto Sans JP', 'sans-serif'],
+			  },
 		}
 	},
 };

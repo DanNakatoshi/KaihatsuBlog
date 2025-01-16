@@ -37,3 +37,25 @@ export async function fetchSinglePost(slug) {
 export async function fetchSeriesById(seriesId) {
 	return fetchWordPressAPI(`/publishpress/v1/seriesId/${seriesId}`);
 }
+
+// Fetch more articles for infinite scrolling
+export async function fetchMoreArticles({ page = 1, limit = 12, category }) {
+	const params = {
+		page,
+		per_page: limit,
+		_fields: 'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories',
+	};
+
+	// Only include the `categories` parameter if a valid category ID is provided
+	if (category && category !== 'all') {
+		params.categories = category; // `category` should be the numeric ID
+	}
+
+	try {
+		const articles = await fetchWordPressAPI('/wp/v2/posts', params);
+		return articles; // Return fetched articles
+	} catch (error) {
+		console.error('Error fetching more articles:', error);
+		return [];
+	}
+}
