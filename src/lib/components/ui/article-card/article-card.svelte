@@ -39,7 +39,7 @@
 			{post?.yoast_head_json?.description}
 		</p>
 		<div class="flex flex-wrap justify-start gap-2 pt-2">
-			{#if post?.tags }
+			{#if post?.tags}
 				{#each tagMgr.getTagNames(post?.tags) as tag (tag)}
 					<span class="text-xs font-bold">
 						#{tag}
@@ -49,21 +49,22 @@
 		</div>
 	</Card.Content>
 
-	<Card.Footer class="flex flex-col">
-		{#if post?.series?.length > 0}
-			<span class="text-yellow mb-2 px-2 py-0 text-xs font-bold"> シリーズで読む </span>
+
+	{#if post?.series?.length > 0}
+		<Card.Footer class="flex flex-col min-w-max ">
+			<span class="flex min-w-auto ">
+				<span class=" mb-1 px-2 py-0 text-xs font-bold "> シリーズで読む </span>
+			</span>
 			<div class="flex flex-wrap justify-end gap-2">
 				{#each getSeriesNames(post?.series) as series (series.id)}
-					<div class="relative">
-						<button
-							onclick={() => articleMgr.handleReadButton(post?.slug, series?.id)}
-							class="rounded border border-primary p-2 pt-1 text-left leading-tight text-primary hover:bg-primary hover:text-white"
-						>
-							<span class="text-xs font-bold">{series?.name}</span>
-						</button>
-					</div>
+					<button
+						onclick={() => articleMgr.handleReadButton(post?.slug, series?.id)}
+						class="rounded p-2 pt-1 text-left leading-tight text-primary hover:bg-primary hover:text-white"
+					>
+						<span class="text-xs font-bold">{series?.name}</span>
+					</button>
 				{/each}
 			</div>
-		{/if}
-	</Card.Footer>
+		</Card.Footer>
+	{/if}
 </Card.Root>
