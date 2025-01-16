@@ -15,29 +15,46 @@ export const mainCategoryInfo = [
 ]
 
 function createTagsData() {
-	let tagsData = $state([]);
-	let tagMap = new Map();
+	let tagsData = $state([]); // Reactive state for tags
+	let tagMap = new Map(); // Map to store tag IDs and names
 
 	function updateTagMap() {
+		// Create a Map of tag IDs to names
 		tagMap = new Map(tagsData.map((tag) => [tag.id, tag.name]));
 	}
 
 	function getTagNames(tagIds) {
-		return tagIds.map((tagId) => tagMap.get(tagId) || 'Unknown');
+		// Ensure `tagIds` is an array
+		if (!Array.isArray(tagIds)) {
+			console.warn('Tags property is not an array:', tagIds);
+			return []; // Return an empty array for invalid input
+		}
+
+		// Map tag IDs to tag names using the tagMap
+		return tagIds
+			.map((tagId) => tagMap.get(tagId)) // Retrieve tag name from the map
+			.filter((tagName) => tagName !== undefined); // Filter out undefined tag names
 	}
 
 	return {
+		// Getter for tagsData
 		get tagsData() {
 			return tagsData;
 		},
+
+		// Setter for tagsData
 		setTagsData(newData) {
 			tagsData.splice(0, tagsData.length, ...newData); // Update reactive state
 			updateTagMap(); // Refresh the map
 		},
+
+		// Expose `getTagNames`
 		getTagNames,
-	}
+	};
 }
+
 export const tagMgr = createTagsData();
+
 
 function createSeriesData() {
 	let seriesData = $state([]);
@@ -81,7 +98,7 @@ function createArticleData() {
 		},
 
 		// Methods for Article Management
-		addArticle(newArticle) {
+		addArticles(newArticle) {
 			articleData = [...articleData, newArticle];
 		},
 		// removeArticle(articleId) {

@@ -4,7 +4,7 @@
 	import '$lib/styles/ToC.css';
 
 // Icons
-import { TableOfContents } from 'lucide-svelte';
+	import { TableOfContents } from 'lucide-svelte';
 
 	// Highlight.js
 	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
@@ -24,7 +24,7 @@ import { TableOfContents } from 'lucide-svelte';
 
 	// Helper
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
-	import { fetchSinglePost, fetchSeriesById } from '$lib/api/WPhandler.js';
+	import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
 	// Svelte
 	import { onMount, tick, onDestroy } from 'svelte'; // Import `tick`
@@ -115,18 +115,47 @@ function scrollToHeading(text) {
     }
 }
 
-	async function fetchPost(slug) {
-		try {
-			post = await fetchSinglePost(slug); // Fetch new post
-			toc = generateTableOfContents(post?.content?.rendered || ''); // Update ToC
-			// Wait for the DOM to update before applying syntax highlighting
-			await tick();
-			highlightSyntax(); // Highlight the newly fetched post
-			observeHeadings(); // Re-observe headings
-		} catch (error) {
-			console.error('Error fetching post:', error);
-		}
-	}
+// async function fetchPost(slug) {
+// 	try {
+// 		const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
+// 		if (!fetchedPost) {
+// 			throw new Error('Post not found');
+// 		}
+// 		console.log('Fetched Post:', fetchedPost); // Debug fetched data
+// 		post = fetchedPost;
+// 		toc = generateTableOfContents(post?.content?.rendered || '');
+// 		await tick();
+// 		highlightSyntax();
+// 		observeHeadings();
+// 	} catch (error) {
+// 		console.error('Error fetching post:', error);
+// 	}
+// }
+
+async function fetchPost(slug) {
+  try {
+    const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
+
+    if (!fetchedPost) {
+      throw new Error(`Post with slug "${slug}" not found.`);
+    }
+
+
+    post = fetchedPost;
+
+    // Generate Table of Contents from the post content
+    toc = generateTableOfContents(post?.content?.rendered || '');
+
+    // Wait for DOM updates before applying syntax highlighting
+    await tick();
+
+    highlightSyntax();
+    observeHeadings();
+  } catch (error) {
+    console.error('Error fetching post:', error);
+  }
+}
+
 
 	function displayRelatedSeries() {
 		if (!post.series || !data.series) {
@@ -154,12 +183,12 @@ function scrollToHeading(text) {
 	async function fetchSeries(seriesId) {
 		try {
 			if (seriesId) {
-				seriesPosts = await fetchSeriesById(seriesId);
-				seriesDetails = seriesPosts?.series;
-				seriesPosts = seriesPosts?.posts;
+				const seriesResponse = await fetchWordPressData({ type: 'seriesById', seriesId });
+				seriesDetails = seriesResponse?.series;
+				seriesPosts = seriesResponse?.posts;
 			}
 		} catch (error) {
-			// console.error('Error fetching series:', error);
+			console.error('Error fetching series:', error);
 		}
 	}
 
@@ -218,18 +247,18 @@ function scrollToHeading(text) {
 </script>
 
 <svelte:head>
-	<title>{post.title.rendered} - あさめしコード</title>
-	<meta name="description" content="{post.excerpt.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
+	<title>{post.title?.rendered} - あさめしコード</title>
+	<meta name="description" content="{post.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, '')}" />
 	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-	<link rel="canonical" href={post.link} />
+	<link rel="canonical" href={post?.link} />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
-	<meta property="og:title" content="{post.title.rendered} - あさめしコード" />
-	<meta property="og:description" content="{post.excerpt.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
-	<meta property="og:url" content="{post.link}" />
+	<meta property="og:title" content="{post.title?.rendered} - あさめしコード" />
+	<meta property="og:description" content="{post.excerpt?.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
+	<meta property="og:url" content="{post?.link}" />
 	<meta property="og:site_name" content="あさめしコード" />
-	<meta property="article:published_time" content="{post.date}" />
-	<meta property="article:modified_time" content="{post.modified}" />
+	<meta property="article:published_time" content="{post?.date}" />
+	<meta property="article:modified_time" content="{post?.modified}" />
 	<meta name="author" content="DanNakatoshi" />
 	<!-- <meta property="og:image" content="https://kaihatsunosho.com/wp-content/uploads/2025/01/image-3.png" /> -->
 	<meta property="og:image:width" content="1348" />
@@ -243,7 +272,7 @@ function scrollToHeading(text) {
 		<div class="grid grid-cols-12 gap-2">
 			<Card.Root class="col-span-12 md:col-span-9 ">
 				<Card.Header>
-					<Card.Title class="mb-4">{post.title.rendered}</Card.Title>
+					<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
 					<div class="pb-2">
 						<PublishInfoBadge date={post.date} modified={post.modified} />
 					</div>
@@ -265,9 +294,9 @@ function scrollToHeading(text) {
 									<button
 									class="rounded border border-primary p-2 text-left leading-tight hover:bg-primary hover:text-white text-primary {series.series_ID == urlSeriesId ? 'text-white bg-primary' : ''}"
 									
-									onclick={() => articleMgr.handleReadButton(post.slug, series.series_ID)}
+									onclick={() => articleMgr.handleReadButton(post?.slug, series?.series_ID)}
 									>
-									<span class="font-bold">{series.ser_name}</span>
+									<span class="font-bold">{series?.ser_name}</span>
 								</button>
 								{/each}
 							</div>
@@ -296,8 +325,8 @@ function scrollToHeading(text) {
 						</div>
 					{/if}
 
-					{@html post.content.rendered}
-				</Card.Content>
+					{@html post?.content?.rendered || ''}
+					</Card.Content>
 				<Card.Footer>
 					<!--  -->
 				</Card.Footer>

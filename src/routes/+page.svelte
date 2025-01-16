@@ -9,7 +9,7 @@
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 // FetchData
 
-import { fetchMoreArticles } from '$lib/api/WPhandler.js';
+import { fetchWordPressData  } from '$lib/api/WPhandler.js';
 
 	
 	// Svelte
@@ -25,103 +25,126 @@ import { fetchMoreArticles } from '$lib/api/WPhandler.js';
 	let isLoading = $state(false); // Loading indicator
 	let hasMore = $state(true); // Flag to check if more articles can be loaded
 
+	// function filterPostsByCategory() {
+	// 	let filteredPosts = [...articleMgr.articleData]; // Create a shallow copy to avoid mutation
+
+	// 	if (activeTab !== 'ALL') {
+	// 		const category = mainCategoryInfo.find((category) => category.name === activeTab);
+	// 		if (category) {
+	// 			filteredPosts = filteredPosts.filter((post) => post.categories?.includes(category.id));
+	// 		} else {
+	// 			return []; // No posts for the active tab
+	// 		}
+	// 	}
+
+	// 	if (searchInputValue) {
+	// 		const searchTerm = searchInputValue.toLowerCase();
+	// 		filteredPosts = filteredPosts.filter((post) => {
+	// 			const title = post.title?.rendered?.toLowerCase() || '';
+	// 			const description = post.yoast_head_json?.description?.toLowerCase() || '';
+	// 			return title.includes(searchTerm) || description.includes(searchTerm);
+	// 		});
+	// 	}
+
+	// 	if (sortByVal === '公開日順') {
+	// 		filteredPosts = [...filteredPosts].sort((a, b) => {
+	// 			const dateA = new Date(a.date);
+	// 			const dateB = new Date(b.date);
+	// 			return dateB.getTime() - dateA.getTime(); // Newest first
+	// 		});
+	// 	} else if (sortByVal === '更新日順') {
+	// 		filteredPosts = [...filteredPosts].sort((a, b) => {
+	// 			const dateA = new Date(a.modified);
+	// 			const dateB = new Date(b.modified);
+	// 			return dateB.getTime() - dateA.getTime(); // Most recently modified first
+	// 		});
+	// 	}
+	// 	return filteredPosts;
+	// }
+
 	function filterPostsByCategory() {
-		let filteredPosts = [...articleMgr.articleData]; // Create a shallow copy to avoid mutation
 
-		// Filter by activeTab (category)
-		if (activeTab !== 'ALL') {
-			const category = mainCategoryInfo.find((category) => category.name === activeTab);
-			if (category) {
-				filteredPosts = filteredPosts.filter((post) => post.categories?.includes(category.id));
-			} else {
-				return []; // No posts for the active tab
-			}
-		}
-
-		// Filter by search input
-		if (searchInputValue) {
+	return [...articleMgr.articleData]
+		.filter((post) => {
+			const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
+			return activeTab === 'ALL' || post.categories?.includes(categoryId);
+		})
+		.filter((post) => {
+			if (!searchInputValue) return true;
 			const searchTerm = searchInputValue.toLowerCase();
-			filteredPosts = filteredPosts.filter((post) => {
-				const title = post.title?.rendered?.toLowerCase() || '';
-				const description = post.yoast_head_json?.description?.toLowerCase() || '';
-				return title.includes(searchTerm) || description.includes(searchTerm);
-			});
-		}
+			return (
+				post.title?.rendered?.toLowerCase().includes(searchTerm) ||
+				post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
+			);
+		})
+		.sort((a, b) => {
+			const key = sortByVal === '公開日順' ? 'date' : 'modified';
+			return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+		});
+}
 
-		if (sortByVal === '公開日順') {
-			filteredPosts = [...filteredPosts].sort((a, b) => {
-				const dateA = new Date(a.date);
-				const dateB = new Date(b.date);
-				return dateB.getTime() - dateA.getTime(); // Newest first
-			});
-		} else if (sortByVal === '更新日順') {
-			filteredPosts = [...filteredPosts].sort((a, b) => {
-				const dateA = new Date(a.modified);
-				const dateB = new Date(b.modified);
-				return dateB.getTime() - dateA.getTime(); // Most recently modified first
-			});
-		}
-		return filteredPosts;
-	}
-
-	async function loadMoreArticles() {
+async function loadMoreArticles() {
 	if (isLoading || !hasMore) return;
 	isLoading = true;
-
+	// console.log('Loading more articles...');
 	try {
-		// Get the category ID for the active tab
-		const categoryId = activeTab !== 'all'
-			? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id
-			: null;
+		// Determine the category ID for the active tab
+		const categoryId =
+			activeTab !== 'ALL'
+				? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id
+				: null;
 
-		// Fetch articles for the active category or all categories
-		const newArticles = await fetchMoreArticles({ page: articleMgr.page, limit: 12, category: categoryId });
+		// console.log('Fetching articles for category:', categoryId);
+
+		// Fetch articles using the updated fetchWordPressData function
+		const newArticles = await fetchWordPressData({
+			type: 'posts',
+			page: articleMgr.page,
+			limit: 12,
+			category: categoryId,
+		});
 
 		if (newArticles.length > 0) {
-			// Append new articles and remove duplicates
+			// console.log('Fetched new articles:', newArticles);
+
+			// Filter out duplicate articles
 			const uniqueArticles = newArticles.filter(
-				(article) => !articleMgr.articleData.some((existing) => existing.id === article.id)
+				(article) =>
+					!articleMgr.articleData.some((existing) => existing.id === article.id)
 			);
-			articleMgr.addArticles(uniqueArticles); // Add only unique articles
-			articleMgr.addPage(); // Increment page
-			updateDisplayedArticles();
+
+			// Add unique articles to the displayed list
+			articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
+			displayedArticles = filterPostsByCategory();
 		} else {
-			hasMore = false; // No more articles
+			hasMore = false; // No more articles to load
+			// console.log('No more articles to load.');
 		}
 	} catch (error) {
 		console.error('Error loading more articles:', error);
 	} finally {
-		isLoading = false;
+		isLoading = false; // Reset loading state
 	}
 }
 
-
-
-
-	function updateDisplayedArticles() {
-		if (activeTab === 'all') {
-			displayedArticles = [...articleMgr.articleData]; // Show all articles
-		} else {
-			displayedArticles = articleMgr.articleData.filter((article) => article.category_id == activeTab);
-		}
-	}
-
-	// Intersection Observer setup for infinite scroll
-	let loadMoreTrigger = $state(); // Element at the bottom of the page
+	// Infinite Scroll Setup
+	let loadMoreTrigger = $state();
 	let observer = $state();
-
 	onMount(() => {
-		observer = new IntersectionObserver((entries) => {
-			if (entries[0].isIntersecting) {
-				loadMoreArticles();
-			}
-		});
-		if (loadMoreTrigger) {
-			observer.observe(loadMoreTrigger);
+	// console.log('Observer mounted');
+	observer = new IntersectionObserver((entries) => {
+		if (entries[0].isIntersecting) {
+			// console.log('Load more trigger intersecting');
+			loadMoreArticles();
 		}
 	});
+	if (loadMoreTrigger) {
+		// console.log('Observing loadMoreTrigger element:', loadMoreTrigger);
+		observer?.observe(loadMoreTrigger);
+	}
+});
 
-	onDestroy(() => observer?.disconnect()); 
+	onDestroy(() => observer?.disconnect());
 </script>
 
 <svelte:head>
@@ -198,6 +221,6 @@ import { fetchMoreArticles } from '$lib/api/WPhandler.js';
 <!-- Infinite Scroll Trigger -->
 <div class="w-full h-10 flex items-center justify-center" bind:this={loadMoreTrigger}>
 	{#if isLoading}
-		<span class="loading loading-dots loading-md text-slate-100"></span>
+		<span>Loading...</span>
 	{/if}
 </div>
