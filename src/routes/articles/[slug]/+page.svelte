@@ -102,18 +102,29 @@ function scrollToHeading(text) {
     );
 
     if (!heading) {
+        console.warn(`Heading not found for text: ${text}`);
         return;
     }
 
     if (isOpenDrawer) {
-        isOpenDrawer = false; // Close the drawer
+        isOpenDrawer = false;
         setTimeout(() => {
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300); // Adjust delay to match drawer's closing animation
+            heading.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start', // モバイルでヘッダーを隠す問題を回避
+                inline: 'nearest',
+            });
+        }, 350);
     } else {
-        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        heading.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest',
+        });
     }
 }
+
+
 
 async function fetchPost(slug) {
   try {
@@ -249,7 +260,6 @@ async function fetchPost(slug) {
 
 
 {#if post}
-	<div class=" ">
 		<div class="grid grid-cols-12 gap-2">
 			<Card.Root class="col-span-12 md:col-span-9 ">
 				<Card.Header>
@@ -310,10 +320,11 @@ async function fetchPost(slug) {
 
 					{@html post?.content?.rendered || ''}
 					</Card.Content>
-				<Card.Footer>
-					<!--  -->
-				</Card.Footer>
+				<!-- <Card.Footer>
+					
+				</Card.Footer> -->
 			</Card.Root>
+			
 
 			<div class="hidden md:block md:sticky top-4 col-span-12 max-h-screen md:col-span-3">
 				<Card.Root class="col-span-12 md:col-span-3 ">
@@ -329,9 +340,16 @@ async function fetchPost(slug) {
 					</Card.Header>
 				</Card.Root>
 			</div>
-
+			<Card.Root class="col-span-12 ">
+				<Card.Header>
+					<Card.Title>著者：Dan Nakatoshi</Card.Title>
+					<Card.Description class="pb-4">
+						管理人のDanです。25歳の時に渡米し、ニューヨーク、ハワイ、シアトル、フィラデルフィアでそれぞれ1年ずつ暮らしました。現在はNYC近郊で、嫁と2匹のチワワと一緒に暮らしています。
+						このブログでは、主にウェブ開発やアメリカでの生活について発信しています。また、このサイトはオープンソースのSvelteを使って構築しました。興味があればぜひチェックしてみてください。
+					</Card.Description>
+				</Card.Header>
+			</Card.Root>
 		</div>
-	</div>
 {/if}
 
 
