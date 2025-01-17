@@ -113,7 +113,7 @@
 	}
 </script>
 
-<div class="mb-4 sm:container ">
+<div class="mb-4 sm:container">
 	<Header />
 	<div class="">
 		{@render children(data)}

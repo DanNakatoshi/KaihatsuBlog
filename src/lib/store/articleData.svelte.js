@@ -3,16 +3,16 @@ import { goto } from '$app/navigation';
 
 export const mainCategoryInfo = [
 	{
-		name:"エッセイ",
-		slug: "essay",
-		id: 21,
+		name: 'エッセイ',
+		slug: 'essay',
+		id: 21
 	},
 	{
-		name:"開発ログ",
-		slug: "technical",
+		name: '開発ログ',
+		slug: 'technical',
 		id: 22
 	}
-]
+];
 
 function createTagsData() {
 	let tagsData = $state([]); // Reactive state for tags
@@ -49,12 +49,11 @@ function createTagsData() {
 		},
 
 		// Expose `getTagNames`
-		getTagNames,
+		getTagNames
 	};
 }
 
 export const tagMgr = createTagsData();
-
 
 function createSeriesData() {
 	let seriesData = $state([]);
@@ -65,21 +64,20 @@ function createSeriesData() {
 		},
 		setSeriesData(newData) {
 			seriesData = newData;
-		},
-	}
+		}
+	};
 }
 export const seriesMgr = createSeriesData();
 
-
 function createArticleData() {
 	let articleData = $state([]);
-	let selectedCategoryFilters = $state([])
+	let selectedCategoryFilters = $state([]);
 
 	function handleReadButton(slug, seriesId = null) {
 		const url = seriesId ? `/articles/${slug}?seriesId=${seriesId}` : `/articles/${slug}`;
 		goto(url);
 	}
-	
+
 	return {
 		handleReadButton,
 		// Getters
@@ -105,19 +103,18 @@ function createArticleData() {
 		// 	articleData = articleData.filter(article => article.id !== articleId);
 		// },
 		filterArticlesByCategory(category) {
-			return articleData.filter(article => 
-				selectedCategoryFilters.length === 0 || 
-				selectedCategoryFilters.includes(article.category)
+			return articleData.filter(
+				(article) =>
+					selectedCategoryFilters.length === 0 || selectedCategoryFilters.includes(article.category)
 			);
-		},
+		}
 	};
 }
 
 export const articleMgr = createArticleData();
 
-
 export function createFilterData() {
-	let selectedCategoryFilters = $state([])
+	let selectedCategoryFilters = $state([]);
 	return {
 		// Getters
 		get selectedCategoryFilters() {
@@ -130,24 +127,20 @@ export function createFilterData() {
 
 		// Methods for Article Management
 		filterArticlesByCategory(category) {
-			return articleData.filter(article => 
-				selectedCategoryFilters.length === 0 || 
-				selectedCategoryFilters.includes(article.category)
+			return articleData.filter(
+				(article) =>
+					selectedCategoryFilters.length === 0 || selectedCategoryFilters.includes(article.category)
 			);
-		},
+		}
 	};
 }
 export const filterMgr = createFilterData();
 
-
-
 export function categorizeCategories(categories) {
-
 	const langCats = [];
 	const seriesCats = [];
 
 	categories.forEach((category) => {
-
 		if (category.parent != 0) {
 			if (category.link.includes('2-programming-language')) {
 				langCats.push(category);
@@ -155,7 +148,6 @@ export function categorizeCategories(categories) {
 				seriesCats.push(category);
 			}
 		}
-
 	});
 
 	return {
@@ -163,4 +155,3 @@ export function categorizeCategories(categories) {
 		seriesCats
 	};
 }
-

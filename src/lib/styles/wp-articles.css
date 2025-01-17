@@ -1,243 +1,241 @@
 /* POST SPACING */
 
 .wp-block-paragraph {
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
 }
 
 .wp-block-group {
-  padding: 1rem;
-  gap: 1.5rem; /* For spacing between child blocks */
+	padding: 1rem;
+	gap: 1.5rem; /* For spacing between child blocks */
 }
 
 .wp-block-column {
-  padding: 1rem;
+	padding: 1rem;
 }
 
 .wp-block-image {
-  margin-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
 }
 
 /* POST */
 .wp-article {
-  max-width: 768px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	max-width: 768px;
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .wp-article > * {
-  margin-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
 }
 
 .wp-block-heading {
-  padding: 1rem 0.5rem 0.5rem 0.5rem; /* Add consistent padding */
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+	padding: 1rem 0.5rem 0.5rem 0.5rem; /* Add consistent padding */
+	margin-top: 1rem;
+	margin-bottom: 0.5rem;
 }
 
-
 .wp-article p {
-  margin: 16px 0;
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #333333;
-  text-align: justify;
+	margin: 16px 0;
+	font-size: 1rem;
+	line-height: 1.8;
+	color: #333333;
+	text-align: justify;
 }
 
 .wp-article h1 {
-  font-size: 1.875rem; /* Slightly smaller font size */
-  line-height: 2.25rem;
-  color: #2c3e50;
+	font-size: 1.875rem; /* Slightly smaller font size */
+	line-height: 2.25rem;
+	color: #2c3e50;
 }
 
 .wp-article h2 {
-  font-size: 1.625rem; /* Smaller font size for h2 */
-  line-height: 2rem;
-  color: #2c3e50;
+	font-size: 1.625rem; /* Smaller font size for h2 */
+	line-height: 2rem;
+	color: #2c3e50;
 }
 
 .wp-article h3 {
-  font-size: 1.375rem; /* Smaller font size for h3 */
-  line-height: 1.75rem;
-  color: #2c3e50;
+	font-size: 1.375rem; /* Smaller font size for h3 */
+	line-height: 1.75rem;
+	color: #2c3e50;
 }
 
 .wp-article h4 {
-  font-size: 1.25rem; /* Smaller font size for h4 */
-  line-height: 1.5rem;
-  color: #2c3e50;
+	font-size: 1.25rem; /* Smaller font size for h4 */
+	line-height: 1.5rem;
+	color: #2c3e50;
 }
 
 .wp-article h5 {
-  font-size: 1.125rem; /* Smaller font size for h5 */
-  line-height: 1.4rem;
-  color: #2c3e50;
+	font-size: 1.125rem; /* Smaller font size for h5 */
+	line-height: 1.4rem;
+	color: #2c3e50;
 }
 
 .wp-article h6 {
-  font-size: 1rem; /* Smaller font size for h6 */
-  line-height: 1.3rem;
-  color: #2c3e50;
+	font-size: 1rem; /* Smaller font size for h6 */
+	line-height: 1.3rem;
+	color: #2c3e50;
 }
 
 .wp-article .has-text-align-left {
-  text-align: left;
+	text-align: left;
 }
 
 .wp-article .has-text-align-center {
-  text-align: center;
+	text-align: center;
 }
 
 .wp-article .has-text-align-right {
-  text-align: right;
+	text-align: right;
 }
 
 /* POST TYPOGRAPHY */
 .wp-block-heading {
-  font-size: 1.5rem; /* Slightly smaller font size */
-  line-height: 1.2;
+	font-size: 1.5rem; /* Slightly smaller font size */
+	line-height: 1.2;
 }
 
 .wp-block-paragraph {
-  font-size: 1rem;
-  line-height: 1.6;
+	font-size: 1rem;
+	line-height: 1.6;
 }
 
 .wp-block-quote {
-  font-style: italic;
-  font-size: 1.25rem;
-  border-left: 4px solid #ddd;
-  padding-left: 1rem;
+	font-style: italic;
+	font-size: 1.25rem;
+	border-left: 4px solid #ddd;
+	padding-left: 1rem;
 }
 
 .wp-block-code {
-  font-family: monospace;
-  background-color: #f5f5f5;
-  padding: 0.5rem;
-  border-radius: 4px;
+	font-family: monospace;
+	background-color: #f5f5f5;
+	padding: 0.5rem;
+	border-radius: 4px;
 }
 
 /* POST ALIGNMENT */
 .wp-block-align-left {
-  float: left;
-  margin-right: 1rem;
+	float: left;
+	margin-right: 1rem;
 }
 
 .wp-block-align-right {
-  float: right;
-  margin-left: 1rem;
+	float: right;
+	margin-left: 1rem;
 }
 
 .wp-block-align-center {
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
 }
 
 /* POST BUTTON */
 .wp-block-button {
-  display: inline-block;
-  margin-bottom: 1rem;
+	display: inline-block;
+	margin-bottom: 1rem;
 }
 
 /* Default link style */
 
 body a {
-  color: #0073aa;
-  text-decoration: underline;
+	color: #0073aa;
+	text-decoration: underline;
 }
 
 .wp-article a {
-  color: #0073aa;
-  text-decoration: underline;
+	color: #0073aa;
+	text-decoration: underline;
 }
 
 a:hover {
-  color: #005177; /* Darker blue on hover */
-  text-decoration: none; /* Remove underline on hover */
+	color: #005177; /* Darker blue on hover */
+	text-decoration: none; /* Remove underline on hover */
 }
 
 /* POST BUTTON */
 .wp-block-button {
-  display: inline-block;
-  margin-bottom: 1rem;
+	display: inline-block;
+	margin-bottom: 1rem;
 }
 
 .wp-block-button__link {
-  background-color: #0073aa; /* WordPress blue */
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  text-align: center;
-  border-radius: 4px;
-  text-decoration: none;
-  display: inline-block;
+	background-color: #0073aa; /* WordPress blue */
+	color: #fff;
+	padding: 0.75rem 1.5rem;
+	text-align: center;
+	border-radius: 4px;
+	text-decoration: none;
+	display: inline-block;
 }
 
 .wp-block-button__link:hover {
-  background-color: #005177;
-  color: #fff;
+	background-color: #005177;
+	color: #fff;
 }
-
 
 /* POST IMG */
 .wp-block-image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 7px; /* Optional rounded corners */
-  margin: 0 auto;
-  display: block;
+	max-width: 100%;
+	height: auto;
+	border-radius: 7px; /* Optional rounded corners */
+	margin: 0 auto;
+	display: block;
 }
 
 /* POST LISTS */
 .wp-block-list {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-left: 1.5rem;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	padding-left: 1.5rem;
 }
 
 .wp-block-list li {
-  margin-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 /* POST TABLES */
 .wp-block-table {
-  width: 100%;
-  border-collapse: collapse;
+	width: 100%;
+	border-collapse: collapse;
 }
 
-.wp-block-table th, .wp-block-table td {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
+.wp-block-table th,
+.wp-block-table td {
+	padding: 0.75rem;
+	border: 1px solid #ddd;
 }
 
 .wp-block-table th {
-  background-color: #f5f5f5;
-  text-align: left;
+	background-color: #f5f5f5;
+	text-align: left;
 }
 
 .wp-block-table {
-  overflow-x: auto; /* For responsiveness */
-  display: block;
+	overflow-x: auto; /* For responsiveness */
+	display: block;
 }
 
 /* POST Background */
 .wp-block-group.has-background {
-  padding: 1.5rem;
-  border-radius: 8px;
+	padding: 1.5rem;
+	border-radius: 8px;
 }
 
 .wp-block-cover {
-  position: relative;
-  padding: 4rem 2rem;
-  background-size: cover;
-  background-position: center;
+	position: relative;
+	padding: 4rem 2rem;
+	background-size: cover;
+	background-position: center;
 }
 
 .wp-block-cover .wp-block-cover__text {
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+	color: #fff;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
-

@@ -7,14 +7,12 @@
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
-// FetchData
+	// FetchData
 
-import { fetchWordPressData  } from '$lib/api/WPhandler.js';
+	import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
-	
 	// Svelte
 	import { onMount, onDestroy } from 'svelte';
-
 
 	let { data } = $props();
 	let activeTab = $state('ALL');
@@ -63,86 +61,82 @@ import { fetchWordPressData  } from '$lib/api/WPhandler.js';
 	// }
 
 	function filterPostsByCategory() {
-
-	return [...articleMgr.articleData]
-		.filter((post) => {
-			const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
-			return activeTab === 'ALL' || post.categories?.includes(categoryId);
-		})
-		.filter((post) => {
-			if (!searchInputValue) return true;
-			const searchTerm = searchInputValue.toLowerCase();
-			return (
-				post.title?.rendered?.toLowerCase().includes(searchTerm) ||
-				post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
-			);
-		})
-		.sort((a, b) => {
-			const key = sortByVal === '公開日順' ? 'date' : 'modified';
-			return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-		});
-}
-
-async function loadMoreArticles() {
-	if (isLoading || !hasMore) return;
-	isLoading = true;
-	// console.log('Loading more articles...');
-	try {
-		// Determine the category ID for the active tab
-		const categoryId =
-			activeTab !== 'ALL'
-				? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id
-				: null;
-
-		// console.log('Fetching articles for category:', categoryId);
-
-		// Fetch articles using the updated fetchWordPressData function
-		const newArticles = await fetchWordPressData({
-			type: 'posts',
-			page: articleMgr.page,
-			limit: 12,
-			category: categoryId,
-		});
-
-		if (newArticles.length > 0) {
-			// console.log('Fetched new articles:', newArticles);
-
-			// Filter out duplicate articles
-			const uniqueArticles = newArticles.filter(
-				(article) =>
-					!articleMgr.articleData.some((existing) => existing.id === article.id)
-			);
-
-			// Add unique articles to the displayed list
-			articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
-			displayedArticles = filterPostsByCategory();
-		} else {
-			hasMore = false; // No more articles to load
-			// console.log('No more articles to load.');
-		}
-	} catch (error) {
-		console.error('Error loading more articles:', error);
-	} finally {
-		isLoading = false; // Reset loading state
+		return [...articleMgr.articleData]
+			.filter((post) => {
+				const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
+				return activeTab === 'ALL' || post.categories?.includes(categoryId);
+			})
+			.filter((post) => {
+				if (!searchInputValue) return true;
+				const searchTerm = searchInputValue.toLowerCase();
+				return (
+					post.title?.rendered?.toLowerCase().includes(searchTerm) ||
+					post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
+				);
+			})
+			.sort((a, b) => {
+				const key = sortByVal === '公開日順' ? 'date' : 'modified';
+				return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+			});
 	}
-}
+
+	async function loadMoreArticles() {
+		if (isLoading || !hasMore) return;
+		isLoading = true;
+		// console.log('Loading more articles...');
+		try {
+			// Determine the category ID for the active tab
+			const categoryId =
+				activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
+
+			// console.log('Fetching articles for category:', categoryId);
+
+			// Fetch articles using the updated fetchWordPressData function
+			const newArticles = await fetchWordPressData({
+				type: 'posts',
+				page: articleMgr.page,
+				limit: 12,
+				category: categoryId
+			});
+
+			if (newArticles.length > 0) {
+				// console.log('Fetched new articles:', newArticles);
+
+				// Filter out duplicate articles
+				const uniqueArticles = newArticles.filter(
+					(article) => !articleMgr.articleData.some((existing) => existing.id === article.id)
+				);
+
+				// Add unique articles to the displayed list
+				articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
+				displayedArticles = filterPostsByCategory();
+			} else {
+				hasMore = false; // No more articles to load
+				// console.log('No more articles to load.');
+			}
+		} catch (error) {
+			console.error('Error loading more articles:', error);
+		} finally {
+			isLoading = false; // Reset loading state
+		}
+	}
 
 	// Infinite Scroll Setup
 	let loadMoreTrigger = $state();
 	let observer = $state();
 	onMount(() => {
-	// console.log('Observer mounted');
-	observer = new IntersectionObserver((entries) => {
-		if (entries[0].isIntersecting) {
-			// console.log('Load more trigger intersecting');
-			loadMoreArticles();
+		// console.log('Observer mounted');
+		observer = new IntersectionObserver((entries) => {
+			if (entries[0].isIntersecting) {
+				// console.log('Load more trigger intersecting');
+				loadMoreArticles();
+			}
+		});
+		if (loadMoreTrigger) {
+			// console.log('Observing loadMoreTrigger element:', loadMoreTrigger);
+			observer?.observe(loadMoreTrigger);
 		}
 	});
-	if (loadMoreTrigger) {
-		// console.log('Observing loadMoreTrigger element:', loadMoreTrigger);
-		observer?.observe(loadMoreTrigger);
-	}
-});
 
 	onDestroy(() => observer?.disconnect());
 </script>
@@ -219,7 +213,7 @@ async function loadMoreArticles() {
 </div>
 
 <!-- Infinite Scroll Trigger -->
-<div class="w-full h-10 flex items-center justify-center" bind:this={loadMoreTrigger}>
+<div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
 	{#if isLoading}
 		<span>Loading...</span>
 	{/if}

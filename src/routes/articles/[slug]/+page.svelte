@@ -3,11 +3,11 @@
 	import '$lib/styles/wp-articles.css';
 	import '$lib/styles/ToC.css';
 
-// Icons
+	// Icons
 	import { TableOfContents } from 'lucide-svelte';
 
 	// Highlight.js
-	import 'highlight.js/styles/monokai.css'; // Replace with your preferred Highlight.js theme
+	import 'highlight.js/styles/monokai.css';
 	import hljs from 'highlight.js/lib/core';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import python from 'highlight.js/lib/languages/python';
@@ -20,7 +20,7 @@
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import * as Drawer from "$lib/components/ui/drawer/index.js";
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
 
 	// Helper
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
@@ -45,6 +45,7 @@
 	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
 	let relatedSeries = $state([]);
 	let isOpenDrawer = $state(false);
+	let observer;
 
 	function generateTableOfContents(articleContent) {
 		if (typeof articleContent !== 'string' || !articleContent.trim()) {
@@ -52,109 +53,103 @@
 			return [];
 		}
 
-		// Parse the HTML content to extract headings
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(articleContent, 'text/html');
 		const headings = doc.querySelectorAll('h1, h2, h3');
 
-		// Build the ToC without modifying the original HTML
 		return Array.from(headings).map((heading) => ({
 			text: heading.textContent.trim(),
-			level: parseInt(heading.tagName[1], 10) // Extract heading level (e.g., 1 for <h1>)
+			level: parseInt(heading.tagName[1], 10)
 		}));
 	}
 
-	let observer;
 	function observeHeadings() {
-	if (observer) {
-		observer.disconnect(); // Disconnect any existing observers
+		if (observer) {
+			observer.disconnect();
+		}
+
+		const headings = document.querySelectorAll(
+			'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
+		);
+
+		observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					// Add class when the heading is in or above the center of the viewport
+					if (
+						entry.intersectionRatio > 0 &&
+						entry.boundingClientRect.top <= window.innerHeight / 2
+					) {
+						entry.target.classList.add('heading-container');
+					} else {
+						entry.target.classList.remove('heading-container');
+					}
+				});
+			},
+			{
+				root: null, // Observe relative to the viewport
+				rootMargin: '0px 0px -50% 0px', // Adjust the bottom margin to trigger when halfway
+				threshold: 0 // Trigger as soon as the element is in view
+			}
+		);
+
+		headings.forEach((heading) => observer.observe(heading));
 	}
 
-	const headings = document.querySelectorAll(
-		'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
-	);
+	function scrollToHeading(text) {
+		const heading = Array.from(document.querySelectorAll('h1, h2, h3')).find(
+			(el) => el.textContent.trim() === text
+		);
 
-	observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				// Add class when the heading is in or above the center of the viewport
-				if (entry.intersectionRatio > 0 && entry.boundingClientRect.top <= window.innerHeight / 2) {
-					entry.target.classList.add('heading-container');
-				} else {
-					entry.target.classList.remove('heading-container');
-				}
-			});
-		},
-		{
-			root: null, // Observe relative to the viewport
-			rootMargin: '0px 0px -50% 0px', // Adjust the bottom margin to trigger when halfway
-			threshold: 0, // Trigger as soon as the element is in view
+		if (!heading) {
+			console.warn(`Heading not found for text: ${text}`);
+			return;
 		}
-	);
 
-	headings.forEach((heading) => observer.observe(heading));
-}
+		if (isOpenDrawer) {
+			isOpenDrawer = false;
+			setTimeout(() => {
+				heading.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start', // モバイルでヘッダーを隠す問題を回避
+					inline: 'nearest'
+				});
+			}, 350);
+		} else {
+			heading.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'nearest'
+			});
+		}
+	}
 
+	async function fetchPost(slug) {
+		try {
+			const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
 
-function scrollToHeading(text) {
-    const heading = Array.from(document.querySelectorAll('h1, h2, h3')).find(
-        (el) => el.textContent.trim() === text
-    );
+			if (!fetchedPost) {
+				throw new Error(`Post with slug "${slug}" not found.`);
+			}
 
-    if (!heading) {
-        console.warn(`Heading not found for text: ${text}`);
-        return;
-    }
+			post = fetchedPost;
+			toc = generateTableOfContents(post?.content?.rendered || '');
 
-    if (isOpenDrawer) {
-        isOpenDrawer = false;
-        setTimeout(() => {
-            heading.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start', // モバイルでヘッダーを隠す問題を回避
-                inline: 'nearest',
-            });
-        }, 350);
-    } else {
-        heading.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'nearest',
-        });
-    }
-}
+			await tick();
 
-
-
-async function fetchPost(slug) {
-  try {
-    const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
-
-    if (!fetchedPost) {
-      throw new Error(`Post with slug "${slug}" not found.`);
-    }
-
-    post = fetchedPost;
-    // Generate Table of Contents from the post content
-    toc = generateTableOfContents(post?.content?.rendered || '');
-
-    // Wait for DOM updates before applying syntax highlighting
-    await tick();
-
-    highlightSyntax();
-    observeHeadings();
-  } catch (error) {
-    console.error('Error fetching post:', error);
-  }
-}
-
+			highlightSyntax();
+			observeHeadings();
+		} catch (error) {
+			console.error('Error fetching post:', error);
+		}
+	}
 
 	function displayRelatedSeries() {
 		if (!post.series || !data.series) {
 			return [];
 		}
 
-		const currentSeriesId = urlSeriesId?.toString(); 
+		const currentSeriesId = urlSeriesId?.toString();
 		const activeSeries = [];
 		const otherSeries = [];
 
@@ -240,17 +235,20 @@ async function fetchPost(slug) {
 
 <svelte:head>
 	<title>{post.title?.rendered} - あさめしコード</title>
-	<meta name="description" content="{post.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, '')}" />
-	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+	<meta name="description" content={post.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, '')} />
+	<meta
+		name="robots"
+		content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+	/>
 	<link rel="canonical" href={post?.link} />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="{post.title?.rendered} - あさめしコード" />
-	<meta property="og:description" content="{post.excerpt?.rendered.replace(/<\/?[^>]+(>|$)/g, '')}" />
-	<meta property="og:url" content="{post?.link}" />
+	<meta property="og:description" content={post.excerpt?.rendered.replace(/<\/?[^>]+(>|$)/g, '')} />
+	<meta property="og:url" content={post?.link} />
 	<meta property="og:site_name" content="あさめしコード" />
-	<meta property="article:published_time" content="{post?.date}" />
-	<meta property="article:modified_time" content="{post?.modified}" />
+	<meta property="article:published_time" content={post?.date} />
+	<meta property="article:modified_time" content={post?.modified} />
 	<meta name="author" content="DanNakatoshi" />
 	<!-- <meta property="og:image" content="https://kaihatsunosho.com/wp-content/uploads/2025/01/image-3.png" /> -->
 	<meta property="og:image:width" content="1348" />
@@ -258,98 +256,94 @@ async function fetchPost(slug) {
 </svelte:head>
 
 
-
 {#if post}
-		<div class="grid grid-cols-12 gap-2">
-			<Card.Root class="col-span-12 md:col-span-9 ">
-				<Card.Header>
-					<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
-					<div class="pb-2">
-						<PublishInfoBadge date={post.date} modified={post.modified} />
-					</div>
-				</Card.Header>
+	<div class="grid grid-cols-12 gap-2">
+		<Card.Root class="col-span-12 md:col-span-9 ">
+			<Card.Header>
+				<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
+				<div class="pb-2">
+					<PublishInfoBadge date={post.date} modified={post.modified} />
+				</div>
+			</Card.Header>
 
 
-				<Card.Content>
-					{#if post.series?.length > 0}
-						<div class="mb-4 rounded py-4 ">
-							<div class="mb-4 flex flex-col flex-wrap gap-4">
-								<span
-									class="text-yellow mb-2   px-2 py-0 text-xs font-bold"
-								>
-								シリーズで読む
-								</span>
-								<div class="flex flex-wrap gap-2">
+			<Card.Content>
+				{#if post.series?.length > 0}
+					<div class="mb-4 rounded py-4 ">
+						<div class="mb-4 flex flex-col flex-wrap gap-4">
+							<span
+								class="text-yellow mb-2   px-2 py-0 text-xs font-bold"
+							>
+							シリーズで読む
+							</span>
+							<div class="flex flex-wrap gap-2">
 
-									{#each displayRelatedSeries() as series (series.series_ID)}
+								{#each displayRelatedSeries() as series (series.series_ID)}
 									<button
 									aria-label={series?.ser_name}
 									class="rounded border border-primary p-2 text-left leading-tight hover:bg-primary hover:text-white text-primary {series.series_ID == urlSeriesId ? 'text-white bg-primary' : ''}"
 									
 									onclick={() => articleMgr.handleReadButton(post?.slug, series?.series_ID)}
 									>
-									<span class="font-bold">{series?.ser_name}</span>
-								</button>
+										<span class="font-bold">{series?.ser_name}</span>
+									</button>
 								{/each}
 							</div>
-							</div>
-							{#if urlSeriesId}
-								<div class="mt-2">
-									{seriesDetails?.description}
-									<div class="flex flex-col flex-wrap items-start justify-start gap-2">
-										{#each seriesPosts as seriesPost, index (seriesPost.id)}
-											<div class="flex w-full items-center ">
-												<button
-												aria-label={seriesPost.title}
-													onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
-													class="text-left text-sm hover:underline hover:decoration-2 hover:decoration-primary"
-												>
-													<span class={`whitespace-normal break-word  ${seriesPost.slug == post.slug ? 'text-primary' : 'text-gray'}`}
-														>{index + 1}. {seriesPost.title}</span
-													>
-												</button>
-											</div>
-										{/each}
-										<div class="w-full border-t border-gray my-2"></div>
-
-									</div>
-								</div>
-							{/if}
 						</div>
-					{/if}
+						{#if urlSeriesId}
+							<div class="mt-2">
+								<span>{seriesDetails?.description}</span>
+								<div class="flex flex-col flex-wrap items-start justify-start gap-2">
+									{#each seriesPosts as seriesPost, index (seriesPost.id)}
+										<div class="flex w-full items-center ">
+											<button
+											aria-label={seriesPost.title}
+												onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
+												class="text-left text-sm hover:underline hover:decoration-2 hover:decoration-primary"
+											>
+												<span class={`whitespace-normal break-word  ${seriesPost.slug == post.slug ? 'text-primary' : 'text-gray'}`}>
+													{index + 1}. {seriesPost.title}
+												</span>
+											</button>
+										</div>
+									{/each}
+									<div class="w-full border-t border-gray my-2"></div>
 
-					{@html post?.content?.rendered || ''}
-					</Card.Content>
-				<!-- <Card.Footer>
-					
-				</Card.Footer> -->
-			</Card.Root>
-			
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
 
-			<div class="hidden md:block md:sticky top-4 col-span-12 max-h-screen md:col-span-3">
-				<Card.Root class="col-span-12 md:col-span-3 ">
-					<Card.Header>
-						<Card.Title>目次ナビ</Card.Title>
-						<Card.Description class="pb-4">
-							{#if toc.length > 0}
-								{@render tocSnippet()}
-							{:else}
-								No Table of Contents available.
-							{/if}
-						</Card.Description>
-					</Card.Header>
-				</Card.Root>
-			</div>
-			<Card.Root class="col-span-12 ">
+				{@html post?.content?.rendered || ''}
+			</Card.Content>
+		</Card.Root>
+		
+
+		<div class="hidden md:block md:sticky top-4 col-span-12 max-h-screen md:col-span-3">
+			<Card.Root class="col-span-12 md:col-span-3 ">
 				<Card.Header>
-					<Card.Title>著者：Dan Nakatoshi</Card.Title>
+					<Card.Title>目次ナビ</Card.Title>
 					<Card.Description class="pb-4">
-						管理人のDanです。25歳の時に渡米し、ニューヨーク、ハワイ、シアトル、フィラデルフィアでそれぞれ1年ずつ暮らしました。現在はNYC近郊で、嫁と2匹のチワワと一緒に暮らしています。
-						このブログでは、主にウェブ開発やアメリカでの生活について発信しています。また、このサイトはオープンソースのSvelteを使って構築しました。興味があればぜひチェックしてみてください。
+						{#if toc.length > 0}
+							{@render tocSnippet()}
+						{:else}
+							目次コンテンツがありません。
+						{/if}
 					</Card.Description>
 				</Card.Header>
 			</Card.Root>
 		</div>
+		<Card.Root class="col-span-12 ">
+			<Card.Header>
+				<Card.Title>Dan Nakatoshi</Card.Title>
+				<Card.Description class="pb-4">
+					管理人のDanです。25歳の時に渡米し、ニューヨーク、ハワイ、シアトル、フィラデルフィアでそれぞれ1年ずつ暮らしました。現在はNYC近郊で、嫁と2匹のチワワと一緒に暮らしています。
+					このブログでは、主にウェブ開発やアメリカでの生活について発信しています。また、このサイトはオープンソースのSvelteを使って構築しました。興味があればぜひチェックしてみてください。
+				</Card.Description>
+			</Card.Header>
+		</Card.Root>
+	</div>
 {/if}
 
 
@@ -378,6 +372,8 @@ async function fetchPost(slug) {
 		</Drawer.Content>
 	</Drawer.Root>
 </div>
+
+
 
 
 

@@ -5,7 +5,7 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	css: {
 		// Optionally configure CSS handling if needed
-	  },
+	}
 	//   build: {
 	// 	rollupOptions: {
 	// 	  output: {

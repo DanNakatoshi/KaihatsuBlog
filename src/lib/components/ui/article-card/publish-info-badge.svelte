@@ -5,19 +5,17 @@
 
 	let publishedDate = new Date(date).toLocaleDateString();
 	let modifiedDate = new Date(modified).toLocaleDateString();
-
 </script>
 
-
 <div class="flex flex-wrap gap-2">
-    {#if publishedDate}
-	<Badge variant="secondary" >
-        公開日：{publishedDate}
-	</Badge>
-    {/if}
-    {#if modifiedDate}
-	<Badge variant="secondary" >
-        更新日：{modifiedDate}
-	</Badge>
-    {/if}
+	{#if publishedDate}
+		<Badge variant="secondary">
+			公開日：{publishedDate}
+		</Badge>
+	{/if}
+	{#if modifiedDate}
+		<Badge variant="secondary">
+			更新日：{modifiedDate}
+		</Badge>
+	{/if}
 </div>

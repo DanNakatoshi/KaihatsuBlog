@@ -1,14 +1,10 @@
 <script>
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
-    import {filterMgr} from '$lib/store/articleData.svelte'
-    
-	let { filterName = '', filterOptions = [],  } = $props();
-    let selectedValues = $state([]);
+	import { filterMgr } from '$lib/store/articleData.svelte';
 
+	let { filterName = '', filterOptions = [] } = $props();
+	let selectedValues = $state([]);
 </script>
-
-
-
 
 <div class="flex items-center">
 	<div class="mr-2 flex min-w-28 justify-end text-xs font-bold">{filterName} :</div>
