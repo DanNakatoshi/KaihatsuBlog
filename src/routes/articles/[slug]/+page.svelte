@@ -292,6 +292,7 @@ async function fetchPost(slug) {
 
 									{#each displayRelatedSeries() as series (series.series_ID)}
 									<button
+									aria-label={series?.ser_name}
 									class="rounded border border-primary p-2 text-left leading-tight hover:bg-primary hover:text-white text-primary {series.series_ID == urlSeriesId ? 'text-white bg-primary' : ''}"
 									
 									onclick={() => articleMgr.handleReadButton(post?.slug, series?.series_ID)}
@@ -308,6 +309,7 @@ async function fetchPost(slug) {
 										{#each seriesPosts as seriesPost, index (seriesPost.id)}
 											<div class="flex w-full items-center ">
 												<button
+												aria-label={seriesPost.title}
 													onclick={() => articleMgr.handleReadButton(seriesPost.slug, urlSeriesId)}
 													class="text-left text-sm hover:underline hover:decoration-2 hover:decoration-primary"
 												>
@@ -390,6 +392,7 @@ async function fetchPost(slug) {
 				<button
 					onclick={() => scrollToHeading(item.text)}
 					class="w-full overflow-hidden text-left hover:underline"
+					aria-label={item.text}
 				>
 					<span class="block w-full truncate">
 						{item.text}
