@@ -115,23 +115,6 @@ function scrollToHeading(text) {
     }
 }
 
-// async function fetchPost(slug) {
-// 	try {
-// 		const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
-// 		if (!fetchedPost) {
-// 			throw new Error('Post not found');
-// 		}
-// 		console.log('Fetched Post:', fetchedPost); // Debug fetched data
-// 		post = fetchedPost;
-// 		toc = generateTableOfContents(post?.content?.rendered || '');
-// 		await tick();
-// 		highlightSyntax();
-// 		observeHeadings();
-// 	} catch (error) {
-// 		console.error('Error fetching post:', error);
-// 	}
-// }
-
 async function fetchPost(slug) {
   try {
     const [fetchedPost] = await fetchWordPressData({ type: 'singlePost', slug });
@@ -140,9 +123,7 @@ async function fetchPost(slug) {
       throw new Error(`Post with slug "${slug}" not found.`);
     }
 
-
     post = fetchedPost;
-
     // Generate Table of Contents from the post content
     toc = generateTableOfContents(post?.content?.rendered || '');
 
@@ -358,7 +339,7 @@ async function fetchPost(slug) {
 	<Drawer.Root bind:open={isOpenDrawer}>
 		<div class="fixed bottom-5 left-1/2 transform -translate-x-1/2">
 			<Drawer.Trigger class="px-4 py-2 rounded-full bg-primary text-white shadow-lg">
-				<TableOfContents />
+				<TableOfContents aria-label="Table of Contents"/>
 			</Drawer.Trigger>
 		</div>
 

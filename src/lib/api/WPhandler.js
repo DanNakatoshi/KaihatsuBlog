@@ -74,3 +74,57 @@ export async function fetchSinglePost(slug) {
 export async function fetchSeriesById(seriesId) {
     return fetchWordPressData({ type: 'seriesById', seriesId });
 }
+
+
+/**
+ * Fetch a single page from the WordPress REST API.
+ * @param {Object} options - Options for fetching the page.
+ * @param {string} [options.slug] - The slug of the page.
+ * @param {number} [options.id] - The ID of the page.
+ * @returns {Promise<Object>} - The page data.
+ * @throws Will throw an error if the request fails or no page is found.
+ */
+export async function fetchWordPressPage({ slug = null, id = null } = {}) {
+    const endpoint = '/wp/v2/pages';
+
+    // Build the query parameters
+    const params = new URLSearchParams();
+    if (slug) {
+        params.append('slug', slug);
+    }
+    if (id) {
+        params.append('id', id);
+    }
+
+    // 必要なフィールドのみ取得
+    params.append('_fields', 'title,content');
+
+    try {
+        const url = `${baseUrl}/wp-json${endpoint}?${params.toString()}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching page: ${response.statusText}`);
+        }
+
+        const pageData = await response.json();
+
+        // If fetching by slug, response is an array; return the first item
+        if (slug && Array.isArray(pageData)) {
+            if (pageData.length === 0) {
+                throw new Error(`No page found with slug: ${slug}`);
+            }
+            return pageData[0];
+        }
+
+        // If fetching by ID, response is a single object
+        if (id) {
+            return pageData;
+        }
+
+        throw new Error('Invalid fetch parameters: Provide either slug or id.');
+    } catch (error) {
+        console.error('Error fetching WordPress page:', error);
+        throw error;
+    }
+}

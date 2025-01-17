@@ -11,12 +11,12 @@
 
 <div class="flex flex-wrap gap-2">
     {#if publishedDate}
-	<Badge variant="secondary" class="text-gray">
+	<Badge variant="secondary" >
         公開日：{publishedDate}
 	</Badge>
     {/if}
     {#if modifiedDate}
-	<Badge variant="secondary" class="text-gray">
+	<Badge variant="secondary" >
         更新日：{modifiedDate}
 	</Badge>
     {/if}
