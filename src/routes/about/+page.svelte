@@ -1,10 +1,12 @@
 <script>
+	// Component
+	import Bio from "$lib/components/about/Bio.svelte";
 	let { data } = $props();
 
 	let about = data.about;
 	let title = data.about.title;
 	let content = data.about.content;
-	console.log(about);
+
 </script>
 
 <svelte:head>
@@ -31,4 +33,6 @@
 <h1>
 	{title}
 </h1>
-<div class=" md:container">{@html content}</div>
+<div class=" md:container mb-4">{@html content}</div>
+
+<Bio/>

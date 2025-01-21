@@ -1,4 +1,7 @@
 <script>
+	// Chadcn
+	import { Separator } from '$lib/components/ui/separator';
+
 	// ICON
 	import { Menu, Bell } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
@@ -88,25 +91,36 @@
 		<h2 class="text-lg font-semibold">Menu</h2>
 		<div class="mt-6 flex flex-col items-start gap-3">
 			<Button
-				variant="link"
+				class="w-full max-w-full"
 				onclick={() => {
 					goto('/');
 					closeMenu();
 				}}>HOME</Button
 			>
 			<Button
-				variant="link"
+				class="w-full max-w-full"
 				onclick={() => {
 					goto('/about');
 					closeMenu();
 				}}>ABOUT</Button
 			>
 			<Button
+				class="w-full max-w-full"
+				onclick={() => {
+					goto('/siteupdates');
+					closeMenu();
+				}}>SITE UPDATES</Button
+			>
+			<Separator />
+			<Button
 				variant="link"
+				class="text-xs"
 				onclick={() => {
 					goto('/privacypolicy');
 					closeMenu();
-				}}>PRIVACY POLICY</Button
+				}}
+			>
+				PRIVACY POLICY</Button
 			>
 		</div>
 	</div>

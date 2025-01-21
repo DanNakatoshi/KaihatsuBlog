@@ -33,7 +33,7 @@
 	// Components
 	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
 	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
-
+	import Bio from '$lib/components/about/Bio.svelte';
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -272,7 +272,7 @@
 					<div class="mb-4 rounded py-4 ">
 						<div class="mb-4 flex flex-col flex-wrap gap-4">
 							<span
-								class="text-yellow mb-2   px-2 py-0 text-xs font-bold"
+								class=" mb-2   px-2 py-0 text-xs font-bold"
 							>
 							シリーズで読む
 							</span>
@@ -334,15 +334,7 @@
 				</Card.Header>
 			</Card.Root>
 		</div>
-		<Card.Root class="col-span-12 ">
-			<Card.Header>
-				<Card.Title>Dan Nakatoshi</Card.Title>
-				<Card.Description class="pb-4">
-					管理人のDanです。25歳の時に渡米し、ニューヨーク、ハワイ、シアトル、フィラデルフィアでそれぞれ1年ずつ暮らしました。現在はNYC近郊で、嫁と2匹のチワワと一緒に暮らしています。
-					このブログでは、主にウェブ開発やアメリカでの生活について発信しています。また、このサイトはオープンソースのSvelteを使って構築しました。興味があればぜひチェックしてみてください。
-				</Card.Description>
-			</Card.Header>
-		</Card.Root>
+		<Bio/>
 	</div>
 {/if}
 

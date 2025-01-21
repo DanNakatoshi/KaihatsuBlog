@@ -195,9 +195,9 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
-			<Button size="sm" aria-label="Filter">
+			<!-- <Button size="sm" variant="outline" aria-label="Filter">
 				<ListFilter />
-			</Button>
+			</Button> -->
 		</div>
 	</div>
 </div>

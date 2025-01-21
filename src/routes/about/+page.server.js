@@ -11,7 +11,6 @@ export async function load() {
 			about: {
 				title: page.title.rendered,
 				content: page.content.rendered,
-				page
 			}
 		};
 	} catch (error) {
