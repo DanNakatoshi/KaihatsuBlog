@@ -1,12 +1,11 @@
 <script>
 	// Component
-	import Bio from "$lib/components/about/Bio.svelte";
+	import Bio from '$lib/components/about/Bio.svelte';
 	let { data } = $props();
 
 	let about = data.about;
 	let title = data.about.title;
 	let content = data.about.content;
-
 </script>
 
 <svelte:head>
@@ -30,9 +29,14 @@
 	<meta name="twitter:image" content="https://asameshicode.com/static/twitter-image-about.png" />
 </svelte:head>
 
-<h1>
-	{title}
-</h1>
-<div class=" md:container mb-4">{@html content}</div>
 
-<Bio/>
+
+
+<div class="md:container">
+	<div class="flex justify-start p-2">
+		<h1>ABOUT</h1>
+	</div>
+	<div class=" mb-4 md:container">{@html content}</div>
+
+	<Bio />
+</div>

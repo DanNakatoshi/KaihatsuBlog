@@ -28,9 +28,11 @@
 	<!-- <meta name="twitter:image" content="https://asameshicode.com/static/twitter-image-about.png" /> -->
 </svelte:head>
 
-<div class="flex justify-start p-2">
-	<h1>SITE UPDATES</h1>
-</div>
-<div class=" md:container mb-4">{@html content}</div>
+<div class="md:container">
+	<div class="flex justify-start p-2">
+		<h1>SITE UPDATES</h1>
+	</div>
+	<div class="  mb-4 p-1">{@html content}</div>
 
-<Bio />
+	<Bio />
+</div>
