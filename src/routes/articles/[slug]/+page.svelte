@@ -16,6 +16,7 @@
 	import nginx from 'highlight.js/lib/languages/nginx';
 	import php from 'highlight.js/lib/languages/php';
 	import bash from 'highlight.js/lib/languages/bash';
+	import json from 'highlight.js/lib/languages/json'; 
 
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -220,7 +221,8 @@
 			hljs.registerLanguage('nginx', nginx);
 			hljs.registerLanguage('php', php);
 			hljs.registerLanguage('bash', bash);
-
+			hljs.registerLanguage('json', json); 
+			
 			highlightSyntax();
 		}
 		observeHeadings();
@@ -285,7 +287,9 @@
 									
 									onclick={() => articleMgr.handleReadButton(post?.slug, series?.series_ID)}
 									>
+									
 										<span class="font-bold">{series?.ser_name}</span>
+
 									</button>
 								{/each}
 							</div>
@@ -295,6 +299,7 @@
 								<span>{seriesDetails?.description}</span>
 								<div class="flex flex-col flex-wrap items-start justify-start gap-2">
 									{#each seriesPosts as seriesPost, index (seriesPost.id)}
+
 										<div class="flex w-full items-center ">
 											<button
 											aria-label={seriesPost.title}
@@ -318,9 +323,9 @@
 				{@html post?.content?.rendered || ''}
 			</Card.Content>
 		</Card.Root>
+	
 		
-
-		<div class="hidden md:block md:sticky top-4 col-span-12 max-h-screen md:col-span-3">
+		<div class="hidden md:block md:sticky top-4 col-span-12  max-h-screen md:col-span-3">
 			<Card.Root class="col-span-12 md:col-span-3 ">
 				<Card.Header>
 					<Card.Title>目次ナビ</Card.Title>
@@ -334,7 +339,10 @@
 				</Card.Header>
 			</Card.Root>
 		</div>
-		<Bio/>
+
+		<div class="col-span-12 md:col-span-9 ">
+			<Bio/>
+		</div>
 	</div>
 {/if}
 

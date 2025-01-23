@@ -16,11 +16,9 @@
 					/>
 				</div>
 			</div>
-			<div class="col-span-12 sm:col-span-9">
-				<p class="text-sm">
+			<div class="col-span-12 sm:col-span-9 text-sm">
 					管理人のDanです。25歳の時に渡米し、ニューヨーク、ハワイ、シアトル、フィラデルフィアでそれぞれ1年ずつ暮らしました。現在はNYC近郊で、嫁と2匹のチワワと一緒に暮らしています。
 					このブログでは、主にウェブ開発やアメリカでの生活について発信しています。また、このサイトはオープンソースのSvelteを使って構築しました。興味があればぜひチェックしてみてください。
-				</p>
 				<div class="mt-1">
 					<a
 						href="https://github.com/DanNakatoshi?tab=repositories"
