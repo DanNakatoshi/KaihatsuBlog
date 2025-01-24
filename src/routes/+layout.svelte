@@ -120,7 +120,7 @@
 	</div>
 </div>
 
-<Drawer.Root bind:open={privacyDrawerManager.isDrawerOpen} dismissible={false}>
+<Drawer.Root bind:open={privacyDrawerManager.isDrawerOpen} dismissible={false} closeOnEscape={false}>
 	<Drawer.Content>
 		<Drawer.Header>
 			<Drawer.Title>Google Analytics の使用に同意しますか？</Drawer.Title>
@@ -136,8 +136,9 @@
 			</Drawer.Description>
 		</Drawer.Header>
 		<Drawer.Footer>
-			<Button on:click={handleConsentGranted}>はい、同意します</Button>
-			<Button on:click={handleConsentDenied} variant="secondary">いいえ、同意しません</Button>
+			<Button onclick={handleConsentGranted}>はい、同意します</Button>
+			<Button onclick={handleConsentDenied} variant="secondary">いいえ、同意しません</Button>
 		</Drawer.Footer>
 	</Drawer.Content>
 </Drawer.Root>
+

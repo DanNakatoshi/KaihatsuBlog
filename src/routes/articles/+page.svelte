@@ -1,4 +1,4 @@
 <script>
 </script>
 
-<h1>Parent page</h1>
+<h1>Hello</h1>
