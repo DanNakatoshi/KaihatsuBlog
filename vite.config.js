@@ -1,7 +1,7 @@
+
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import compression from 'vite-plugin-compression';
-import { resolve } from 'path';
 
 export default defineConfig({
 	plugins: [
@@ -21,16 +21,6 @@ export default defineConfig({
 	},
 	build: {
 		target: 'esnext', // モダンブラウザ向けの出力設定
-		sourcemap: true, // デバッグ用にソースマップを有効化
-		outDir: resolve(__dirname, 'static'), // ビルド出力先を `static` に設定
-		rollupOptions: {
-			output: {
-				// ファイル構造を調整
-				entryFileNames: '_app/immutable/entry/[name].js',
-				chunkFileNames: '_app/immutable/chunks/[name].js',
-				assetFileNames: '_app/immutable/assets/[name][extname]'
-			}
-		}
-	},
-	publicDir: resolve(__dirname, 'static') // 静的ファイルのディレクトリ設定
+		sourcemap: true // デバッグ用にソースマップを有効化
+	}
 });
