@@ -8,7 +8,7 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Button } from '$lib/components/ui/button';
 	// Svelte
-	import { goto, afterNavigate } from '$app/navigation';
+	import { goto, afterNavigate, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	// Store
@@ -21,12 +21,15 @@
 	articleMgr.setArticleData(data.posts);
 
 	let isOptedIn = $state(false);
-	let gtagReady = $state(false); // Track if gtag is initialized
-
-	// Initialize Google Analytics in the browser
+	let gtagReady = $state(false);
+	let isNavigating = $state(false); // ページ遷移中の状態を管理
 
 	// Initialize Google Analytics in the browser
 	onMount(() => {
+		// ページ遷移が始まったら読み込み状態を有効にする
+		beforeNavigate(() => {
+			isNavigating = true;
+		});
 		if (typeof window !== 'undefined') {
 			window.dataLayer = window.dataLayer || [];
 			function gtag() {
@@ -71,6 +74,11 @@
 			} else {
 				privacyDrawerManager.setDrawerState(true);
 			}
+
+			// ページ遷移が完了したら読み込み状態を無効にする
+			afterNavigate(() => {
+				isNavigating = false;
+			});
 		}
 	});
 
@@ -114,13 +122,33 @@
 </script>
 
 <div class="mb-4 sm:container">
+	<!-- 読み込み中のアイコン -->
+	{#if isNavigating}
+		<div
+			class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50"
+			aria-live="polite"
+			role="status"
+		>
+			<div class="flex flex-col items-center">
+				<div
+					class="h-16 w-16 animate-spin rounded-full border-4 border-white border-t-transparent"
+				></div>
+				<p class="mt-4 text-white">ページを読み込んでいます...</p>
+			</div>
+		</div>
+	{/if}
+
 	<Header />
 	<div class="">
 		{@render children(data)}
 	</div>
 </div>
 
-<Drawer.Root bind:open={privacyDrawerManager.isDrawerOpen} dismissible={false} closeOnEscape={false}>
+<Drawer.Root
+	bind:open={privacyDrawerManager.isDrawerOpen}
+	dismissible={false}
+	closeOnEscape={false}
+>
 	<Drawer.Content>
 		<Drawer.Header>
 			<Drawer.Title>Google Analytics の使用に同意しますか？</Drawer.Title>
@@ -142,3 +170,14 @@
 	</Drawer.Content>
 </Drawer.Root>
 
+<style>
+	/* アニメーションの速度 */
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	.animate-spin {
+		animation: spin 1s linear infinite;
+	}
+</style>

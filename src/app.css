@@ -128,9 +128,6 @@
 	src: url('/fonts/NotoSansJP-Bold.ttf') format('truetype');
 }
 
-
-
-
 @layer base {
 	* {
 		@apply border-border;
@@ -142,14 +139,19 @@
 		line-height: var(--line-height-normal);
 	}
 
-	h1,
-	h2,
-	h3,
+	h1 {
+		font-size: var(--font-size-3xl); /* Largest */
+	}
+	h2 {
+		font-size: var(--font-size-2xl); /* Slightly smaller */
+	}
+	h3 {
+		font-size: var(--font-size-xl); /* Smaller still */
+	}
 	h4,
 	h5,
 	h6 {
-		color: var(--heading-color);
-		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-base); /* Same size for h4, h5, h6 */
 	}
 
 	p {
@@ -163,6 +165,24 @@
 		text-decoration: underline;
 		transition: color 0.3s;
 	}
+
+	ul {
+		list-style-type: disc; /* Dots for unordered lists */
+		padding-left: 1.5rem; /* Indent for readability */
+	}
+
+	ol {
+		list-style-type: decimal; /* Numbers for ordered lists */
+		padding-left: 1.5rem; /* Indent for readability */
+	}
+
+	li {
+		color: var(--paragraph-color); /* Use the paragraph color for consistency */
+		font-size: var(--font-size-base); /* Default font size */
+		line-height: var(--line-height-relaxed); /* Better line spacing */
+		margin-bottom: 0.5rem; /* Add spacing between list items */
+	}
+
 
 	a:hover {
 		color: var(--link-hover-color);

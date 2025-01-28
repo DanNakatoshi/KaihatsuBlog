@@ -22,45 +22,17 @@
 	let displayedArticles = $state([...articleMgr.articleData]); // Reactive articles list
 	let isLoading = $state(false); // Loading indicator
 	let hasMore = $state(true); // Flag to check if more articles can be loaded
+	let isDebounced = false;
 
-	// function filterPostsByCategory() {
-	// 	let filteredPosts = [...articleMgr.articleData]; // Create a shallow copy to avoid mutation
-
-	// 	if (activeTab !== 'ALL') {
-	// 		const category = mainCategoryInfo.find((category) => category.name === activeTab);
-	// 		if (category) {
-	// 			filteredPosts = filteredPosts.filter((post) => post.categories?.includes(category.id));
-	// 		} else {
-	// 			return []; // No posts for the active tab
-	// 		}
-	// 	}
-
-	// 	if (searchInputValue) {
-	// 		const searchTerm = searchInputValue.toLowerCase();
-	// 		filteredPosts = filteredPosts.filter((post) => {
-	// 			const title = post.title?.rendered?.toLowerCase() || '';
-	// 			const description = post.yoast_head_json?.description?.toLowerCase() || '';
-	// 			return title.includes(searchTerm) || description.includes(searchTerm);
-	// 		});
-	// 	}
-
-	// 	if (sortByVal === '公開日順') {
-	// 		filteredPosts = [...filteredPosts].sort((a, b) => {
-	// 			const dateA = new Date(a.date);
-	// 			const dateB = new Date(b.date);
-	// 			return dateB.getTime() - dateA.getTime(); // Newest first
-	// 		});
-	// 	} else if (sortByVal === '更新日順') {
-	// 		filteredPosts = [...filteredPosts].sort((a, b) => {
-	// 			const dateA = new Date(a.modified);
-	// 			const dateB = new Date(b.modified);
-	// 			return dateB.getTime() - dateA.getTime(); // Most recently modified first
-	// 		});
-	// 	}
-	// 	return filteredPosts;
-	// }
+	function handleTabChange(newTab) {
+		activeTab = newTab; // Update the active tab
+		hasMore = true;
+		isLoading = false;
+		// displayedArticles = filterPostsByCategory(); 
+	}
 
 	function filterPostsByCategory() {
+		console.log("filtering")
 		return [...articleMgr.articleData]
 			.filter((post) => {
 				const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
@@ -81,17 +53,19 @@
 	}
 
 	async function loadMoreArticles() {
-		if (isLoading || !hasMore) return;
+		if (isLoading || !hasMore || isDebounced) return;
+
+		console.log('Loading more...');
 		isLoading = true;
-		// console.log('Loading more articles...');
+		isDebounced = true; // Prevent immediate subsequent calls
+		setTimeout(() => {
+			isDebounced = false;
+		}, 3000); // 3-second delay
+
 		try {
-			// Determine the category ID for the active tab
 			const categoryId =
 				activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
 
-			// console.log('Fetching articles for category:', categoryId);
-
-			// Fetch articles using the updated fetchWordPressData function
 			const newArticles = await fetchWordPressData({
 				type: 'posts',
 				page: articleMgr.page,
@@ -100,19 +74,14 @@
 			});
 
 			if (newArticles.length > 0) {
-				// console.log('Fetched new articles:', newArticles);
-
-				// Filter out duplicate articles
 				const uniqueArticles = newArticles.filter(
 					(article) => !articleMgr.articleData.some((existing) => existing.id === article.id)
 				);
 
-				// Add unique articles to the displayed list
 				articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
 				displayedArticles = filterPostsByCategory();
 			} else {
 				hasMore = false; // No more articles to load
-				// console.log('No more articles to load.');
 			}
 		} catch (error) {
 			console.error('Error loading more articles:', error);
@@ -124,6 +93,7 @@
 	// Infinite Scroll Setup
 	let loadMoreTrigger = $state();
 	let observer = $state();
+
 	onMount(() => {
 		// console.log('Observer mounted');
 		observer = new IntersectionObserver((entries) => {
@@ -173,9 +143,15 @@
 <div id="searchbox" class="flex flex-col items-center gap-2">
 	<Tabs.Root bind:value={activeTab} class="">
 		<Tabs.List class="">
-			<Tabs.Trigger value="ALL" class="min-w-16">ALL</Tabs.Trigger>
-			<Tabs.Trigger value="開発ログ" class="min-w-16">開発ログ</Tabs.Trigger>
-			<Tabs.Trigger value="エッセイ" class="min-w-16">エッセイ</Tabs.Trigger>
+			<Tabs.Trigger onclick={() => handleTabChange('ALL')} value="ALL" class="min-w-16"
+				>ALL</Tabs.Trigger
+			>
+			<Tabs.Trigger onclick={() => handleTabChange('開発ログ')} value="開発ログ" class="min-w-16"
+				>開発ログ</Tabs.Trigger
+			>
+			<Tabs.Trigger onclick={() => handleTabChange('エッセイ')} value="エッセイ" class="min-w-16"
+				>エッセイ</Tabs.Trigger
+			>
 		</Tabs.List>
 	</Tabs.Root>
 
@@ -215,6 +191,6 @@
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
 	{#if isLoading}
-		<span>Loading...</span>
+		<span>読込中...</span>
 	{/if}
 </div>

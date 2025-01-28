@@ -376,14 +376,11 @@
 
 
 
-
-
-
 <!-- Table of Contents Snippet -->
 {#snippet tocSnippet()}
-	<ul id="toc" class="flex max-w-full flex-col items-start">
+	<div id="toc" class="flex max-w-full flex-col items-start">
 		{#each toc as item (item.text)}
-			<li class="w-full">
+			<div class="w-full">
 				<button
 					onclick={() => scrollToHeading(item.text)}
 					class="w-full overflow-hidden text-left hover:underline"
@@ -393,7 +390,7 @@
 						{item.text}
 					</span>
 				</button>
-			</li>
+			</div>
 		{/each}
-	</ul>
+	</div>
 {/snippet}
