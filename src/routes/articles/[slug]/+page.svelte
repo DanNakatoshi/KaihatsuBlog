@@ -12,7 +12,7 @@
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import python from 'highlight.js/lib/languages/python';
 	import css from 'highlight.js/lib/languages/css';
-	import xml from 'highlight.js/lib/languages/xml';
+	// import xml from 'highlight.js/lib/languages/xml';
 	import nginx from 'highlight.js/lib/languages/nginx';
 	import php from 'highlight.js/lib/languages/php';
 	import bash from 'highlight.js/lib/languages/bash';
@@ -217,7 +217,7 @@
 			hljs.registerLanguage('javascript', javascript);
 			hljs.registerLanguage('python', python);
 			hljs.registerLanguage('css', css);
-			hljs.registerLanguage('xml', xml);
+			// hljs.registerLanguage('xml', xml);
 			hljs.registerLanguage('nginx', nginx);
 			hljs.registerLanguage('php', php);
 			hljs.registerLanguage('bash', bash);
@@ -274,9 +274,9 @@
 					<div class="mb-4 rounded py-4 ">
 						<div class="mb-4 flex flex-col flex-wrap gap-4">
 							<span
-								class=" mb-2   px-2 py-0 text-xs font-bold"
+								class="   px-2 py-0 text-xs font-bold"
 							>
-							シリーズで読む
+							##シリーズ##
 							</span>
 							<div class="flex flex-wrap gap-2">
 

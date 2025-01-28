@@ -7,12 +7,13 @@
 	<div class="pb-4">
 		<div class="grid grid-cols-12 gap-2">
 			<div class="col-span-12 flex flex-col items-center pb-1 sm:col-span-3">
-				<h2 class="pb-2">Dan Nakatoshi</h2>
+				<h4 class="pb-2 font-bold">Dan Nakatoshi</h4>
                 <div class="h-24 w-24 sm:h-auto sm:w-auto rounded-full overflow-hidden">
 					<img
 						src="https://avatars.githubusercontent.com/u/60120881?s=400&u=71d5c5f09a272176db450cfaa96d6a2333c46b3a&v=4"
 						alt="Avatar"
 						class="h-full w-full object-cover"
+						loading="lazy"
 					/>
 				</div>
 			</div>
