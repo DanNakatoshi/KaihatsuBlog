@@ -246,24 +246,24 @@
 
 .heading-container {
 	position: relative;
-	display: inline-block; /* Inline for fitting the text width */
+	display: inline-block; 
 }
 
 .heading-container::after {
 	content: '';
 	position: absolute;
-	bottom: 0; /* Always aligned at the bottom */
+	bottom: 0; 
 	left: 0;
-	width: 0; /* Start with no width */
-	height: 4px; /* Adjust the height of the underline */
-	background-color: #333; /* Color of the underline */
-	border-radius: 999px; /* Fully round the ends of the underline */
-	background-color: var(--underline-color-light); /* Light theme color */
-	animation: underline-stretch 0.5s linear forwards; /* Use linear timing for straight movement */
+	width: 0; 
+	height: 4px; 
+	background-color: #333; 
+	border-radius: 999px; 
+	background-color: var(--underline-color-light); 
+	animation: underline-stretch 0.5s linear forwards; 
 }
 
 body.dark .heading-container::after {
-	background-color: var(--underline-color-dark); /* Dark theme color */
+	background-color: var(--underline-color-dark);
 }
 
 /* Keyframes for the underline animation */
@@ -296,28 +296,30 @@ body.dark {
 
 /* Side Scroll bar */
 /* For WebKit browsers (Chrome, Edge, Safari) */
+
+
 ::-webkit-scrollbar {
-	width: 8px; /* Width of the scrollbar */
+	width: 8px; 
 }
 
 ::-webkit-scrollbar-track {
-	background: var(--scrollbar-track-color, #f3f3f3); /* Background color of the track */
-	border-radius: 8px; /* Optional: Round the edges */
+	background: var(--scrollbar-track-color, #f3f3f3); 
+	border-radius: 8px; 
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--scrollbar-thumb-color, #888); /* Color of the thumb */
-	border-radius: 8px; /* Round the edges of the thumb */
-	border: 2px solid transparent; /* Add space around thumb */
-	background-clip: content-box; /* Make the border visible */
+	background: var(--scrollbar-thumb-color, #888); 
+	border-radius: 8px; 
+	border: 2px solid transparent; 
+	background-clip: content-box; 
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: var(--scrollbar-thumb-hover-color, #555); /* Thumb color on hover */
+	background: var(--scrollbar-thumb-hover-color, #555); 
 }
 
 /* For Firefox */
 * {
-	scrollbar-width: thin; /* Makes the scrollbar thinner */
-	scrollbar-color: var(--scrollbar-thumb-color, #888) var(--scrollbar-track-color, #f3f3f3); /* Thumb and track color */
+	scrollbar-width: thin; 
+	scrollbar-color: var(--scrollbar-thumb-color, #888) var(--scrollbar-track-color, #f3f3f3); 
 }

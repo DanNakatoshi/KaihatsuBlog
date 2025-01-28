@@ -35,6 +35,8 @@
 	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
 	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
 	import Bio from '$lib/components/about/Bio.svelte';
+
+
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -64,38 +66,40 @@
 		}));
 	}
 
-	function observeHeadings() {
-		if (observer) {
-			observer.disconnect();
-		}
+function observeHeadings() {
+    if (observer) {
+        observer.disconnect();
+    }
 
-		const headings = document.querySelectorAll(
-			'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
-		);
+    const headings = document.querySelectorAll(
+        'h1.wp-block-heading, h2.wp-block-heading, h3.wp-block-heading'
+    );
 
-		observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					// Add class when the heading is in or above the center of the viewport
-					if (
-						entry.intersectionRatio > 0 &&
-						entry.boundingClientRect.top <= window.innerHeight / 2
-					) {
-						entry.target.classList.add('heading-container');
-					} else {
-						entry.target.classList.remove('heading-container');
-					}
-				});
-			},
-			{
-				root: null, // Observe relative to the viewport
-				rootMargin: '0px 0px -50% 0px', // Adjust the bottom margin to trigger when halfway
-				threshold: 0 // Trigger as soon as the element is in view
-			}
-		);
+    observer = new IntersectionObserver(
+        (entries, obs) => {
+            entries.forEach((entry) => {
+                if (
+                    entry.intersectionRatio > 0 &&
+                    entry.boundingClientRect.top <= window.innerHeight / 2
+                ) {
+                    // Add the class permanently
+                    entry.target.classList.add('heading-container');
+                    
+                    // Stop observing this heading to improve performance
+                    obs.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            root: null, // Observe relative to the viewport
+            rootMargin: '0px 0px -50% 0px', // Trigger when halfway in the viewport
+            threshold: 0 // Trigger as soon as the element is in view
+        }
+    );
 
-		headings.forEach((heading) => observer.observe(heading));
-	}
+    headings.forEach((heading) => observer.observe(heading));
+}
+
 
 	function scrollToHeading(text) {
 		const heading = Array.from(document.querySelectorAll('h1, h2, h3')).find(
