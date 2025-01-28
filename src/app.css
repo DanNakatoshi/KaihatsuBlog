@@ -128,21 +128,8 @@
 	src: url('/fonts/NotoSansJP-Bold.ttf') format('truetype');
 }
 
-/* Light */
-@font-face {
-	font-family: 'Noto Sans JP';
-	font-weight: 300; /* Light */
-	font-style: normal;
-	src: url('/fonts/NotoSansJP-Light.ttf') format('truetype');
-}
 
-/* Medium */
-@font-face {
-	font-family: 'Noto Sans JP';
-	font-weight: 500; /* Medium */
-	font-style: normal;
-	src: url('/fonts/NotoSansJP-SemiBold.ttf') format('truetype');
-}
+
 
 @layer base {
 	* {

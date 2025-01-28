@@ -39,8 +39,8 @@
 	let { data } = $props();
 	let isClient = $state(false);
 	let post = $state(data.post);
-	let seriesDetails = $state(data.seriesData.series);
-	let seriesPosts = $state(data.seriesData.posts);
+	let seriesDetails = $state(data?.seriesData?.series);
+	let seriesPosts = $state(data?.seriesData?.posts);
 	let toc = $state([]);
 	let urlSlug = $state($page.params.slug);
 	let urlSeriesId = $state($page.url.searchParams.get('seriesId'));
