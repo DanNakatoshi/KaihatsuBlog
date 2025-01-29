@@ -8,6 +8,14 @@
 		crossorigin="anonymous"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
+
+		<script>
+			// Get the user's preferred theme from localStorage
+			const theme = localStorage.getItem('theme') || 'light';
+			// Apply the theme class to the root HTML element
+			document.documentElement.classList.add(theme);
+		  </script>
+
 	</head>
 	<body data-sveltekit-preload-data="hover" class="bg-secondary">
 		<div style="display: contents">%sveltekit.body%</div>

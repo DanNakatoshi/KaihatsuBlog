@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: 'Noto Sans JP';
+	font-weight: 400; /* Regular */
+	font-style: normal;
+	src: url('/fonts/NotoSansJP-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Noto Sans JP';
+	font-weight: 700; /* Bold */
+	font-style: normal;
+	src: url('/fonts/NotoSansJP-Bold.ttf') format('truetype');
+}
+
 @layer base {
 	:root {
 		--font-primary: 'Noto Sans JP', sans-serif;
@@ -112,22 +126,6 @@
 	}
 }
 
-/* Regular */
-@font-face {
-	font-family: 'Noto Sans JP';
-	font-weight: 400; /* Regular */
-	font-style: normal;
-	src: url('/fonts/NotoSansJP-Regular.ttf') format('truetype');
-}
-
-/* Bold */
-@font-face {
-	font-family: 'Noto Sans JP';
-	font-weight: 700; /* Bold */
-	font-style: normal;
-	src: url('/fonts/NotoSansJP-Bold.ttf') format('truetype');
-}
-
 @layer base {
 	* {
 		@apply border-border;
@@ -182,7 +180,6 @@
 		line-height: var(--line-height-relaxed); /* Better line spacing */
 		margin-bottom: 0.5rem; /* Add spacing between list items */
 	}
-
 
 	a:hover {
 		color: var(--link-hover-color);
@@ -246,20 +243,20 @@
 
 .heading-container {
 	position: relative;
-	display: inline-block; 
+	display: inline-block;
 }
 
 .heading-container::after {
 	content: '';
 	position: absolute;
-	bottom: 0; 
+	bottom: 0;
 	left: 0;
-	width: 0; 
-	height: 4px; 
-	background-color: #333; 
-	border-radius: 999px; 
-	background-color: var(--underline-color-light); 
-	animation: underline-stretch 0.5s linear forwards; 
+	width: 0;
+	height: 4px;
+	background-color: #333;
+	border-radius: 999px;
+	background-color: var(--underline-color-light);
+	animation: underline-stretch 0.5s linear forwards;
 }
 
 body.dark .heading-container::after {
@@ -297,29 +294,28 @@ body.dark {
 /* Side Scroll bar */
 /* For WebKit browsers (Chrome, Edge, Safari) */
 
-
 ::-webkit-scrollbar {
-	width: 8px; 
+	width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-	background: var(--scrollbar-track-color, #f3f3f3); 
-	border-radius: 8px; 
+	background: var(--scrollbar-track-color, #f3f3f3);
+	border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--scrollbar-thumb-color, #888); 
-	border-radius: 8px; 
-	border: 2px solid transparent; 
-	background-clip: content-box; 
+	background: var(--scrollbar-thumb-color, #888);
+	border-radius: 8px;
+	border: 2px solid transparent;
+	background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: var(--scrollbar-thumb-hover-color, #555); 
+	background: var(--scrollbar-thumb-hover-color, #555);
 }
 
 /* For Firefox */
 * {
-	scrollbar-width: thin; 
-	scrollbar-color: var(--scrollbar-thumb-color, #888) var(--scrollbar-track-color, #f3f3f3); 
+	scrollbar-width: thin;
+	scrollbar-color: var(--scrollbar-thumb-color, #888) var(--scrollbar-track-color, #f3f3f3);
 }
