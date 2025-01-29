@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<link rel="preload" href="/fonts/NotoSansJP-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
 		<!-- GOODLE ADSENSE -->
 		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5645646747512700"
 		crossorigin="anonymous"></script>
@@ -10,9 +12,7 @@
 		%sveltekit.head%
 
 		<script>
-			// Get the user's preferred theme from localStorage
 			const theme = localStorage.getItem('theme') || 'light';
-			// Apply the theme class to the root HTML element
 			document.documentElement.classList.add(theme);
 		  </script>
 
