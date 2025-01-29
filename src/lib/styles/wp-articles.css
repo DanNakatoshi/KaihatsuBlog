@@ -180,8 +180,14 @@ a:hover {
 	color: #fff;
 }
 
+.wp-block-prismatic-blocks {
+	padding: 1rem 0 1rem 0;
+
+}
+
 /* POST IMG */
 .wp-block-image img {
+	padding: 1rem 0 1rem 0;
 	max-width: 100%;
 	height: auto;
 	border-radius: 7px; /* Optional rounded corners */

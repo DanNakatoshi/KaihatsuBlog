@@ -361,7 +361,7 @@ function observeHeadings() {
 
 		<Drawer.Content>
 			<Drawer.Header>
-				<Drawer.Title>目次ナビ</Drawer.Title>
+				<Drawer.Title class="flex justify-center">目次ナビ</Drawer.Title>
 			</Drawer.Header>
 
 			<Drawer.Footer>
@@ -371,7 +371,7 @@ function observeHeadings() {
 					<p>No Table of Contents available.</p>
 				{/if}
 
-				<Drawer.Close>とじる</Drawer.Close>
+				<!-- <Drawer.Close>とじる</Drawer.Close> -->
 			</Drawer.Footer>
 		</Drawer.Content>
 	</Drawer.Root>
