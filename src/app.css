@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+	visibility: hidden;
+  }
+  html.light, html.dark {
+	visibility: visible;
+  }
+
+
 @font-face {
 	font-family: 'Noto Sans JP';
 	font-weight: 400;
