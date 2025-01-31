@@ -32,7 +32,6 @@
 	}
 
 	function filterPostsByCategory() {
-		console.log("filtering")
 		return [...articleMgr.articleData]
 			.filter((post) => {
 				const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;

@@ -1,4 +1,3 @@
-
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import compression from 'vite-plugin-compression';
@@ -6,21 +5,33 @@ import compression from 'vite-plugin-compression';
 export default defineConfig({
 	plugins: [
 		sveltekit(),
+
 		compression({
-			algorithm: 'gzip', // Gzip 圧縮の設定
-			ext: '.gz', // 作成される圧縮ファイルの拡張子
-			deleteOriginFile: false // 元のファイルを削除せず保持する
+			algorithm: 'gzip', // Use gzip compression
+			ext: '.gz', // Generate .gz files
+			deleteOriginFile: false // Keep original uncompressed files
 		}),
+
 		compression({
-			algorithm: 'brotliCompress', // Brotli 圧縮の設定
-			ext: '.br' // 作成される圧縮ファイルの拡張子
+			algorithm: 'brotliCompress', // Use Brotli compression
+			ext: '.br' // Generate .br files
 		})
 	],
+
 	css: {
-		// 必要に応じて CSS の設定を追加
+		preprocessorOptions: {
+			scss: { additionalData: `@import "src/styles/global.scss";` }
+		}
 	},
+
 	build: {
-		target: 'esnext', // モダンブラウザ向けの出力設定
-		sourcemap: true // デバッグ用にソースマップを有効化
+		target: 'esnext', // Target modern browsers
+		sourcemap: false, // ✅ Disable sourcemaps in production for better performance
+		cssCodeSplit: true, // ✅ Optimize CSS (split & minify)
+		minify: 'esbuild' // ✅ Use Vite's default, fast minification
+	},
+
+	server: {
+		strictPort: true
 	}
 });
