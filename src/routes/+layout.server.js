@@ -1,4 +1,5 @@
 import { fetchWordPressData } from '$lib/api/WPhandler.js';
+import { supabase } from '$lib/api/supabaseClient';
 
 /**
  * Load function to fetch WordPress data on the server.
@@ -16,11 +17,17 @@ export async function load() {
 		const categories = await fetchWordPressData({ type: 'categories' });
 		const tags = await fetchWordPressData({ type: 'tags' });
 
+		// SUPABASE
+		const { data, error } = await supabase
+			.from('bookmarks_post')
+			.select('*')
+
 		return {
 			posts,
 			series,
 			categories,
-			tags
+			tags,
+			bookmarks_post: data
 		};
 	} catch (error) {
 		console.error('Error loading data in +layout.server.js:', {

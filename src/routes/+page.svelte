@@ -28,7 +28,7 @@
 		activeTab = newTab; // Update the active tab
 		hasMore = true;
 		isLoading = false;
-		// displayedArticles = filterPostsByCategory(); 
+		// displayedArticles = filterPostsByCategory();
 	}
 
 	function filterPostsByCategory() {
@@ -139,7 +139,17 @@
 	<meta name="twitter:image" content="https://asameshicode.com/og-image.png" />
 </svelte:head>
 
+<!-- {console.log(data.bookmarks_post)} -->
+
+<!-- <div>
+	{#each data.bookmarks_post as bookmark, index (bookmark.id)}
+		<div>{bookmark._slug}</div>
+	{/each}
+</div> -->
 <div id="searchbox" class="flex flex-col items-center gap-2">
+	{#each data.bookmarks_post as bookmark, index (bookmark.id)}
+		<div>{bookmark.post_slug}</div>
+	{/each}
 	<Tabs.Root bind:value={activeTab} class="">
 		<Tabs.List class="">
 			<Tabs.Trigger onclick={() => handleTabChange('ALL')} value="ALL" class="min-w-16"
