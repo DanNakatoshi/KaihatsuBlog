@@ -19,7 +19,6 @@
 	import json from 'highlight.js/lib/languages/json'; 
 	import sql from 'highlight.js/lib/languages/sql'; //aded
 
-
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -229,6 +228,8 @@ function observeHeadings() {
 			hljs.registerLanguage('php', php);
 			hljs.registerLanguage('bash', bash);
 			hljs.registerLanguage('json', json); 
+			hljs.registerLanguage('sql', sql); 
+
 			
 			highlightSyntax();
 		}
