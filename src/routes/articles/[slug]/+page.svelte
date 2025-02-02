@@ -17,6 +17,11 @@
 	import php from 'highlight.js/lib/languages/php';
 	import bash from 'highlight.js/lib/languages/bash';
 	import json from 'highlight.js/lib/languages/json'; 
+<<<<<<< Updated upstream
+=======
+	import sql from 'highlight.js/lib/languages/sql'; //aded
+
+>>>>>>> Stashed changes
 
 	// Chadcn
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -212,6 +217,7 @@ function observeHeadings() {
 			}
 		}
 	});
+
 
 	onMount(() => {
 		isClient = true;
