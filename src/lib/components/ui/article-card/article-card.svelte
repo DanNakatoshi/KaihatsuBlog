@@ -7,7 +7,7 @@
 	import { Description } from 'formsnap';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
-
+	import Bookmark from '$lib/components/ui/article-card/bookmark.svelte';
 	let { post } = $props();
 
 	function getSeriesNames(seriesIds) {
@@ -22,13 +22,14 @@
 
 <Card.Root class=" ">
 	<Card.Header>
-		<Card.Title class="flex flex-wrap items-center gap-2">
+		<Card.Title class="flex justify-between items-center gap-2">
 			<button
 				onclick={() => articleMgr.handleReadButton(post?.slug)}
 				class="text-left leading-tight hover:text-primary"
 			>
 				<span class="font-semibold">{post?.title?.rendered}</span>
 			</button>
+			<Bookmark />
 		</Card.Title>
 		<div class="pt-2">
 			<PublishInfoBadge date={post?.date} modified={post?.modified} />

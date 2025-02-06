@@ -13,6 +13,9 @@
 
 	// Store
 	import { privacyDrawerManager } from '$lib/store/pageContorol.svelte';
+	// User
+	import { supabase } from '$lib/api/supabaseClient';
+	import { userMgr } from '$lib/store/userData.svelte.js';
 
 	let { children, data } = $props();
 
@@ -25,11 +28,12 @@
 	let isNavigating = $state(false); // ページ遷移中の状態を管理
 
 	// Initialize Google Analytics in the browser
-	onMount(() => {
+	onMount(async () => {
 		// ページ遷移が始まったら読み込み状態を有効にする
 		beforeNavigate(() => {
 			isNavigating = true;
 		});
+
 		if (typeof window !== 'undefined') {
 			window.dataLayer = window.dataLayer || [];
 			function gtag() {
@@ -75,15 +79,35 @@
 				privacyDrawerManager.setDrawerState(true);
 			}
 
-			// ページ遷移が完了したら読み込み状態を無効にする
-			afterNavigate(() => {
-				isNavigating = false;
-			});
+			// If no session, try extracting from URL
+			const { data, error } = await supabase.auth.getSession();
+
+			if (!data.session) {
+				console.warn('❌ No session found, forcing extraction from URL.');
+				await userMgr.extractSessionFromUrl();
+				console.log();
+			} else {
+				console.log('✅ Session retrieved:', data.session);
+				await userMgr.fetchUser();
+			}
+
+			// userMgr.fetchUser();
+			console.log('✅ Supabase Session:', data.session);
+			console.log('Current Session:', data.session);
+
+			// userMgr.fetchBookmarks();
 		}
 	});
 
+	// // ページ遷移が完了したら読み込み状態を無効にする
+	// afterNavigate(() => {
+	// 	isNavigating = false;
+	// });
+
 	// Track navigation
 	afterNavigate((navigation) => {
+		isNavigating = false;
+
 		if (gtagReady && isOptedIn) {
 			window.gtag('config', 'G-63G83HJJ0L', {
 				page_path: navigation.to?.pathname || window.location.pathname
@@ -119,7 +143,12 @@
 			});
 		}
 	}
+
+
+
 </script>
+
+
 
 <div class="mb-4 sm:container">
 	<!-- 読み込み中のアイコン -->
