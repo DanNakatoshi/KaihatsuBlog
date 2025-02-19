@@ -22,13 +22,15 @@
 	// Google Auth
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
-	let { user, signInWithGoogle, signOut } = userMgr;
+	// let { user, signInWithGoogle, signOut } = userMgr;
 
 	let isMenuOpen = $state(false);
 
 	function closeMenu() {
 		isMenuOpen = false;
 	}
+
+	// let user = userMgr.user
 
 	let currentTheme = $state('light'); // Default theme before hydration
 
@@ -128,12 +130,12 @@
 
 			<!-- Google Auth -->
 			<div class="flex w-full items-center justify-center">
-				{#if user}
-					<Button variant='link' onclick={signOut} class="w-full max-w-full">
+				{#if userMgr?.user}
+					<Button variant='link' onclick={userMgr?.signOut} class="w-full max-w-full">
 						<span>Logout</span>
 					</Button>
 				{:else}
-					<button onclick={()=>signInWithGoogle()} class="google-signin">
+					<button onclick={()=>userMgr.signInWithGoogle()} class="google-signin">
 						<img src={googleSignInImage} alt="Sign in with Google" />
 					</button>
 				{/if}
