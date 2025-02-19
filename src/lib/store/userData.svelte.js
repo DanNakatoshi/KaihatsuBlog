@@ -87,22 +87,24 @@ function createUserData() {
 
 
     async function signInWithGoogle() {
-        // ✅ Store the previous page before redirecting
         const previousUrl = window.location.href;
         localStorage.setItem('previousPage', previousUrl);
-
-        // ✅ Redirect to Google login
+    
+        // ✅ Ensure the redirect URL is correct
+        const redirectUrl = `${import.meta.env.VITE_PUBLIC_SITE_URL}/auth/callback`;
+    
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: redirectUrl,
             },
         });
-
+    
         if (error) {
             console.error('❌ Login error:', error.message);
         }
     }
+    
 
     async function signOut() {
         await supabase.auth.signOut();
