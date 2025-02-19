@@ -2,14 +2,13 @@
 	// Chadcn
 	import { Separator } from '$lib/components/ui/separator';
 
-	// ICON
+	// ICONS
 	import { Menu, Bell } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 
-	// Theme color swicher
+	// Theme color switcher
 	import { toggleMode } from 'mode-watcher';
-	// import { ModeWatcher } from 'mode-watcher';
 
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
@@ -20,17 +19,16 @@
 	import { onMount } from 'svelte';
 
 	// Google Auth
+	import { browser } from '$app/environment';
 	import { userMgr } from '$lib/store/userData.svelte.js';
+	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
 
-	// let { user, signInWithGoogle, signOut } = userMgr;
-
+	let user = $state(userMgr?.user || null);
 	let isMenuOpen = $state(false);
 
 	function closeMenu() {
 		isMenuOpen = false;
 	}
-
-	// let user = userMgr.user
 
 	let currentTheme = $state('light'); // Default theme before hydration
 
@@ -47,27 +45,25 @@
 		}
 	}
 
-	// Select Google sign-in button based on theme
-	let googleSignInImage = $state('/google/signin_light.svg');
-
-	$effect(() => {
-		googleSignInImage =
-			currentTheme === 'dark' ? '/google/signin_dark.svg' : '/google/signin_light.svg';
-	});
-
 	onMount(() => {
 		const storedTheme = localStorage.getItem('theme') || 'light';
 		currentTheme = storedTheme;
 		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+
+		// ✅ Ensure we update the user state if it changes
+		if (browser && userMgr) {
+			$effect(() => {
+				user = userMgr.user;
+			});
+		}
 	});
 </script>
 
-<!-- <ModeWatcher /> -->
-
+<!-- Menu Overlay -->
 {#if isMenuOpen}
 	<button
 		class="fixed inset-0 z-10 bg-black bg-opacity-50"
-		onclick={() => (isMenuOpen = false)}
+		onclick={closeMenu}
 		aria-label="close menu"
 	></button>
 {/if}
@@ -81,14 +77,21 @@
 			<span class="font-extrabold">あさめしコード</span>
 		</Button>
 
-		<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
-			<Sun
-				class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-			/>
-			<Moon
-				class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-			/>
-		</Button>
+		<div class="flex items-center gap-2">
+			{#if user}
+				<div>
+					<Button variant="outline">{user.user_metadata?.full_name}</Button>
+				</div>
+			{/if}
+			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
+				<Sun
+					class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+				/>
+				<Moon
+					class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+				/>
+			</Button>
+		</div>
 	</div>
 </header>
 
@@ -100,8 +103,8 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="absolute right-2 top-2 rounded-full "
-			onclick={() => (isMenuOpen = false)}><X size="12" strokeWidth={6} /></Button
+			class="absolute right-2 top-2 rounded-full"
+			onclick={closeMenu}><X size="12" strokeWidth={6} /></Button
 		>
 		<h2 class="text-lg font-semibold">Menu</h2>
 		<div class="mt-6 flex flex-col items-start gap-3">
@@ -128,18 +131,18 @@
 			>
 			<Separator />
 
-			<!-- Google Auth -->
-			<div class="flex w-full items-center justify-center">
-				{#if userMgr?.user}
-					<Button variant='link' onclick={userMgr?.signOut} class="w-full max-w-full">
-						<span>Logout</span>
-					</Button>
-				{:else}
-					<button onclick={()=>userMgr.signInWithGoogle()} class="google-signin">
-						<img src={googleSignInImage} alt="Sign in with Google" />
-					</button>
-				{/if}
-			</div>
+			<!-- ✅ Google Auth (Only if userMgr exists) -->
+			{#if browser && userMgr}
+				<div class="flex w-full items-center justify-center">
+					{#if user}
+						<Button variant="link" onclick={() => userMgr.signOut()} class="w-full max-w-full">
+							<span>Logout</span>
+						</Button>
+					{:else}
+						<GoogleSigninBtn />
+					{/if}
+				</div>
+			{/if}
 
 			<Separator />
 
@@ -151,8 +154,8 @@
 					closeMenu();
 				}}
 			>
-				PRIVACY POLICY</Button
-			>
+				PRIVACY POLICY
+			</Button>
 		</div>
 	</div>
 </div>

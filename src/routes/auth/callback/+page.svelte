@@ -1,23 +1,22 @@
 <script>
 	import { onMount } from 'svelte';
-	import { supabase } from '$lib/api/supabaseClient';
+	import { goto } from '$app/navigation';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
-	// onMount(async () => {
-	// 	if (!data.session) {
-	// 		console.warn('❌ No session found, forcing extraction from URL.');
-	// 		await userMgr.extractSessionFromUrl(userMgr.session);
-	// 		console.log();
-	// 	} else {
-	// 		console.log('✅ Session retrieved:', data.session);
-	// 		await userMgr.fetchUser();
-	// 	}
-	// });
+	onMount(async () => {
+		// ✅ Ensure session is updated
+		await userMgr?.fetchUser();
 
-   onMount(()=>{
-    userMgr.extractSessionFromUrl();
-   })
+		// ✅ Retrieve previous page from localStorage
+		const previousPage = localStorage.getItem('previousPage');
+		// console.log("🔄 Redirecting back to:", previousPage); // Debugging
 
+		// ✅ Clean up (optional)
+		localStorage.removeItem('previousPage');
+
+		// ✅ Redirect back or go home (`/`)
+		goto(previousPage || '/');
+	});
 </script>
 
 <p>Processing login...</p>

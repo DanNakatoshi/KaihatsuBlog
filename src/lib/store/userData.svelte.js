@@ -1,76 +1,122 @@
-import { browser } from '$app/environment'; // ✅ Only runs in the browser
+import { browser } from '$app/environment'; 
 import { supabase } from '$lib/api/supabaseClient';
 
 function createUserData() {
-    if (!browser) return null; // ✅ Prevents execution on the server
+    if (!browser) return null; 
 
     let user = $state(null);
     let session = $state(null);
+    let bookmarks = $state([]); 
 
     async function fetchUser() {
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error || !data.session) {
-            console.warn('❌ No active session found.');
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+            console.warn('❌ No active user session found.');
             user = null;
             session = null;
             return;
         }
+        user = data.user;
+        session = await supabase.auth.getSession();
+        await fetchBookmarks(); 
 
-        user = data.session.user;
-        session = data.session;
-        console.log('✅ User:', user);
-        console.log('✅ Session:', session);
+        // console.log('✅ User:', user);
     }
 
+
+    /* BOOKMARK */
+    async function fetchBookmarks() {
+        if (!user) return;
+
+        const { data, error } = await supabase
+            .from('bookmarks_post')
+            .select('post_id')
+            .eq('user_id', user.id);
+
+        if (error) {
+            console.error('❌ Error fetching bookmarks:', error.message);
+            return;
+        }
+
+        bookmarks = data.map(item => item.post_id);
+    }
+
+
+    async function toggleBookmark(postId) {
+        if (!user) {
+            console.warn('❌ User not logged in.');
+            return;
+        }
+    
+        const isBookmarked = bookmarks.includes(postId);
+    
+        if (isBookmarked) {
+            // ✅ Remove bookmark
+            const { error } = await supabase
+                .from('bookmarks_post')
+                .delete()
+                .match({ user_id: user.id, post_id: postId });
+    
+            if (error) {
+                console.error('❌ Error removing bookmark:', error.message);
+                return;
+            }
+    
+            // ✅ Update local state
+            bookmarks = bookmarks.filter(id => id !== postId);
+            console.log(`✅ Bookmark removed for post ID: ${postId}`);
+        } else {
+            // ✅ Add bookmark
+            const { error } = await supabase
+                .from('bookmarks_post')
+                .insert([{ user_id: user.id, post_id: postId }]);
+    
+            if (error) {
+                console.error('❌ Error adding bookmark:', error.message);
+                return;
+            }
+    
+            // ✅ Update local state
+            bookmarks = [...bookmarks, postId];
+            console.log(`✅ Bookmark added for post ID: ${postId}`);
+        }
+    }
+    
+
+    /*END BOOKMARK */
+
+
     async function signInWithGoogle() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        // ✅ Store the previous page before redirecting
+        const previousUrl = window.location.href;
+        localStorage.setItem('previousPage', previousUrl);
+
+        // ✅ Redirect to Google login
+        const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
-                scopes: 'email profile openid',
             },
         });
 
         if (error) {
             console.error('❌ Login error:', error.message);
-            return;
         }
-
-        if (data?.url) {
-            console.log("🔄 Redirecting to:", data.url);
-            window.location.href = data.url;
-        }
-    }
-
-    async function extractSessionFromUrl() {
-        console.log("🔄 Attempting to exchange auth code for session...");
-        
-        const code = new URLSearchParams(window.location.search).get("code");
-
-        if (!code) {
-            console.error("❌ No auth code found in URL.");
-            return;
-        }
-
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (error) {
-            console.error("❌ Failed to exchange code for session:", error.message);
-            return;
-        }
-
-        console.log("✅ Session obtained:", data.session);
-        await fetchUser();
-
-        window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     async function signOut() {
         await supabase.auth.signOut();
         user = null;
         session = null;
+        bookmarks = [];
     }
+
+    // ✅ Automatically update user session when authentication state changes
+    supabase.auth.onAuthStateChange((event, sessionData) => {
+        console.log(`🔄 Auth event: ${event}`);
+        user = sessionData?.user || null;
+        session = sessionData || null;
+    });
 
     return {
         get user() {
@@ -79,9 +125,13 @@ function createUserData() {
         signInWithGoogle,
         signOut,
         fetchUser,
-        extractSessionFromUrl,
+        // BOOKMARK
+        get bookmarks() {
+            return bookmarks;
+        },
+        toggleBookmark,
     };
 }
 
-// ✅ Only create userMgr on the client side
+// ✅ Create only on the client side
 export const userMgr = browser ? createUserData() : null;

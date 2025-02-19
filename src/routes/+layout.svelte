@@ -84,7 +84,7 @@
 
 			if (!data.session) {
 				console.warn('❌ No session found, forcing extraction from URL.');
-				await userMgr.extractSessionFromUrl();
+				// await userMgr.extractSessionFromUrl();
 				console.log();
 			} else {
 				console.log('✅ Session retrieved:', data.session);
@@ -92,8 +92,6 @@
 			}
 
 			// userMgr.fetchUser();
-			console.log('✅ Supabase Session:', data.session);
-			console.log('Current Session:', data.session);
 
 			// userMgr.fetchBookmarks();
 		}

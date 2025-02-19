@@ -33,8 +33,8 @@
 	import { page } from '$app/stores';
 
 	// Components
-	import PublishInfoBadge from '$lib/components/ui/article-card/publish-info-badge.svelte';
-	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
+	import PublishInfoBadge from '$lib/components/ui/custom-article-card/publish-info-badge.svelte';
+	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import Bio from '$lib/components/about/Bio.svelte';
 
 

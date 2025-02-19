@@ -5,7 +5,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { ListFilter } from 'lucide-svelte';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
-	import ArticleCard from '$lib/components/ui/article-card/article-card.svelte';
+	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
 	// FetchData
 
