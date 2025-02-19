@@ -17,6 +17,9 @@
 	import { supabase } from '$lib/api/supabaseClient';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
+	import LoginPopup from '$lib/components/ui/custom-google-login/LoginPopup.svelte';
+
+
 	let { children, data } = $props();
 
 	tagMgr.setTagsData(data.tags);
@@ -145,7 +148,6 @@
 
 
 </script>
-
 
 
 <div class="mb-4 sm:container">

@@ -36,7 +36,7 @@
 	import PublishInfoBadge from '$lib/components/ui/custom-article-card/publish-info-badge.svelte';
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import Bio from '$lib/components/about/Bio.svelte';
-
+	import Bookmark from '$lib/components/ui/custom-article-card/bookmark.svelte';
 
 	// Initalize data
 	let { data } = $props();
@@ -270,8 +270,11 @@ function observeHeadings() {
 	<div class="grid grid-cols-12 gap-2">
 		<Card.Root class="col-span-12 md:col-span-9 ">
 			<Card.Header>
-				<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
-				<div class="pb-2">
+				<div class="flex justify-between items-start">
+					<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
+					<Bookmark postId={post?.id}/>
+				</div>
+					<div class="pb-2">
 					<PublishInfoBadge date={post.date} modified={post.modified} />
 				</div>
 			</Card.Header>
