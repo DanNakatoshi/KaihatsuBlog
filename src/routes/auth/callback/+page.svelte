@@ -1,20 +1,23 @@
 <script>
-    import { onMount } from 'svelte';
-    import { userMgr } from '$lib/store/userData.svelte.js';
+	import { onMount } from 'svelte';
+	import { supabase } from '$lib/api/supabaseClient';
+	import { userMgr } from '$lib/store/userData.svelte.js';
 
-    onMount(async () => {
-        console.log("🔄 Processing login...");
+	// onMount(async () => {
+	// 	if (!data.session) {
+	// 		console.warn('❌ No session found, forcing extraction from URL.');
+	// 		await userMgr.extractSessionFromUrl(userMgr.session);
+	// 		console.log();
+	// 	} else {
+	// 		console.log('✅ Session retrieved:', data.session);
+	// 		await userMgr.fetchUser();
+	// 	}
+	// });
 
-        if (!userMgr) {
-            console.error("❌ `userMgr` is not available. Ensure it's initialized on the client.");
-            return;
-        }
+   onMount(()=>{
+    userMgr.extractSessionFromUrl();
+   })
 
-        await userMgr.extractSessionFromUrl();
-
-        console.log("✅ Login successful! Redirecting...");
-        window.location.replace('/');
-    });
 </script>
 
 <p>Processing login...</p>

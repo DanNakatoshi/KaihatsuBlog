@@ -7,8 +7,9 @@
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 
-	// Theme color switcher
+	// Theme color swicher
 	import { toggleMode } from 'mode-watcher';
+	// import { ModeWatcher } from 'mode-watcher';
 
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
@@ -19,26 +20,17 @@
 	import { onMount } from 'svelte';
 
 	// Google Auth
-	import { browser } from '$app/environment';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
-	// State
+	let { user, signInWithGoogle, signOut } = userMgr;
+
 	let isMenuOpen = $state(false);
+
+	function closeMenu() {
+		isMenuOpen = false;
+	}
+
 	let currentTheme = $state('light'); // Default theme before hydration
-	let googleSignInImage = $state('/google/signin_light.svg');
-	let user = $state(null);
-
-	// Ensure `userMgr` is only used in the browser
-	onMount(() => {
-		if (browser && userMgr) {
-			user = userMgr.user;
-		}
-
-		// Load theme
-		const storedTheme = localStorage.getItem('theme') || 'light';
-		currentTheme = storedTheme;
-		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
-	});
 
 	function toggleTheme() {
 		const isDark = document.documentElement.classList.contains('dark');
@@ -53,29 +45,22 @@
 		}
 	}
 
-	// Update Google sign-in button based on theme
+	// Select Google sign-in button based on theme
+	let googleSignInImage = $state('/google/signin_light.svg');
+
 	$effect(() => {
 		googleSignInImage =
 			currentTheme === 'dark' ? '/google/signin_dark.svg' : '/google/signin_light.svg';
 	});
 
-	function closeMenu() {
-		isMenuOpen = false;
-	}
-
-	async function handleLogin() {
-		if (userMgr) {
-			await userMgr.signInWithGoogle();
-		}
-	}
-
-	async function handleLogout() {
-		if (userMgr) {
-			await userMgr.signOut();
-			user = null; // Clear local state
-		}
-	}
+	onMount(() => {
+		const storedTheme = localStorage.getItem('theme') || 'light';
+		currentTheme = storedTheme;
+		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+	});
 </script>
+
+<!-- <ModeWatcher /> -->
 
 {#if isMenuOpen}
 	<button
@@ -144,11 +129,11 @@
 			<!-- Google Auth -->
 			<div class="flex w-full items-center justify-center">
 				{#if user}
-					<Button variant='link' onclick={handleLogout} class="w-full max-w-full">
+					<Button variant='link' onclick={signOut} class="w-full max-w-full">
 						<span>Logout</span>
 					</Button>
 				{:else}
-					<button onclick={handleLogin} class="google-signin">
+					<button onclick={()=>signInWithGoogle()} class="google-signin">
 						<img src={googleSignInImage} alt="Sign in with Google" />
 					</button>
 				{/if}
