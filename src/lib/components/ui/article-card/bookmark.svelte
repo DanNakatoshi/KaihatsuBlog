@@ -5,9 +5,9 @@
 	let { postId } = $props();
 </script>
 
-<button onclick={() => userMgr.toggleBookmark(postId)}>
+<!-- <button onclick={() => userMgr.toggleBookmark(postId)}>
 	<Bookmark class={userMgr.bookmarks.includes(postId) ? 'fill-black' : 'fill-none'} />
-</button>
+</button> -->
 
 <style>
 	.fill-black {

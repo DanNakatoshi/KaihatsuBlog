@@ -7,9 +7,8 @@
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 
-	// Theme color swicher
+	// Theme color switcher
 	import { toggleMode } from 'mode-watcher';
-	// import { ModeWatcher } from 'mode-watcher';
 
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
@@ -20,17 +19,26 @@
 	import { onMount } from 'svelte';
 
 	// Google Auth
+	import { browser } from '$app/environment';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
-	let { user, signInWithGoogle, signOut } = userMgr;
-
+	// State
 	let isMenuOpen = $state(false);
-
-	function closeMenu() {
-		isMenuOpen = false;
-	}
-
 	let currentTheme = $state('light'); // Default theme before hydration
+	let googleSignInImage = $state('/google/signin_light.svg');
+	let user = $state(null);
+
+	// Ensure `userMgr` is only used in the browser
+	onMount(() => {
+		if (browser && userMgr) {
+			user = userMgr.user;
+		}
+
+		// Load theme
+		const storedTheme = localStorage.getItem('theme') || 'light';
+		currentTheme = storedTheme;
+		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+	});
 
 	function toggleTheme() {
 		const isDark = document.documentElement.classList.contains('dark');
@@ -45,22 +53,29 @@
 		}
 	}
 
-	// Select Google sign-in button based on theme
-	let googleSignInImage = $state('/google/signin_light.svg');
-
+	// Update Google sign-in button based on theme
 	$effect(() => {
 		googleSignInImage =
 			currentTheme === 'dark' ? '/google/signin_dark.svg' : '/google/signin_light.svg';
 	});
 
-	onMount(() => {
-		const storedTheme = localStorage.getItem('theme') || 'light';
-		currentTheme = storedTheme;
-		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
-	});
-</script>
+	function closeMenu() {
+		isMenuOpen = false;
+	}
 
-<!-- <ModeWatcher /> -->
+	async function handleLogin() {
+		if (userMgr) {
+			await userMgr.signInWithGoogle();
+		}
+	}
+
+	async function handleLogout() {
+		if (userMgr) {
+			await userMgr.signOut();
+			user = null; // Clear local state
+		}
+	}
+</script>
 
 {#if isMenuOpen}
 	<button
@@ -129,11 +144,11 @@
 			<!-- Google Auth -->
 			<div class="flex w-full items-center justify-center">
 				{#if user}
-					<Button variant='link' onclick={signOut} class="w-full max-w-full">
+					<Button variant='link' onclick={handleLogout} class="w-full max-w-full">
 						<span>Logout</span>
 					</Button>
 				{:else}
-					<button onclick={()=>signInWithGoogle()} class="google-signin">
+					<button onclick={handleLogin} class="google-signin">
 						<img src={googleSignInImage} alt="Sign in with Google" />
 					</button>
 				{/if}
