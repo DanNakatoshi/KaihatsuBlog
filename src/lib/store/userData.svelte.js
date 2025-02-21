@@ -117,7 +117,7 @@ function createUserData() {
 
     // ✅ Automatically update user session when authentication state changes
     supabase.auth.onAuthStateChange((event, sessionData) => {
-        console.log(`🔄 Auth event: ${event}`);
+        // console.log(`🔄 Auth event: ${event}`);
         user = sessionData?.user || null;
         session = sessionData || null;
     });
@@ -130,50 +130,29 @@ function createUserData() {
         }
     
         try {
-            const { error } = await supabase.rpc('delete_user_account');
-            if (error) {
-                throw new Error(`Function Error: ${error.message}`);
+            const response = await fetch(`${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/delete-user`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({ userId: user.id }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Server error: ${await response.text()}`);
             }
     
             console.log("✅ User deleted successfully.");
-            await signOut();
+            // await signOut();
             window.location.href = "/";
         } catch (error) {
             console.error("❌ Error deleting account:", error.message);
         }
     }
-
-    // async function deleteAccount() {
-    //     if (!user) {
-    //         console.error("❌ No user is logged in.");
-    //         return;
-    //     }
     
-    //     const userId = user.id;
-    //     console.log(`🗑 Deleting user: ${userId}`);
     
-    //     try {
-    //         // ✅ Step 1: Delete all user-related data (bookmarks, comments, etc.)
-    //         // await deleteUserData(userId);
     
-    //         // ✅ Step 2: Delete user from Supabase Auth (requires admin access)
-    //         const { error } = await supabase.auth.admin.deleteUser(userId);
-    //         if (error) {
-    //             throw new Error(`Supabase Auth Deletion Error: ${error.message}`);
-    //         }
-    
-    //         console.log("✅ User deleted successfully.");
-    
-    //         // ✅ Step 3: Sign out user and reset state
-    //         await signOut();
-    
-    //         // ✅ Step 4: Refresh UI
-    //         window.location.href = "/";
-    //     } catch (error) {
-    //         console.error("❌ Error deleting account:", error.message);
-    //     }
-    // }
-
     return {
         get user() {
             return user;
