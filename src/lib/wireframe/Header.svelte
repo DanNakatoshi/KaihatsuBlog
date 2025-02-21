@@ -23,7 +23,7 @@
 	import { userMgr } from '$lib/store/userData.svelte.js';
 	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
 
-	let user = $state(userMgr?.user || null);
+	// let user = $state(userMgr?.user || null);
 	let isMenuOpen = $state(false);
 
 	function closeMenu() {
@@ -49,13 +49,6 @@
 		const storedTheme = localStorage.getItem('theme') || 'light';
 		currentTheme = storedTheme;
 		document.documentElement.classList.toggle('dark', storedTheme === 'dark');
-
-		// ✅ Ensure we update the user state if it changes
-		if (browser && userMgr) {
-			$effect(() => {
-				user = userMgr.user;
-			});
-		}
 	});
 </script>
 
@@ -78,9 +71,9 @@
 		</Button>
 
 		<div class="flex items-center gap-2">
-			{#if user}
+			{#if userMgr?.user}
 				<div>
-					<Button variant="outline">{user.user_metadata?.full_name}</Button>
+					<Button variant="outline">{userMgr?.user.user_metadata?.full_name}</Button>
 				</div>
 			{/if}
 			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
@@ -132,15 +125,31 @@
 			<Separator />
 
 			<!-- ✅ Google Auth (Only if userMgr exists) -->
-			{#if browser && userMgr}
+			{#if userMgr?.user}
+				<div class="flex flex-col w-full items-center justify-center gap-2">
+
+					<Button
+						class="w-full max-w-full"
+						onclick={() => {
+							goto('/account');
+							closeMenu();
+						}}>マイページ</Button
+					>
+
+					<Button
+						variant="link"
+						onclick={() => {
+							userMgr.signOut();
+							window.location.reload();
+						}}
+						class="w-full max-w-full"
+					>
+						<span>Logout</span>
+					</Button>
+				</div>
+			{:else}
 				<div class="flex w-full items-center justify-center">
-					{#if user}
-						<Button variant="link" onclick={() => userMgr.signOut()} class="w-full max-w-full">
-							<span>Logout</span>
-						</Button>
-					{:else}
-						<GoogleSigninBtn />
-					{/if}
+					<GoogleSigninBtn />
 				</div>
 			{/if}
 

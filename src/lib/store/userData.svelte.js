@@ -92,7 +92,9 @@ function createUserData() {
     
         // ✅ Ensure the redirect URL is correct
         const redirectUrl = `${import.meta.env.VITE_PUBLIC_SITE_URL}/auth/callback`;
-    
+
+        console.log("VITE_PUBLIC_SITE_URL:", import.meta.env.VITE_PUBLIC_SITE_URL);
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
@@ -120,6 +122,58 @@ function createUserData() {
         session = sessionData || null;
     });
 
+
+    async function deleteAccount() {
+        if (!user) {
+            console.error("❌ No user is logged in.");
+            return;
+        }
+    
+        try {
+            const { error } = await supabase.rpc('delete_user_account');
+            if (error) {
+                throw new Error(`Function Error: ${error.message}`);
+            }
+    
+            console.log("✅ User deleted successfully.");
+            await signOut();
+            window.location.href = "/";
+        } catch (error) {
+            console.error("❌ Error deleting account:", error.message);
+        }
+    }
+
+    // async function deleteAccount() {
+    //     if (!user) {
+    //         console.error("❌ No user is logged in.");
+    //         return;
+    //     }
+    
+    //     const userId = user.id;
+    //     console.log(`🗑 Deleting user: ${userId}`);
+    
+    //     try {
+    //         // ✅ Step 1: Delete all user-related data (bookmarks, comments, etc.)
+    //         // await deleteUserData(userId);
+    
+    //         // ✅ Step 2: Delete user from Supabase Auth (requires admin access)
+    //         const { error } = await supabase.auth.admin.deleteUser(userId);
+    //         if (error) {
+    //             throw new Error(`Supabase Auth Deletion Error: ${error.message}`);
+    //         }
+    
+    //         console.log("✅ User deleted successfully.");
+    
+    //         // ✅ Step 3: Sign out user and reset state
+    //         await signOut();
+    
+    //         // ✅ Step 4: Refresh UI
+    //         window.location.href = "/";
+    //     } catch (error) {
+    //         console.error("❌ Error deleting account:", error.message);
+    //     }
+    // }
+
     return {
         get user() {
             return user;
@@ -132,6 +186,8 @@ function createUserData() {
             return bookmarks;
         },
         toggleBookmark,
+        // ACCOUNT
+        deleteAccount,
     };
 }
 
