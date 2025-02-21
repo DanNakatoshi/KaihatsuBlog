@@ -6,6 +6,7 @@
 	import { Menu, Bell } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
+	import { User } from 'lucide-svelte';
 
 	// Theme color switcher
 	import { toggleMode } from 'mode-watcher';
@@ -72,9 +73,7 @@
 
 		<div class="flex items-center gap-2">
 			{#if userMgr?.user}
-				<div>
-					<Button variant="outline">{userMgr?.user.user_metadata?.full_name}</Button>
-				</div>
+				<Button variant="outline" size="icon" onclick={() => goto('/account')}><User /></Button>
 			{/if}
 			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
 				<Sun
@@ -126,8 +125,7 @@
 
 			<!-- ✅ Google Auth (Only if userMgr exists) -->
 			{#if userMgr?.user}
-				<div class="flex flex-col w-full items-center justify-center gap-2">
-
+				<div class="flex w-full flex-col items-center justify-center gap-2">
 					<Button
 						class="w-full max-w-full"
 						onclick={() => {

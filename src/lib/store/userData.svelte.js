@@ -1,5 +1,6 @@
 import { browser } from '$app/environment'; 
 import { supabase } from '$lib/api/supabaseClient';
+import { toast } from "svelte-sonner";
 
 function createUserData() {
     if (!browser) return null; 
@@ -64,6 +65,8 @@ function createUserData() {
     
             // ✅ Update local state
             bookmarks = bookmarks.filter(id => id !== postId);
+            toast.success("ブックマークを外しました")
+
             console.log(`✅ Bookmark removed for post ID: ${postId}`);
         } else {
             // ✅ Add bookmark
@@ -73,12 +76,15 @@ function createUserData() {
     
             if (error) {
                 console.error('❌ Error adding bookmark:', error.message);
+                toast.error('ブックマークの追加でエラーになりました');
+
                 return;
             }
     
             // ✅ Update local state
             bookmarks = [...bookmarks, postId];
             console.log(`✅ Bookmark added for post ID: ${postId}`);
+            toast.success("ブックマークに追加しました")
         }
     }
     
@@ -92,7 +98,6 @@ function createUserData() {
     
         // ✅ Ensure the redirect URL is correct
         const redirectUrl = `${import.meta.env.VITE_PUBLIC_SITE_URL}/auth/callback`;
-
         console.log("VITE_PUBLIC_SITE_URL:", import.meta.env.VITE_PUBLIC_SITE_URL);
 
         const { error } = await supabase.auth.signInWithOAuth({
@@ -116,10 +121,21 @@ function createUserData() {
     }
 
     // ✅ Automatically update user session when authentication state changes
+    // supabase.auth.onAuthStateChange((event, sessionData) => {
+    //     // console.log(`🔄 Auth event: ${event}`);
+    //     user = sessionData?.user || null;
+    //     session = sessionData || null;
+    // });
+
     supabase.auth.onAuthStateChange((event, sessionData) => {
-        // console.log(`🔄 Auth event: ${event}`);
         user = sessionData?.user || null;
         session = sessionData || null;
+
+        if (event === "SIGNED_IN") {
+            toast.success("ログインしました");
+        } else if (event === "SIGNED_OUT") {
+            toast.info("ログアウトしました");
+        }
     });
 
 
@@ -144,10 +160,14 @@ function createUserData() {
             }
     
             console.log("✅ User deleted successfully.");
+            toast.info("アカウントの削除が完了しました")
+
             // await signOut();
             window.location.href = "/";
         } catch (error) {
             console.error("❌ Error deleting account:", error.message);
+            toast.error("アカウントの削除でエラーが発生しました")
+
         }
     }
     

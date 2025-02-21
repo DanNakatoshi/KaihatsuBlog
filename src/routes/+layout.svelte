@@ -7,6 +7,8 @@
 	// Shadcn
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Button } from '$lib/components/ui/button';
+	import { Toaster } from "$lib/components/ui/sonner/index.js";
+
 	// Svelte
 	import { goto, afterNavigate, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -173,6 +175,9 @@
 	</div>
 </div>
 
+<Toaster position="bottom-left" />
+
+
 <Drawer.Root
 	bind:open={privacyDrawerManager.isDrawerOpen}
 	dismissible={false}
@@ -198,6 +203,8 @@
 		</Drawer.Footer>
 	</Drawer.Content>
 </Drawer.Root>
+
+
 
 <style>
 	/* アニメーションの速度 */
