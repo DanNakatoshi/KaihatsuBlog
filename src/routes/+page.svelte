@@ -159,8 +159,8 @@
 
 		<div class="my-2 flex justify-between">
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger asChild let:builder>
-					<Button variant="outline" builders={[builder]}>{sortByVal}</Button>
+				<DropdownMenu.Trigger >
+					<Button variant="outline" >{sortByVal}</Button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="">
 					<DropdownMenu.RadioGroup bind:value={sortByVal}>
