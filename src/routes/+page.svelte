@@ -1,13 +1,19 @@
-<script lang="ts">
+<script >
+	// Chadcn
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { Switch } from '$lib/components/ui/switch/index.js';
+
+	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
+	import { userMgr } from '$lib/store/userData.svelte.js';
+
 	import { ListFilter } from 'lucide-svelte';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
-	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
-	// FetchData
 
+	// FetchData
 	import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
 	// Svelte
@@ -15,12 +21,13 @@
 
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
-	import BookmarkCounter from '$lib/components/ui/custom-bookmark-counter/BookmarkCounter.svelte';
+	// import BookmarkCounter from '$lib/components/ui/custom-bookmark-counter/BookmarkCounter.svelte';
 
 	let { data } = $props();
 	let activeTab = $state('ALL');
 	let sortByVal = $state('公開日順');
 	let searchInputValue = $state('');
+	let filterBookmarks = $state(false);
 
 	let displayedArticles = $state([...articleMgr.articleData]); // Reactive articles list
 	let isLoading = $state(false); // Loading indicator
@@ -47,6 +54,13 @@
 					post.title?.rendered?.toLowerCase().includes(searchTerm) ||
 					post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
 				);
+			})
+			.filter((post) => {
+				// If filter toggle is on, only include posts that are bookmarked.
+				if (filterBookmarks) {
+					return userMgr?.bookmarks?.includes(post.id);
+				}
+				return true;
 			})
 			.sort((a, b) => {
 				const key = sortByVal === '公開日順' ? 'date' : 'modified';
@@ -142,112 +156,45 @@
 	<meta name="twitter:image" content="https://asameshicode.com/og-image.png" />
 </svelte:head>
 
-<!-- <div class="grid grid-cols-12">
-	<div class="grid-cols-12 md:grid-cols-6">
-		<div id="searchbox" class="flex flex-col items-center gap-2">
-			<Tabs.Root bind:value={activeTab} class="">
-				<Tabs.List class="">
-					<Tabs.Trigger onclick={() => handleTabChange('ALL')} value="ALL" class="min-w-16"
-						>ALL</Tabs.Trigger
-					>
-					<Tabs.Trigger
-						onclick={() => handleTabChange('開発ログ')}
-						value="開発ログ"
-						class="min-w-16">開発ログ</Tabs.Trigger
-					>
-					<Tabs.Trigger
-						onclick={() => handleTabChange('エッセイ')}
-						value="エッセイ"
-						class="min-w-16">エッセイ</Tabs.Trigger
-					>
-				</Tabs.List>
-			</Tabs.Root>
+<div id="searchbox" class="flex flex-col items-center gap-2">
+	<Tabs.Root bind:value={activeTab} class="">
+		<Tabs.List class="">
+			<Tabs.Trigger onclick={() => handleTabChange('ALL')} value="ALL" class="min-w-16"
+				>ALL</Tabs.Trigger
+			>
+			<Tabs.Trigger onclick={() => handleTabChange('開発ログ')} value="開発ログ" class="min-w-16"
+				>開発ログ</Tabs.Trigger
+			>
+			<Tabs.Trigger onclick={() => handleTabChange('エッセイ')} value="エッセイ" class="min-w-16"
+				>エッセイ</Tabs.Trigger
+			>
+		</Tabs.List>
+	</Tabs.Root>
 
-			<div>
-				<Input type="text" placeholder="検索" class="min-w-52" bind:value={searchInputValue} />
+	<div>
+		<Input type="text" placeholder="キーワード検索" class="min-w-52" bind:value={searchInputValue} />
 
-				<div class="my-2 flex justify-between">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							<Button variant="outline">{sortByVal}</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content class="">
-							<DropdownMenu.RadioGroup bind:value={sortByVal}>
-								<DropdownMenu.RadioItem value="公開日順"
-									>最新の公開日から表示</DropdownMenu.RadioItem
-								>
-								<DropdownMenu.RadioItem value="更新日順"
-									>最新の更新日から表示</DropdownMenu.RadioItem
-								>
-							</DropdownMenu.RadioGroup>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
+		<div class="my-2 flex justify-between">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					<Button variant="outline">{sortByVal}</Button>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content class="">
+					<DropdownMenu.RadioGroup bind:value={sortByVal}>
+						<DropdownMenu.RadioItem value="公開日順">最新の公開日から表示</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="更新日順">最新の更新日から表示</DropdownMenu.RadioItem>
+					</DropdownMenu.RadioGroup>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 
-				</div>
-			</div>
+			<!-- <Button size="sm" variant="outline" aria-label="Filter">
+				<ListFilter />
+			</Button> -->
 		</div>
-	</div>
-	<div class="grid-cols-12 md:grid-cols-6">
-		<BookmarkCounter />
-	</div>
-</div> -->
-
-<div class="grid grid-cols-12 gap-4">
-	<!-- Search Box: Full width on mobile, left half on md+ -->
-	<div class="col-span-12 md:col-span-6">
-		<div id="searchbox" class="flex flex-col items-center gap-2">
-			<Tabs.Root bind:value={activeTab}>
-				<Tabs.List>
-					<Tabs.Trigger onclick={() => handleTabChange('ALL')} value="ALL" class="min-w-16">
-						ALL
-					</Tabs.Trigger>
-					<Tabs.Trigger
-						onclick={() => handleTabChange('開発ログ')}
-						value="開発ログ"
-						class="min-w-16"
-					>
-						開発ログ
-					</Tabs.Trigger>
-					<Tabs.Trigger
-						onclick={() => handleTabChange('エッセイ')}
-						value="エッセイ"
-						class="min-w-16"
-					>
-						エッセイ
-					</Tabs.Trigger>
-				</Tabs.List>
-			</Tabs.Root>
-
-			<div>
-				<Input type="text" placeholder="検索" class="min-w-52" bind:value={searchInputValue} />
-
-				<div class="my-2 flex justify-between">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							<Button variant="outline">{sortByVal}</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content>
-							<DropdownMenu.RadioGroup bind:value={sortByVal}>
-								<DropdownMenu.RadioItem value="公開日順"
-									>最新の公開日から表示</DropdownMenu.RadioItem
-								>
-								<DropdownMenu.RadioItem value="更新日順"
-									>最新の更新日から表示</DropdownMenu.RadioItem
-								>
-							</DropdownMenu.RadioGroup>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-					<Button size="sm" variant="outline" aria-label="Filter">
-						<ListFilter />
-					</Button>
-				</div>
-			</div>
+		<div class="flex items-center space-x-2 mb-2">
+			<Switch id="bookmark" bind:checked={filterBookmarks} disabled={!userMgr?.user}/>
+			<Label for="bookmark">ブックマークした記事だけ</Label>
 		</div>
-	</div>
-
-	<!-- Bookmark Counter: Full width on mobile, right half on md+ -->
-	<div class="col-span-12 md:col-span-6">
-		<BookmarkCounter />
 	</div>
 </div>
 

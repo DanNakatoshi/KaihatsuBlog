@@ -1,4 +1,4 @@
-<script lang="ts">
+<script >
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
     import { Bookmark } from 'lucide-svelte';
