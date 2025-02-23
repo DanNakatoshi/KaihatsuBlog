@@ -19,4 +19,9 @@
 	});
 </script>
 
-<p>Processing login...</p>
+<div class="flex items-center justify-center h-screen">
+	<p class="px-2 text-center">
+		ログインに成功しました。<br class="sm:hidden">
+		前のページにリダイレクトしています…
+	</p>
+</div>

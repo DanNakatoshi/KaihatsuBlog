@@ -3,10 +3,9 @@
 	import { Separator } from '$lib/components/ui/separator';
 
 	// ICONS
-	import { Menu, Bell } from 'lucide-svelte';
+	import { Menu, Bell, User } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
-	import { User } from 'lucide-svelte';
 
 	// Theme color switcher
 	import { toggleMode } from 'mode-watcher';
@@ -22,6 +21,8 @@
 	// Google Auth
 	import { browser } from '$app/environment';
 	import { userMgr } from '$lib/store/userData.svelte.js';
+
+	// components
 	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
 
 	// let user = $state(userMgr?.user || null);
@@ -74,6 +75,8 @@
 		<div class="flex items-center gap-2">
 			{#if userMgr?.user}
 				<Button variant="outline" size="icon" onclick={() => goto('/account')}><User /></Button>
+			{:else}
+				<Button variant="outline" size="icon"><Bell /></Button>
 			{/if}
 			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
 				<Sun

@@ -21,7 +21,7 @@
 {#if userMgr?.user}
 	<button onclick={handleBookmark} aria-label="Toggle Bookmark">
 		<Bookmark
-			class="text-current transition-all duration-200"
+			class="text-primary transition-all duration-200"
 			style="fill: {isBookmarked ? 'currentColor' : 'none'};"
 		/>
 	</button>
