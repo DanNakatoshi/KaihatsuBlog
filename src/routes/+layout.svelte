@@ -7,7 +7,8 @@
 	// Shadcn
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Button } from '$lib/components/ui/button';
-	import { Toaster } from "$lib/components/ui/sonner/index.js";
+	import { Toaster } from '$lib/components/ui/sonner/index.js';
+	import { toast } from 'svelte-sonner';
 
 	// Svelte
 	import { goto, afterNavigate, beforeNavigate } from '$app/navigation';
@@ -19,8 +20,11 @@
 	import { supabase } from '$lib/api/supabaseClient';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
+	// Icon
+
 	// Components
 	import LoginPopup from '$lib/components/ui/custom-google-login/LoginPopup.svelte';
+	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
 
 	let { children, data } = $props();
 
@@ -30,13 +34,14 @@
 
 	let isOptedIn = $state(false);
 	let gtagReady = $state(false);
-	let isNavigating = $state(false); // ページ遷移中の状態を管理
+	let loadingToastId = $state(null);
 
 	// Initialize Google Analytics in the browser
 	onMount(async () => {
-		// ページ遷移が始まったら読み込み状態を有効にする
 		beforeNavigate(() => {
-			isNavigating = true;
+			toast('ページを読み込んでいます...', {
+				icon: LoadingIcon
+			});
 		});
 
 		if (typeof window !== 'undefined') {
@@ -90,26 +95,20 @@
 			if (!data.session) {
 				console.warn('❌ No session found, forcing extraction from URL.');
 				// await userMgr.extractSessionFromUrl();
-				console.log();
 			} else {
-				console.log('✅ Session retrieved:', data.session);
+				// console.log('✅ Session retrieved:', data.session);
 				await userMgr.fetchUser();
 			}
 
-			// userMgr.fetchUser();
-
-			// userMgr.fetchBookmarks();
 		}
 	});
 
-	// // ページ遷移が完了したら読み込み状態を無効にする
-	// afterNavigate(() => {
-	// 	isNavigating = false;
-	// });
-
 	// Track navigation
 	afterNavigate((navigation) => {
-		isNavigating = false;
+		if (loadingToastId) {
+			toast.dismiss(loadingToastId);
+			loadingToastId = null;
+		}
 
 		if (gtagReady && isOptedIn) {
 			window.gtag('config', 'G-63G83HJJ0L', {
@@ -146,29 +145,9 @@
 			});
 		}
 	}
-
-
-
 </script>
 
-
 <div class="mb-4 sm:container">
-	<!-- 読み込み中のアイコン -->
-	{#if isNavigating}
-		<div
-			class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50"
-			aria-live="polite"
-			role="status"
-		>
-			<div class="flex flex-col items-center">
-				<div
-					class="h-16 w-16 animate-spin rounded-full border-4 border-white border-t-transparent"
-				></div>
-				<p class="mt-4 text-white">ページを読み込んでいます...</p>
-			</div>
-		</div>
-	{/if}
-
 	<Header />
 	<div class="">
 		{@render children(data)}
@@ -176,7 +155,6 @@
 </div>
 
 <Toaster position="bottom-left" />
-
 
 <Drawer.Root
 	bind:open={privacyDrawerManager.isDrawerOpen}
@@ -204,16 +182,3 @@
 	</Drawer.Content>
 </Drawer.Root>
 
-
-
-<style>
-	/* アニメーションの速度 */
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-	.animate-spin {
-		animation: spin 1s linear infinite;
-	}
-</style>

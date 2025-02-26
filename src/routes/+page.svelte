@@ -1,4 +1,4 @@
-<script >
+<script>
 	// Chadcn
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -21,6 +21,8 @@
 
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
+	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
+
 	// import BookmarkCounter from '$lib/components/ui/custom-bookmark-counter/BookmarkCounter.svelte';
 
 	let { data } = $props();
@@ -172,7 +174,12 @@
 	</Tabs.Root>
 
 	<div>
-		<Input type="text" placeholder="キーワード検索" class="min-w-52" bind:value={searchInputValue} />
+		<Input
+			type="text"
+			placeholder="キーワード検索"
+			class="min-w-52"
+			bind:value={searchInputValue}
+		/>
 
 		<div class="my-2 flex justify-between">
 			<DropdownMenu.Root>
@@ -191,8 +198,8 @@
 				<ListFilter />
 			</Button> -->
 		</div>
-		<div class="flex items-center space-x-2 mb-2">
-			<Switch id="bookmark" bind:checked={filterBookmarks} disabled={!userMgr?.user}/>
+		<div class="mb-2 flex items-center space-x-2">
+			<Switch id="bookmark" bind:checked={filterBookmarks} disabled={!userMgr?.user} />
 			<Label for="bookmark">ブックマークした記事だけ</Label>
 		</div>
 	</div>
@@ -211,6 +218,6 @@
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
 	{#if isLoading}
-		<span>読込中...</span>
+		<LoadingIcon />
 	{/if}
 </div>

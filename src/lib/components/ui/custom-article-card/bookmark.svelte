@@ -19,11 +19,12 @@
 <!-- {isBookmarked} -->
 
 {#if userMgr?.user}
-	<button onclick={handleBookmark} aria-label="Toggle Bookmark">
+	<button onclick={handleBookmark} aria-label="Toggle Bookmark" class="pl-2">
 		<Bookmark
 			class="text-primary transition-all duration-200"
 			style="fill: {isBookmarked ? 'currentColor' : 'none'};"
-		/>
+			size={28}
+			/>
 	</button>
 {:else}
 	<LoginPopup />

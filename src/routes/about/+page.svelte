@@ -1,6 +1,10 @@
 <script>
 	// Component
 	import Bio from '$lib/components/about/Bio.svelte';
+
+	// Chadcn
+	import * as Card from '$lib/components/ui/card/index.js';
+
 	let { data } = $props();
 
 	let about = data.about;
@@ -29,14 +33,18 @@
 	<meta name="twitter:image" content="https://asameshicode.com/static/twitter-image-about.png" />
 </svelte:head>
 
+<Card.Root>
+	<Card.Header>
+		<Card.Title>ABOUT</Card.Title>
+		<!-- <Card.Description>Card Description</Card.Description> -->
+	</Card.Header>
+	<Card.Content>
+		{@html content}
+	</Card.Content>
+</Card.Root>
 
-
-
-<div class="md:container">
-	<div class="flex justify-start p-2">
-		<h1>ABOUT</h1>
-	</div>
-	<div class=" mb-4 md:container">{@html content}</div>
-
+<div class="mt-2">
 	<Bio />
 </div>
+
+
