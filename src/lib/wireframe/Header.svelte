@@ -74,9 +74,9 @@
 
 		<div class="flex items-center gap-2">
 			{#if userMgr?.user}
-				<Button variant="outline" size="icon" onclick={() => goto('/account')}><User /></Button>
+				<Button variant="outline" size="icon" onclick={() => goto('/account')} aria-label="Account"><User /></Button>
 			{:else}
-				<Button variant="outline" size="icon"><Bell /></Button>
+				<Button variant="outline" size="icon" aria-label="Notification"><Bell /></Button>
 			{/if}
 			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
 				<Sun
@@ -99,6 +99,7 @@
 			variant="ghost"
 			size="sm"
 			class="absolute right-2 top-2 rounded-full"
+			aria-label="close menu"
 			onclick={closeMenu}><X size="12" strokeWidth={6} /></Button
 		>
 		<h2 class="text-lg font-semibold">Menu</h2>

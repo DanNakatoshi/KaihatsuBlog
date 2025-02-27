@@ -31,34 +31,35 @@
 	articleMgr.setArticleData(data.posts);
 
 	let isOptedIn = $state(false);
-	let gtagReady = $state(false);
-	let loadingToastId = $state(null);
+	let gtagReady = false;
+	let loadingToastId = null;
 
 	onMount(async () => {
-		// Check if the user has previously granted consent
+		// Fetch user session (only if not already loaded)
+		const { data, error } = await supabase.auth.getSession();
+		if (data.session) {
+			await userMgr.fetchUser();
+		}
+
+		// Check previous user consent
 		const consentGranted = localStorage.getItem('consentGranted');
 
 		if (consentGranted === 'true') {
 			isOptedIn = true;
 			privacyDrawerManager.setDrawerState(false);
-			loadGoogleAnalytics(); // Load GA only if user previously consented
+			loadGoogleAnalytics();
 		} else if (consentGranted === 'false') {
 			isOptedIn = false;
 			privacyDrawerManager.setDrawerState(false);
 		} else {
-			privacyDrawerManager.setDrawerState(true); // Show consent prompt
-		}
-
-		// Fetch Supabase session only if the user is not already logged in
-		const { data, error } = await supabase.auth.getSession();
-		if (data.session) {
-			await userMgr.fetchUser();
+			// First-time visitors see the consent drawer
+			privacyDrawerManager.setDrawerState(true);
 		}
 	});
 
-	// Function to load GA after consent
+	// Load GA dynamically after user consent
 	function loadGoogleAnalytics() {
-		if (typeof window === 'undefined') return;
+		if (gtagReady || typeof window === 'undefined') return; // Prevent duplicate loading
 
 		window.dataLayer = window.dataLayer || [];
 		function gtag() {
@@ -66,7 +67,6 @@
 		}
 		window.gtag = gtag;
 
-		// Set initial consent state
 		gtag('consent', 'default', {
 			ad_storage: 'denied',
 			analytics_storage: 'denied',
@@ -75,31 +75,32 @@
 			wait_for_update: 500
 		});
 
-		// Create and load GA script dynamically
 		const script = document.createElement('script');
 		script.defer = true;
 		script.src = 'https://www.googletagmanager.com/gtag/js?id=G-63G83HJJ0L';
 		document.head.appendChild(script);
 
-		// Initialize GA after script loads
 		script.onload = () => {
 			gtag('js', new Date());
 			gtag('config', 'G-63G83HJJ0L', {
-				page_path: window.location.pathname
+				page_path: window.location.pathname,
+				client_storage: 'none',
+				cookie_flags: 'secure;samesite=none'
 			});
 			gtagReady = true;
 		};
 	}
 
-	// Handle consent granted
+	// Handle Consent Granted
 	function handleConsentGranted() {
-		isOptedIn = true;
-		privacyDrawerManager.setDrawerState(false);
-		localStorage.setItem('consentGranted', 'true');
-
-		if (!gtagReady) {
+		if (!isOptedIn) {
+			isOptedIn = true;
+			localStorage.setItem('consentGranted', 'true');
+			privacyDrawerManager.setDrawerState(false);
 			loadGoogleAnalytics();
-		} else {
+		}
+
+		if (gtagReady) {
 			window.gtag('consent', 'update', {
 				ad_storage: 'granted',
 				analytics_storage: 'granted',
@@ -109,11 +110,11 @@
 		}
 	}
 
-	// Handle consent denied
+	// Handle Consent Denied
 	function handleConsentDenied() {
 		isOptedIn = false;
-		privacyDrawerManager.setDrawerState(false);
 		localStorage.setItem('consentGranted', 'false');
+		privacyDrawerManager.setDrawerState(false);
 
 		if (gtagReady) {
 			window.gtag('consent', 'update', {
@@ -125,7 +126,7 @@
 		}
 	}
 
-	// Track navigation after user consents
+	// Track navigation only if user has consented
 	afterNavigate((navigation) => {
 		if (loadingToastId) {
 			toast.dismiss(loadingToastId);
@@ -138,6 +139,7 @@
 			});
 		}
 	});
+
 </script>
 
 <!-- Layout -->

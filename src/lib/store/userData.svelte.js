@@ -1,9 +1,9 @@
-import { browser } from '$app/environment'; 
+// import { browser } from '$app/environment'; 
 import { supabase } from '$lib/api/supabaseClient';
 import { toast } from "svelte-sonner";
 
 function createUserData() {
-    if (!browser) return null; 
+    // if (!browser) return null; 
 
     let user = $state(null);
     let session = $state(null);
@@ -120,13 +120,6 @@ function createUserData() {
         bookmarks = [];
     }
 
-    // ✅ Automatically update user session when authentication state changes
-    // supabase.auth.onAuthStateChange((event, sessionData) => {
-    //     // console.log(`🔄 Auth event: ${event}`);
-    //     user = sessionData?.user || null;
-    //     session = sessionData || null;
-    // });
-
     supabase.auth.onAuthStateChange((event, sessionData) => {
         user = sessionData?.user || null;
         session = sessionData || null;
@@ -191,4 +184,4 @@ function createUserData() {
 }
 
 // ✅ Create only on the client side
-export const userMgr = browser ? createUserData() : null;
+export const userMgr = createUserData()
