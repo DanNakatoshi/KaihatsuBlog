@@ -158,7 +158,14 @@
 	<div>{@render children(data)}</div>
 </div>
 
-<Toaster position="bottom-left" />
+<!-- Toaster for mobile (hidden on md and larger) -->
+<Toaster 
+  position="bottom-left" 
+  style="bottom: 4rem;"
+/>
+
+
+
 
 <!-- Privacy Consent Drawer -->
 <Drawer.Root

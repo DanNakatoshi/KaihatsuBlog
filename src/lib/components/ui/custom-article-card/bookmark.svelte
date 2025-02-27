@@ -4,7 +4,7 @@
 	import LoginPopup from '$lib/components/ui/custom-google-login/LoginPopup.svelte';
 	import { onMount } from 'svelte';
 
-	let { postId } = $props();
+	let { postId, size = '28' } = $props();
 	let isBookmarked = $derived(userMgr?.bookmarks?.includes(postId) ?? false);
 
 	async function handleBookmark() {
@@ -23,7 +23,7 @@
 		<Bookmark
 			class="text-primary transition-all duration-200"
 			style="fill: {isBookmarked ? 'currentColor' : 'none'};"
-			size={28}
+			size={size}
 			/>
 	</button>
 {:else}

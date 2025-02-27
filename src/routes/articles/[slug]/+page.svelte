@@ -4,7 +4,7 @@
 	import '$lib/styles/ToC.css';
 
 	// Icons
-	import { TableOfContents } from 'lucide-svelte';
+	import { TableOfContents, Home, User } from 'lucide-svelte';
 
 	// Highlight.js
 	import 'highlight.js/styles/monokai.css';
@@ -31,6 +31,7 @@
 	// Svelte
 	import { onMount, tick, onDestroy } from 'svelte'; // Import `tick`
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	// Components
 	import PublishInfoBadge from '$lib/components/ui/custom-article-card/publish-info-badge.svelte';
@@ -51,7 +52,17 @@
 	let isOpenDrawer = $state(false);
 	let observer;
 
-	function generateTableOfContents(articleContent) {
+// Mobile Menu
+function openMobileToc() {
+    isOpenDrawer = true;
+	console.log(isOpenDrawer)
+}
+
+function handleClick(path) {
+    goto(path);
+}
+
+function generateTableOfContents(articleContent) {
 		if (typeof articleContent !== 'string' || !articleContent.trim()) {
 			console.warn('Invalid article content provided');
 			return [];
@@ -65,7 +76,7 @@
 			text: heading.textContent.trim(),
 			level: parseInt(heading.tagName[1], 10)
 		}));
-	}
+}
 
 function observeHeadings() {
     if (observer) {
@@ -360,12 +371,6 @@ function observeHeadings() {
 
 <div class="block md:hidden">
 	<Drawer.Root bind:open={isOpenDrawer}>
-		<div class="fixed bottom-5 left-1/2 transform -translate-x-1/2">
-			<Drawer.Trigger class="px-4 py-2 rounded-full bg-primary text-white shadow-lg">
-				<TableOfContents aria-label="Table of Contents"/>
-			</Drawer.Trigger>
-		</div>
-
 		<Drawer.Content>
 			<Drawer.Header>
 				<Drawer.Title class="flex justify-center">目次ナビ</Drawer.Title>
@@ -377,13 +382,38 @@ function observeHeadings() {
 				{:else}
 					<p>No Table of Contents available.</p>
 				{/if}
-
-				<!-- <Drawer.Close>とじる</Drawer.Close> -->
 			</Drawer.Footer>
 		</Drawer.Content>
 	</Drawer.Root>
 </div>
 
+
+<!-- Mobile Menu -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-background border-t border-border flex justify-around p-2 shadow-md">
+	<!-- Home -->
+	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/')} aria-label="home">
+	  <Home size="20" />
+	  <span class="text-xs">ホーム</span>
+	</Button>
+  
+	<!-- Profile -->
+	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/account')} aria-label="my page">
+	  <User size="20" />
+	  <span class="text-xs">マイページ</span>
+	</Button>
+  
+	<!-- Table of Contents -->
+	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={()=> openMobileToc()} aria-label="Table of contents">
+	  <TableOfContents size="20" />
+	  <span class="text-xs">目次</span>
+	</Button>
+  
+	<!-- Bookmark -->
+	 <div class="flex flex-col items-center gap-1 transition-all">
+		 <Bookmark size='20' postId={post.id}/>
+		 <span class="text-xs">ブクマ</span>
+	</div>
+  </div>
 
 
 
