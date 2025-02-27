@@ -1,6 +1,7 @@
 <script>
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import { goto } from '$app/navigation';
 
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
@@ -15,6 +16,12 @@
 	function openModal() {
 		isOpen = true;
 	}
+
+	$effect(() => {
+		if (!userMgr?.user) {
+			goto('/');
+		}
+	});
 </script>
 
 <div>
@@ -22,6 +29,13 @@
 	<StatusCards />
 
 	<div class="flex justify-end gap-2 p-2">
+		<Button
+			onclick={() => {
+				userMgr.signOut();
+			}}
+		>
+			<span>ログアウト</span>
+		</Button>
 		<Button variant="destructive" onclick={openModal}>アカウントを削除</Button>
 	</div>
 </div>

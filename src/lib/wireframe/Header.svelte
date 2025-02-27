@@ -142,7 +142,7 @@
 						variant="link"
 						onclick={() => {
 							userMgr.signOut();
-							window.location.reload();
+							closeMenu();
 						}}
 						class="w-full max-w-full"
 					>

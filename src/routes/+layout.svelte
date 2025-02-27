@@ -20,7 +20,6 @@
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
 	// Components
-	import LoginPopup from '$lib/components/ui/custom-google-login/LoginPopup.svelte';
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
 
 	let { children, data } = $props();

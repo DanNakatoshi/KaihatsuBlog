@@ -20,7 +20,7 @@
 	}
 </script>
 
-<Card.Root class=" ">
+<Card.Root >
 	<Card.Header>
 		<Card.Title class="flex justify-between items-start gap-2">
 			<button
@@ -29,7 +29,9 @@
 			>
 				<span class="font-semibold">{post?.title?.rendered}</span>
 			</button>
-			<Bookmark postId={post?.id}/>
+			<div class="">
+				<Bookmark postId={post?.id}/>
+			</div>
 		</Card.Title>
 		<div class="pt-2">
 			<PublishInfoBadge date={post?.date} modified={post?.modified} />

@@ -1,4 +1,5 @@
 <script>
-</script>
+	// import { goto } from '$app/navigation';
 
-<h1>Hello</h1>
+    // goto('/');
+</script>
