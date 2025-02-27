@@ -11,7 +11,7 @@
 	import { toast } from 'svelte-sonner';
 
 	// Svelte
-	import { goto, afterNavigate } from '$app/navigation';
+	import { goto, afterNavigate, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	// Store
@@ -63,7 +63,7 @@
 
 		window.dataLayer = window.dataLayer || [];
 		function gtag() {
-			window.dataLayer.push(arguments);
+			dataLayer.push(arguments);
 		}
 		window.gtag = gtag;
 
@@ -84,8 +84,10 @@
 			gtag('js', new Date());
 			gtag('config', 'G-63G83HJJ0L', {
 				page_path: window.location.pathname,
-				client_storage: 'none',
-				cookie_flags: 'secure;samesite=none'
+				cookie_domain: 'auto', // ✅ ファーストパーティ Cookie にする
+				cookie_flags: 'Secure', // ✅ Secure のみ設定
+				allow_google_signals: false, // ✅ Google Signals の無効化
+				anonymize_ip: true // ✅ IPアドレスの匿名化
 			});
 			gtagReady = true;
 		};
@@ -100,7 +102,7 @@
 			loadGoogleAnalytics();
 		}
 
-		if (gtagReady) {
+		if (gtagReady && window.gtag) {
 			window.gtag('consent', 'update', {
 				ad_storage: 'granted',
 				analytics_storage: 'granted',
@@ -116,7 +118,7 @@
 		localStorage.setItem('consentGranted', 'false');
 		privacyDrawerManager.setDrawerState(false);
 
-		if (gtagReady) {
+		if (gtagReady && window.gtag) {
 			window.gtag('consent', 'update', {
 				ad_storage: 'denied',
 				analytics_storage: 'denied',
@@ -126,6 +128,13 @@
 		}
 	}
 
+	beforeNavigate(() => {
+		loadingToastId = toast("ページを読み込んでいます...", {
+			duration: Infinity, // 手動で消すまで表示
+			icon: LoadingIcon
+		});
+	});
+
 	// Track navigation only if user has consented
 	afterNavigate((navigation) => {
 		if (loadingToastId) {
@@ -133,12 +142,13 @@
 			loadingToastId = null;
 		}
 
-		if (gtagReady && isOptedIn) {
+		if (gtagReady && isOptedIn && window.gtag) {
 			window.gtag('config', 'G-63G83HJJ0L', {
 				page_path: navigation.to?.pathname || window.location.pathname
 			});
 		}
 	});
+
 
 </script>
 
@@ -162,12 +172,11 @@
 			<Drawer.Description>
 				Google Analytics を使用して、以下の情報を収集・分析します:
 				<ul class="mt-2 list-inside list-disc text-left">
-					<li>ウェブサイトの利用状況（ページビュー、滞在時間など）</li>
-					<li>デバイス情報（ブラウザ、OSなど）</li>
-					<li>IPアドレスに基づく地域情報（匿名化済み）</li>
-					<li>広告のパフォーマンスデータ（クリック数、コンバージョンなど）</li>
+					<li>ページビュー、滞在時間などのサイト利用状況</li>
+					<li>デバイス情報（ブラウザ、OS）</li>
+					<li>匿名化された IP アドレスに基づく地域情報</li>
 				</ul>
-				このデータは、サービスの改善およびコンテンツの最適化に使用されます。同意しない場合は、これらのデータは収集されません。
+				このデータは、サイトの改善やコンテンツ最適化のために使用されます。 同意しない場合、これらのデータは収集されません。
 			</Drawer.Description>
 		</Drawer.Header>
 		<Drawer.Footer>
