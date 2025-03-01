@@ -39,7 +39,7 @@
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import Bio from '$lib/components/about/Bio.svelte';
 	import Bookmark from '$lib/components/ui/custom-article-card/bookmark.svelte';
-
+	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -419,6 +419,20 @@ function observeHeadings() {
 	</div>
  </div> -->
 
+<!-- +page.svelte (Article Page) -->
+
+<MobileMenu articleNavButtons={articleNavButtons}/>
+{#snippet articleNavButtons()}
+	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={()=> openMobileToc()} aria-label="Table of contents">
+	<TableOfContents size="20" />
+	<span class="text-xs">目次</span>
+  </Button>
+
+   
+  <div class="flex flex-col items-center gap-1 transition-all" aria-label="Bookmark">
+	  <Bookmark size="20" postId={post.id} isCircleBtn={true} hasShowLable={true} isOpenModal={isOpenLoginModal}/>
+  </div>
+{/snippet}
 
 
 

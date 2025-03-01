@@ -3,7 +3,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 
 	// ICONS
-	import { Menu, Bell, User, X } from 'lucide-svelte';
+	import { Menu, X } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 
@@ -71,11 +71,6 @@
 		</Button>
 
 		<div class="flex items-center gap-2">
-			{#if userMgr?.user}
-				<Button variant="outline" size="icon" onclick={() => goto('/account')} aria-label="Account"><User /></Button>
-			{:else}
-				<Button variant="outline" size="icon" aria-label="Notification"><Bell /></Button>
-			{/if}
 			<Button onclick={toggleTheme} variant="outline" size="icon" aria-label="Toggle theme">
 				<Sun
 					class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"

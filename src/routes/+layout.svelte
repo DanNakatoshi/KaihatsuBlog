@@ -13,6 +13,7 @@
 	// Svelte
 	import { goto, afterNavigate, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	// Store
 	import { privacyDrawerManager } from '$lib/store/pageContorol.svelte';
@@ -32,6 +33,8 @@
 	let isOptedIn = $state(false);
 	let gtagReady = false;
 	let loadingToastId = null;
+
+	let isOnArticlesPage = $state(false);
 
 	onMount(async () => {
 		// Fetch user session (only if not already loaded)
@@ -127,6 +130,10 @@
 		}
 	}
 
+	$effect(() => {
+		isOnArticlesPage = $page.url.pathname.startsWith('/articles/');
+	});
+
 	beforeNavigate(() => {
 		loadingToastId = toast('ページを読み込んでいます...', {
 			duration: Infinity,
@@ -163,7 +170,9 @@
 <div class="mb-4 sm:container">
 	<Header />
 	<div class="pb-16">{@render children(data)}</div>
+	{#if !isOnArticlesPage}
 	<MobileMenu />
+	{/if}
 </div>
 
 <!-- Toaster for mobile (hidden on md and larger) -->
