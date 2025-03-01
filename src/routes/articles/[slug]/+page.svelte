@@ -54,9 +54,6 @@
 	let observer;
 	let isOpenLoginModal = $state(false);
 
-	let isUserLoaded = $derived(userMgr?.user !== undefined); // Ensures userMgr is initialized
-	let isDisabled = $derived(!userMgr?.user); // Only compute once userMgr is ready
-
 
 // Mobile Menu
 function openMobileToc() {
@@ -67,13 +64,6 @@ function openMobileToc() {
 function handleClick(path) {
     goto(path);
 }
-
-function handleMyPageBtn() {
-    if (!isDisabled) {
-      goto('/account');
-    }
-  }
-
 
 function generateTableOfContents(articleContent) {
 		if (typeof articleContent !== 'string' || !articleContent.trim()) {
@@ -224,6 +214,7 @@ function observeHeadings() {
 	$effect(() => {
 		const currentSlug = $page.params.slug;
 		const currentSeriesId = $page.url.searchParams.get('seriesId');
+		userMgr.setNowReadingArticle(currentSlug, currentSeriesId);
 
 		if (urlSlug !== currentSlug || urlSeriesId !== currentSeriesId) {
 			urlSlug = currentSlug;
@@ -256,8 +247,12 @@ function observeHeadings() {
 
 			
 			highlightSyntax();
+
+			// userMgr.setNowReadingArticle($page.params.slug, $page.url.searchParams.get('seriesId'));
+			// console.log(userMgr.getNowReadingArticle())
 		}
 		observeHeadings();
+
 	});
 
 	onDestroy(() => {
@@ -402,31 +397,27 @@ function observeHeadings() {
 
 
 <!-- Mobile Menu -->
-<div class="md:hidden fixed bottom-0 left-0 w-full bg-background border-t border-border flex justify-around p-2 shadow-md items-center">
-	<!-- Home -->
+<!-- <div class="md:hidden fixed bottom-0 left-0 w-full bg-background border-t border-border flex justify-around p-2 shadow-md items-center">
 	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/')} aria-label="home">
 	  <Home size="20" />
 	  <span class="text-xs">ホーム</span>
 	</Button>
   
-	<!-- Profile -->
-	<Button disabled={isDisabled && isUserLoaded}  variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={handleMyPageBtn} aria-label="my page">
+	<Button  variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/account')} aria-label="my page">
 	  <User size="20" />
 	  <span class="text-xs">ﾏｲﾍﾟｰｼﾞ</span>
 	</Button>
   
-	<!-- Table of Contents -->
 	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={()=> openMobileToc()} aria-label="Table of contents">
 	  <TableOfContents size="20" />
 	  <span class="text-xs">目次</span>
 	</Button>
   
-	<!-- Bookmark -->
 	 
 	<div class="flex flex-col items-center gap-1 transition-all" aria-label="Bookmark">
 		<Bookmark size="20" postId={post.id} isCircleBtn={true} hasShowLable={true} isOpenModal={isOpenLoginModal}/>
 	</div>
- </div>
+ </div> -->
 
 
 

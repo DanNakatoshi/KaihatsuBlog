@@ -90,8 +90,6 @@ function createUserData() {
     
 
     /*END BOOKMARK */
-
-
     async function signInWithGoogle() {
         const previousUrl = window.location.href;
         localStorage.setItem('previousPage', previousUrl);
@@ -164,7 +162,31 @@ function createUserData() {
         }
     }
     
+    // MobileMenu Functions
+    function setNowReadingArticle(slug, seriesId) {
+        if (!slug) return;
+        
+        const nowReadingData = {
+            slug,
+            seriesId: seriesId || null // Store `null` if seriesId is not provided
+        };
     
+        localStorage.setItem("nowReading", JSON.stringify(nowReadingData));
+        console.log(`✅ Now reading set: ${JSON.stringify(nowReadingData)}`);
+    }
+    
+    function getNowReadingArticle() {
+        const data = localStorage.getItem("nowReading");
+        return data ? JSON.parse(data) : null;
+    }
+    
+    function clearNowReadingArticle() {
+        localStorage.removeItem("nowReading");
+        console.log("✅ Now reading cleared");
+    }
+    
+
+
     
     return {
         get user() {
@@ -180,6 +202,9 @@ function createUserData() {
         toggleBookmark,
         // ACCOUNT
         deleteAccount,
+        setNowReadingArticle,
+        getNowReadingArticle,
+        clearNowReadingArticle,
     };
 }
 

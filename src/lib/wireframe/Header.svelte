@@ -3,7 +3,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 
 	// ICONS
-	import { Menu, Bell, User } from 'lucide-svelte';
+	import { Menu, Bell, User, X } from 'lucide-svelte';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
 
@@ -13,13 +13,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ICON_SIZES } from '$lib/config.js';
 	import { goto } from '$app/navigation';
-	import { X } from 'lucide-svelte';
 
 	// Svelte
 	import { onMount } from 'svelte';
 
 	// Google Auth
-	import { browser } from '$app/environment';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
 	// components

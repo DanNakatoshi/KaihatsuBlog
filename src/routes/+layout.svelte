@@ -21,11 +21,11 @@
 
 	// Components
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
-
+	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
 	let { children, data } = $props();
 
 	// Set initial data for tags, series, and articles
-	tagMgr.setTagsData(data.tags);
+	// tagMgr.setTagsData(data.tags);
 	seriesMgr.setSeriesData(data.series);
 	articleMgr.setArticleData(data.posts);
 
@@ -128,17 +128,27 @@
 	}
 
 	beforeNavigate(() => {
-		loadingToastId = toast("ページを読み込んでいます...", {
-			duration: Infinity, // 手動で消すまで表示
+		loadingToastId = toast('ページを読み込んでいます...', {
+			duration: Infinity,
 			icon: LoadingIcon
 		});
+
+		// console.log('beforeNavigate triggered');
+		// console.log('Toast ID set:', loadingToastId);
 	});
 
 	// Track navigation only if user has consented
 	afterNavigate((navigation) => {
-		if (loadingToastId) {
+		// console.log('afterNavigate triggered', navigation);
+		// console.log('Dismissing toast with ID:', loadingToastId);
+
+		if (loadingToastId !== null && typeof loadingToastId !== 'undefined') {
 			toast.dismiss(loadingToastId);
+			// console.log('Toast dismissed successfully');
 			loadingToastId = null;
+		} else {
+			// console.warn('Invalid toast ID, dismissing all toasts instead.');
+			toast.dismiss();
 		}
 
 		if (gtagReady && isOptedIn && window.gtag) {
@@ -147,24 +157,17 @@
 			});
 		}
 	});
-
-
 </script>
 
 <!-- Layout -->
 <div class="mb-4 sm:container">
 	<Header />
-	<div>{@render children(data)}</div>
+	<div class="pb-16">{@render children(data)}</div>
+	<MobileMenu />
 </div>
 
 <!-- Toaster for mobile (hidden on md and larger) -->
-<Toaster 
-  position="bottom-left" 
-  style="bottom: 4rem;"
-/>
-
-
-
+<Toaster position="bottom-left" style="bottom: 4rem;" />
 
 <!-- Privacy Consent Drawer -->
 <Drawer.Root

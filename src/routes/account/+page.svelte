@@ -17,13 +17,10 @@
 		isOpen = true;
 	}
 
-	$effect(() => {
-		if (!userMgr?.user) {
-			goto('/');
-		}
-	});
 </script>
 
+
+{#if userMgr?.user} 
 <div>
 	<!-- <Button variant="destructive">アカウントを削除</Button> -->
 	<StatusCards />
@@ -51,3 +48,8 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
+
+{:else}
+
+roguinnya
+{/if}
