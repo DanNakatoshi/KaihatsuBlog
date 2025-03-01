@@ -48,8 +48,35 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {:else}
-	<div class="flex flex-col gap-2">
-		<p>Googleでサインインしてブックマーク機能やコメント機能を使ってみましょう。</p>
-		<GoogleSigninBtn />
-	</div>
+<div class="flex flex-col gap-4 p-4 ">
+    <h2 class="text-lg font-bold text-center text-primary">🔓 Googleでサインインして、新機能を楽しもう！</h2>
+
+    <p class=" text-sm text-center">
+        ログインすると、便利な機能がどんどん使えるようになります！✨  
+    </p>
+
+    <ul class="space-y-2 text-sm ">
+        <li class="flex items-center gap-2">
+            ✅ <span class="font-semibold">ブックマーク機能</span>
+        </li>
+        <li class="flex items-center gap-2">
+            💬 <span class="font-semibold">コメント機能（準備中）</span> 
+        </li>
+        <li class="flex items-center gap-2">
+            ⭐ <span class="font-semibold">オープンソースに投票（準備中）</span>
+        </li>
+        <li class="flex items-center gap-2">
+            🔑 <span class="font-semibold">メンバー限定記事（準備中）</span> 
+        </li>
+    </ul>
+
+    <p class="text-center text-sm  mt-2">
+        🚀 **今すぐログインして、新機能を体験しよう！** 🎉  
+    </p>
+
+    <div class="flex justify-center">
+        <GoogleSigninBtn class="w-full max-w-xs" />
+    </div>
+</div>
+
 {/if}

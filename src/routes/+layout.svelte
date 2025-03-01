@@ -87,7 +87,7 @@
 			gtag('config', 'G-63G83HJJ0L', {
 				page_path: window.location.pathname,
 				cookie_domain: 'auto', // ✅ ファーストパーティ Cookie にする
-				cookie_flags: 'Secure', // ✅ Secure のみ設定
+				cookie_flags: 'Secure; SameSite=None', 
 				allow_google_signals: false, // ✅ Google Signals の無効化
 				anonymize_ip: true // ✅ IPアドレスの匿名化
 			});

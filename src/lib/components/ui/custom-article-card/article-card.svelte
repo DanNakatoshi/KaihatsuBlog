@@ -1,8 +1,9 @@
 <script>
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	// import { Badge } from "$lib/components/ui/badge/index.js";
+
 	// import { goto } from '$app/navigation';
-	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 	import { Description } from 'formsnap';
 	import { tagMgr, seriesMgr, articleMgr } from '$lib/store/articleData.svelte.js';
@@ -54,8 +55,9 @@
 
 	<Card.Footer class="flex flex-col">
 		{#if post?.series?.length > 0}
-			<span class=" mb-1 px-2 py-0 text-xs font-bold"> シリーズで読む </span>
-			<div class="flex flex-wrap justify-end gap-2">
+			
+			<div class="flex flex-wrap justify-end gap-2 items-center">
+				<span class=" py-0 text-xs font-bold"> 📖シリーズで読む: </span>
 				{#each getSeriesNames(post?.series) as series (series.id)}
 					<button
 						onclick={() => articleMgr.handleReadButton(post?.slug, series?.id)}
