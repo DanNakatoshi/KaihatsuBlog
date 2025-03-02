@@ -64,10 +64,6 @@
 				}
 				return true;
 			})
-			// .sort((a, b) => {
-			// 	const key = sortByVal === '公開日順' ? 'date' : 'modified';
-			// 	return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-			// });
 			.sort((a, b) => {
             if (sortByVal === '人気順') {
                 return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
@@ -196,9 +192,9 @@
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="">
 					<DropdownMenu.RadioGroup bind:value={sortByVal}>
-						<DropdownMenu.RadioItem value="公開日順">最新の公開日から表示</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="更新日順">最新の更新日から表示</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="人気順">人気の記事から表示</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="公開日順">最新の公開日</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="更新日順">最新の更新日</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="人気順">人気の記事</DropdownMenu.RadioItem>
 
 					</DropdownMenu.RadioGroup>
 				</DropdownMenu.Content>
@@ -224,6 +220,9 @@
 		</div>
 	{/each}
 </div>
+
+
+
 
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>

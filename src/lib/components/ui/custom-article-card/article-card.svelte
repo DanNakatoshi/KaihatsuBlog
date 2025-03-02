@@ -15,13 +15,13 @@
 		return seriesIds
 			.map((seriesId) => {
 				const series = seriesMgr.seriesData[seriesId];
-				return series ? { id: series.series_ID, name: series.ser_name } : null; // Returns an object with both id and ser_name
+				return series ? { id: series.series_ID, name: series.ser_name } : null; 
 			})
 			.filter((series) => series !== null); // Filter out null values
 	}
 </script>
 
-<Card.Root >
+<Card.Root class="max-w-96">
 	<Card.Header>
 		<Card.Title class="flex justify-between items-start gap-2">
 			
