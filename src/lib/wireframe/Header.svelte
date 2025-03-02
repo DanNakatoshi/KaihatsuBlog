@@ -102,21 +102,21 @@
 				onclick={() => {
 					goto('/');
 					closeMenu();
-				}}>HOME</Button
+				}}>ホーム</Button
 			>
 			<Button
 				class="w-full max-w-full"
 				onclick={() => {
 					goto('/about');
 					closeMenu();
-				}}>ABOUT</Button
+				}}>サイト紹介</Button
 			>
 			<Button
 				class="w-full max-w-full"
 				onclick={() => {
 					goto('/siteupdates');
 					closeMenu();
-				}}>SITE UPDATES</Button
+				}}>サイト更新情報</Button
 			>
 			<Separator />
 
@@ -128,18 +128,18 @@
 						onclick={() => {
 							goto('/account');
 							closeMenu();
-						}}>マイページ</Button
+						}}>プロフィール</Button
 					>
 
 					<Button
-						variant="link"
+						variant="outline"
 						onclick={() => {
 							userMgr.signOut();
 							closeMenu();
 						}}
 						class="w-full max-w-full"
 					>
-						<span>Logout</span>
+						<span>ログアウト</span>
 					</Button>
 				</div>
 			{:else}
@@ -158,7 +158,7 @@
 					closeMenu();
 				}}
 			>
-				PRIVACY POLICY
+				プライバシーポリシー
 			</Button>
 		</div>
 	</div>

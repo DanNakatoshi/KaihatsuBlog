@@ -52,7 +52,7 @@
 </script>
 
 <div
-	class="fixed bottom-0 left-0 flex w-full items-center justify-around border-t border-border bg-background p-2 shadow-md md:hidden"
+	class="fixed bottom-0 left-1/2 -translate-x-1/2 flex w-full max-w-screen-sm items-center justify-around border border-border bg-background p-2 shadow-lg sm:mb-2 sm:rounded-md"
 >
 	<!-- Home -->
 	<Button
@@ -73,7 +73,7 @@
 		aria-label="my page"
 	>
 		<User size="20" />
-		<span class="text-xs">ﾏｲﾍﾟｰｼﾞ</span>
+		<span class="text-xs">プロフィール</span>
 	</Button>
 
 	{#if !articleNavButtons}

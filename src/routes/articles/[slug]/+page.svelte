@@ -396,30 +396,6 @@ function observeHeadings() {
 </div>
 
 
-<!-- Mobile Menu -->
-<!-- <div class="md:hidden fixed bottom-0 left-0 w-full bg-background border-t border-border flex justify-around p-2 shadow-md items-center">
-	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/')} aria-label="home">
-	  <Home size="20" />
-	  <span class="text-xs">ホーム</span>
-	</Button>
-  
-	<Button  variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={() => handleClick('/account')} aria-label="my page">
-	  <User size="20" />
-	  <span class="text-xs">ﾏｲﾍﾟｰｼﾞ</span>
-	</Button>
-  
-	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={()=> openMobileToc()} aria-label="Table of contents">
-	  <TableOfContents size="20" />
-	  <span class="text-xs">目次</span>
-	</Button>
-  
-	 
-	<div class="flex flex-col items-center gap-1 transition-all" aria-label="Bookmark">
-		<Bookmark size="20" postId={post.id} isCircleBtn={true} hasShowLable={true} isOpenModal={isOpenLoginModal}/>
-	</div>
- </div> -->
-
-<!-- +page.svelte (Article Page) -->
 
 <MobileMenu articleNavButtons={articleNavButtons}/>
 {#snippet articleNavButtons()}
