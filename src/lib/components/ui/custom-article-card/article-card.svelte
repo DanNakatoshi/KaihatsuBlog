@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	// import { Badge } from "$lib/components/ui/badge/index.js";
 
+
 	// import { goto } from '$app/navigation';
 	import { mainCategoryInfo } from '$lib/store/articleData.svelte';
 	import { Description } from 'formsnap';
@@ -19,9 +20,10 @@
 			})
 			.filter((series) => series !== null); // Filter out null values
 	}
+
 </script>
 
-<Card.Root class="max-w-96">
+<Card.Root >
 	<Card.Header>
 		<Card.Title class="flex justify-between items-start gap-2">
 			

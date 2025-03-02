@@ -17,7 +17,7 @@
 	import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
 	// Svelte
-	import { onMount, onDestroy } from 'svelte';
+	import { tick, onMount, onDestroy } from 'svelte';
 
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
@@ -26,6 +26,9 @@
 	// import BookmarkCounter from '$lib/components/ui/custom-bookmark-counter/BookmarkCounter.svelte';
 
 	let { data } = $props();
+	let masonryGrid = $state();
+	let masonryInstance = $state();
+
 	let activeTab = $state('ALL');
 	let sortByVal = $state('公開日順');
 	let searchInputValue = $state('');
@@ -35,6 +38,32 @@
 	let isLoading = $state(false); // Loading indicator
 	let hasMore = $state(true); // Flag to check if more articles can be loaded
 	let isDebounced = false;
+
+	async function initializeMasonry() {
+		await tick();
+		if (typeof window !== 'undefined') {
+			const Masonry = (await import('masonry-layout')).default;
+			masonryInstance = new Masonry('.masonry-grid', {
+				itemSelector: '.masonry-item',
+				columnWidth: '.masonry-sizer',
+				percentPosition: true,
+				gutter: 16
+			});
+		}
+	}
+
+
+	function setupInfiniteScroll() {
+		const observer = new IntersectionObserver((entries) => {
+			if (entries[0].isIntersecting) {
+				loadMoreArticles();
+			}
+		});
+
+		if (loadMoreTrigger) {
+			observer.observe(loadMoreTrigger);
+		}
+	}
 
 	function handleTabChange(newTab) {
 		activeTab = newTab; // Update the active tab
@@ -65,13 +94,13 @@
 				return true;
 			})
 			.sort((a, b) => {
-            if (sortByVal === '人気順') {
-                return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
-            } else {
-                const key = sortByVal === '公開日順' ? 'date' : 'modified';
-                return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-            }
-        });
+				if (sortByVal === '人気順') {
+					return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
+				} else {
+					const key = sortByVal === '公開日順' ? 'date' : 'modified';
+					return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+				}
+			});
 	}
 
 	async function loadMoreArticles() {
@@ -116,21 +145,26 @@
 	let loadMoreTrigger = $state();
 	let observer = $state();
 
-	onMount(() => {
-		// console.log('Observer mounted');
-		observer = new IntersectionObserver((entries) => {
-			if (entries[0].isIntersecting) {
-				// console.log('Load more trigger intersecting');
-				loadMoreArticles();
-			}
-		});
-		if (loadMoreTrigger) {
-			// console.log('Observing loadMoreTrigger element:', loadMoreTrigger);
-			observer?.observe(loadMoreTrigger);
-		}
+	onMount(async () => {
+		await initializeMasonry();
 	});
 
-	onDestroy(() => observer?.disconnect());
+	onDestroy(() => {
+		observer?.disconnect();
+		if (masonryInstance) masonryInstance.destroy();
+
+	});
+
+	$effect(() => {
+		displayedArticles = filterPostsByCategory();
+		setTimeout(() => {
+			if (masonryInstance) {
+				masonryInstance.reloadItems();
+				masonryInstance.layout();
+			}
+		}, 100);
+	});
+
 </script>
 
 <svelte:head>
@@ -195,7 +229,6 @@
 						<DropdownMenu.RadioItem value="公開日順">最新の公開日</DropdownMenu.RadioItem>
 						<DropdownMenu.RadioItem value="更新日順">最新の更新日</DropdownMenu.RadioItem>
 						<DropdownMenu.RadioItem value="人気順">人気の記事</DropdownMenu.RadioItem>
-
 					</DropdownMenu.RadioGroup>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
@@ -211,7 +244,7 @@
 	</div>
 </div>
 
-<div class="columns-1 gap-2 md:columns-2 md:gap-4 xl:columns-3">
+<!-- <div class="columns-1 gap-2 md:columns-2 md:gap-4 xl:columns-3">
 	{#each filterPostsByCategory() as post (post.id)}
 		<div class="col-span-12 md:col-span-6 lg:col-span-4">
 			<div class="mb-6 break-inside-avoid">
@@ -219,9 +252,41 @@
 			</div>
 		</div>
 	{/each}
+</div> -->
+
+<!-- Masonry Grid -->
+<!-- <div bind:this={masonryGrid} class="flex flex-wrap justify-center">
+	<div class="masonry-sizer w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3"></div>
+
+	{#each filterPostsByCategory() as post (post.id)}
+		<div 
+			class="masonry-item w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3 p-2 break-inside-avoid flex-grow min-w-0"
+			style="flex: 1 1 auto; max-width: 100%;">
+			<ArticleCard {post} />
+		</div>
+	{/each}
+</div> -->
+
+<!-- Masonry Grid -->
+<!-- <div class="masonry-grid flex flex-wrap justify-center">
+	<div class="masonry-sizer w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3"></div>
+
+	{#each displayedArticles as post (post.id)}
+		<div 
+			class="masonry-item w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3 p-2 break-inside-avoid flex-grow min-w-0"
+			style="flex: 1 1 auto; max-width: 100%;">
+			<ArticleCard {post} />
+		</div>
+	{/each}
+</div> -->
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+	{#each displayedArticles as post (post.id)}
+		<div class="break-inside-avoid">
+			<ArticleCard {post} />
+		</div>
+	{/each}
 </div>
-
-
 
 
 <!-- Infinite Scroll Trigger -->
@@ -230,3 +295,4 @@
 		<LoadingIcon />
 	{/if}
 </div>
+

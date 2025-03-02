@@ -23,6 +23,7 @@
 	// Components
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
 	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
+
 	let { children, data } = $props();
 
 	// Set initial data for tags, series, and articles
