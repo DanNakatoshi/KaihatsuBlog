@@ -4,6 +4,7 @@
     
 	let googleSignInImage = $state('/google/signin_light.svg');
     let currentTheme = '' // change this later
+	
 	$effect(() => {
 		googleSignInImage =
 			currentTheme === 'dark' ? '/google/signin_dark.svg' : '/google/signin_light.svg';

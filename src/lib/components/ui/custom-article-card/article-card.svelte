@@ -24,6 +24,7 @@
 <Card.Root >
 	<Card.Header>
 		<Card.Title class="flex justify-between items-start gap-2">
+			
 			<button
 				onclick={() => articleMgr.handleReadButton(post?.slug)}
 				class="text-left leading-tight hover:text-primary"
@@ -35,7 +36,7 @@
 			</div>
 		</Card.Title>
 		<div class="pt-2">
-			<PublishInfoBadge date={post?.date} modified={post?.modified} />
+			<PublishInfoBadge date={post?.date} modified={post?.modified} viewCount={post.view_count}/>
 		</div>
 	</Card.Header>
 	<Card.Content class="">

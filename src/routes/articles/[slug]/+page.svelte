@@ -294,7 +294,7 @@ function observeHeadings() {
 					<Bookmark postId={post?.id}/>
 				</div>
 					<div class="pb-2">
-					<PublishInfoBadge date={post.date} modified={post.modified} />
+					<PublishInfoBadge date={post.date} modified={post.modified} viewCount={post.view_count}/>
 				</div>
 			</Card.Header>
 
@@ -399,13 +399,13 @@ function observeHeadings() {
 
 <MobileMenu articleNavButtons={articleNavButtons}/>
 {#snippet articleNavButtons()}
-	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all" onclick={()=> openMobileToc()} aria-label="Table of contents">
+	<Button variant="ghost" class="flex flex-col items-center gap-1 transition-all jello-horizontal" onclick={()=> openMobileToc()} aria-label="Table of contents">
 	<TableOfContents size="20" />
 	<span class="text-xs">目次</span>
   </Button>
 
    
-  <div class="flex flex-col items-center gap-1 transition-all" aria-label="Bookmark">
+  <div class="flex flex-col items-center gap-1 transition-all jello-horizontal" aria-label="Bookmark">
 	  <Bookmark size="20" postId={post.id} isCircleBtn={true} hasShowLable={true} isOpenModal={isOpenLoginModal}/>
   </div>
 {/snippet}

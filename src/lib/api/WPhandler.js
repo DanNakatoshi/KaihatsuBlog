@@ -35,9 +35,9 @@ export async function fetchWordPressData({
 	};
 
 	const fieldsMap = {
-		posts: 'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories',
+		posts: 'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories,view_count',
 		singlePost:
-			'id,title,slug,date,modified,content.rendered,excerpt.rendered,categories,tags,series,yoast_head_json.description'
+			'id,title,slug,date,modified,content.rendered,excerpt.rendered,categories,tags,series,yoast_head_json.description,view_count'
 	};
 
 	const params = {

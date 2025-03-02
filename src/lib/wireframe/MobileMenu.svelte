@@ -68,7 +68,7 @@
 	<!-- Profile -->
 	<Button
 		variant="ghost"
-		class="flex flex-col items-center gap-1 transition-all"
+		class="flex flex-col items-center gap-1 transition-all "
 		onclick={() => handleClick('/account')}
 		aria-label="my page"
 	>
@@ -79,7 +79,7 @@
 	{#if !articleNavButtons}
 		<Button
 			variant="ghost"
-			class="flex flex-col items-center gap-1 transition-all"
+			class="flex flex-col items-center gap-1 transition-all jello-horizontal"
 			onclick={navigateToReading}
 			aria-label="my page"
 		>
@@ -88,12 +88,12 @@
 		</Button>
 		<Button
 			variant="ghost"
-			class="flex flex-col items-center gap-1 transition-all"
+			class="flex flex-col items-center gap-1 transition-all jello-horizontal"
 			onclick={handleMessage}
 			aria-label="my page"
 		>
 			<MessageCircle size="20" />
-			<span class="text-xs">ハロー</span>
+			<span class="text-xs">お知らせ</span>
 		</Button>
 	{/if}
 

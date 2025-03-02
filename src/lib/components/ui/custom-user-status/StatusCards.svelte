@@ -27,7 +27,7 @@
 </script>
 
 <div class="grid grid-cols-12 gap-4">
-	<div class="col-span-12 md:col-span-6">
+	<div class="col-span-12 sm:col-span-6">
 		<Card.Root class="mx-auto max-w-sm">
 			<Card.Header>
 				<Card.Title class="flex items-center space-x-2">
@@ -46,7 +46,7 @@
 	</div>
 
 	<!-- Member Since Card -->
-	<div class="col-span-12 md:col-span-6">
+	<div class="col-span-12 sm:col-span-6">
 		<Card.Root class="mx-auto max-w-sm">
 			<Card.Header>
 				<Card.Title class="flex items-center space-x-2">
