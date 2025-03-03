@@ -22,7 +22,7 @@
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
-
+	import Masonry from '$lib/helper/Masonry.svelte';
 	// import BookmarkCounter from '$lib/components/ui/custom-bookmark-counter/BookmarkCounter.svelte';
 
 	let { data } = $props();
@@ -244,50 +244,13 @@
 	</div>
 </div>
 
-<!-- <div class="columns-1 gap-2 md:columns-2 md:gap-4 xl:columns-3">
+<Masonry items={filterPostsByCategory()} gridGap={'0.2rem'} stretchFirst={false} reset>
 	{#each filterPostsByCategory() as post (post.id)}
-		<div class="col-span-12 md:col-span-6 lg:col-span-4">
-			<div class="mb-6 break-inside-avoid">
-				<ArticleCard {post} />
-			</div>
-		</div>
-	{/each}
-</div> -->
-
-<!-- Masonry Grid -->
-<!-- <div bind:this={masonryGrid} class="flex flex-wrap justify-center">
-	<div class="masonry-sizer w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3"></div>
-
-	{#each filterPostsByCategory() as post (post.id)}
-		<div 
-			class="masonry-item w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3 p-2 break-inside-avoid flex-grow min-w-0"
-			style="flex: 1 1 auto; max-width: 100%;">
+		<div class="p-2">
 			<ArticleCard {post} />
 		</div>
 	{/each}
-</div> -->
-
-<!-- Masonry Grid -->
-<!-- <div class="masonry-grid flex flex-wrap justify-center">
-	<div class="masonry-sizer w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3"></div>
-
-	{#each displayedArticles as post (post.id)}
-		<div 
-			class="masonry-item w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/3 p-2 break-inside-avoid flex-grow min-w-0"
-			style="flex: 1 1 auto; max-width: 100%;">
-			<ArticleCard {post} />
-		</div>
-	{/each}
-</div> -->
-
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-	{#each displayedArticles as post (post.id)}
-		<div class="break-inside-avoid">
-			<ArticleCard {post} />
-		</div>
-	{/each}
-</div>
-
+</Masonry>
 
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
