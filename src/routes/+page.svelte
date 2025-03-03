@@ -17,7 +17,7 @@
 	import { fetchWordPressData } from '$lib/api/WPhandler.js';
 
 	// Svelte
-	import { tick, onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
@@ -27,43 +27,22 @@
 
 	let { data } = $props();
 	let masonryGrid = $state();
-	let masonryInstance = $state();
 
 	let activeTab = $state('ALL');
 	let sortByVal = $state('公開日順');
 	let searchInputValue = $state('');
 	let filterBookmarks = $state(false);
 
-	let displayedArticles = $state([...articleMgr.articleData]); // Reactive articles list
-	let isLoading = $state(false); // Loading indicator
-	let hasMore = $state(true); // Flag to check if more articles can be loaded
+	let displayedArticles = $state([...articleMgr.articleData]); 
+	let isLoading = $state(false); 
+	let hasMore = $state(true);
 	let isDebounced = false;
 
-	async function initializeMasonry() {
-		await tick();
-		if (typeof window !== 'undefined') {
-			const Masonry = (await import('masonry-layout')).default;
-			masonryInstance = new Masonry('.masonry-grid', {
-				itemSelector: '.masonry-item',
-				columnWidth: '.masonry-sizer',
-				percentPosition: true,
-				gutter: 16
-			});
-		}
-	}
+	// Infinite Scroll Setup
+	let loadMoreTrigger = $state();
+	let observer = null; // ✅ Declare observer globally
 
 
-	function setupInfiniteScroll() {
-		const observer = new IntersectionObserver((entries) => {
-			if (entries[0].isIntersecting) {
-				loadMoreArticles();
-			}
-		});
-
-		if (loadMoreTrigger) {
-			observer.observe(loadMoreTrigger);
-		}
-	}
 
 	function handleTabChange(newTab) {
 		activeTab = newTab; // Update the active tab
@@ -73,38 +52,35 @@
 	}
 
 	function filterPostsByCategory() {
-		return [...articleMgr.articleData]
-			.filter((post) => {
-				const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
-				return activeTab === 'ALL' || post.categories?.includes(categoryId);
-			})
-			.filter((post) => {
-				if (!searchInputValue) return true;
-				const searchTerm = searchInputValue.toLowerCase();
-				return (
-					post.title?.rendered?.toLowerCase().includes(searchTerm) ||
-					post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
-				);
-			})
-			.filter((post) => {
-				// If filter toggle is on, only include posts that are bookmarked.
-				if (filterBookmarks) {
-					return userMgr?.bookmarks?.includes(post.id);
-				}
-				return true;
-			})
-			// .sort((a, b) => {
-			// 	const key = sortByVal === '公開日順' ? 'date' : 'modified';
-			// 	return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-			// });
-			.sort((a, b) => {
-				if (sortByVal === '人気順') {
-					return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
-				} else {
-					const key = sortByVal === '公開日順' ? 'date' : 'modified';
-					return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-				}
-			});
+		return (
+			[...articleMgr.articleData]
+				.filter((post) => {
+					const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
+					return activeTab === 'ALL' || post.categories?.includes(categoryId);
+				})
+				.filter((post) => {
+					if (!searchInputValue) return true;
+					const searchTerm = searchInputValue.toLowerCase();
+					return (
+						post.title?.rendered?.toLowerCase().includes(searchTerm) ||
+						post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
+					);
+				})
+				.filter((post) => {
+					if (filterBookmarks) {
+						return userMgr?.bookmarks?.includes(post.id);
+					}
+					return true;
+				})
+				.sort((a, b) => {
+					if (sortByVal === '人気順') {
+						return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
+					} else {
+						const key = sortByVal === '公開日順' ? 'date' : 'modified';
+						return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+					}
+				})
+		);
 	}
 
 	async function loadMoreArticles() {
@@ -145,30 +121,34 @@
 		}
 	}
 
-	// Infinite Scroll Setup
-	let loadMoreTrigger = $state();
-	let observer = $state();
+	function setupInfiniteScroll() {
+		if (observer) observer.disconnect(); // ✅ Prevent multiple observers
+		if (!loadMoreTrigger ) return; // ✅ Prevent re-creating observer
 
-	onMount(async () => {
-		await initializeMasonry();
+		observer = new IntersectionObserver((entries) => {
+			if (entries[0].isIntersecting) {
+				loadMoreArticles();
+			}
+		});
+
+		observer.observe(loadMoreTrigger);
+
+	}
+
+	onMount(() => {
+		displayedArticles = filterPostsByCategory();
+		setupInfiniteScroll();
 	});
 
 	onDestroy(() => {
-		observer?.disconnect();
-		if (masonryInstance) masonryInstance.destroy();
-
-	});
+		if (observer) {
+			observer.disconnect();
+			observer = null;
+		}	});
 
 	$effect(() => {
 		displayedArticles = filterPostsByCategory();
-		setTimeout(() => {
-			if (masonryInstance) {
-				masonryInstance.reloadItems();
-				masonryInstance.layout();
-			}
-		}, 100);
 	});
-
 </script>
 
 <svelte:head>
@@ -230,16 +210,9 @@
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="">
 					<DropdownMenu.RadioGroup bind:value={sortByVal}>
-<<<<<<< HEAD
 						<DropdownMenu.RadioItem value="公開日順">最新の公開日</DropdownMenu.RadioItem>
 						<DropdownMenu.RadioItem value="更新日順">最新の更新日</DropdownMenu.RadioItem>
 						<DropdownMenu.RadioItem value="人気順">人気の記事</DropdownMenu.RadioItem>
-=======
-						<DropdownMenu.RadioItem value="公開日順">最新の公開日から表示</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="更新日順">最新の更新日から表示</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="人気順">人気の記事から表示</DropdownMenu.RadioItem>
-
->>>>>>> parent of c77c89b (before i masony layout)
 					</DropdownMenu.RadioGroup>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
@@ -255,17 +228,13 @@
 	</div>
 </div>
 
-<Masonry items={filterPostsByCategory()} gridGap={'0.2rem'} stretchFirst={false} reset>
-	{#each filterPostsByCategory() as post (post.id)}
+<Masonry items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
+	{#each displayedArticles as post (post.id)}
 		<div class="p-2">
 			<ArticleCard {post} />
 		</div>
 	{/each}
-<<<<<<< HEAD
 </Masonry>
-=======
-</div>
->>>>>>> parent of c77c89b (before i masony layout)
 
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
@@ -273,4 +242,3 @@
 		<LoadingIcon />
 	{/if}
 </div>
-
