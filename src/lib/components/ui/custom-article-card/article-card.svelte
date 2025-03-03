@@ -16,7 +16,7 @@
 		return seriesIds
 			.map((seriesId) => {
 				const series = seriesMgr.seriesData[seriesId];
-				return series ? { id: series.series_ID, name: series.ser_name } : null; 
+				return series ? { id: series.series_ID, name: series.ser_name } : null; // Returns an object with both id and ser_name
 			})
 			.filter((series) => series !== null); // Filter out null values
 	}
