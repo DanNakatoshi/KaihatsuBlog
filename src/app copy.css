@@ -137,18 +137,18 @@
 	}
 
 	h1 {
-		font-size: 1.25rem;
+		font-size: 1.875rem;
 		line-height: 2.25rem;
 		font-weight: bold;
 	}
 
 	h2 {
-		font-size: 1.25rem;
+		font-size: 1.625rem;
 		line-height: 2rem;
 	}
 
 	h3 {
-		font-size: 1.25rem;
+		font-size: 1.375rem;
 		line-height: 1.75rem;
 	}
 
@@ -161,6 +161,7 @@
 		font-size: 1.125rem;
 		line-height: 1.4rem;
 	}
+
 	h6 {
 		font-size: 1rem;
 		line-height: 1.3rem;
@@ -179,21 +180,14 @@
 		transition: color 0.3s;
 	}
 
-	a:hover {
-		color: var(--link-hover-color);
-		text-decoration: none;
-	}
-
-	ul, ol {
-		padding-left: 1.5rem;
-	}
-
 	ul {
-		list-style-type: disc;
+		list-style-type: disc; /* Dots for unordered lists */
+		padding-left: 1.5rem; /* Indent for readability */
 	}
 
 	ol {
-		list-style-type: decimal;
+		list-style-type: decimal; /* Numbers for ordered lists */
+		padding-left: 1.5rem; /* Indent for readability */
 	}
 
 	li {
@@ -201,6 +195,10 @@
 		font-size: var(--font-size-base); /* Default font size */
 		line-height: var(--line-height-relaxed); /* Better line spacing */
 		margin-bottom: 0.5rem; /* Add spacing between list items */
+	}
+
+	a:hover {
+		color: var(--link-hover-color);
 	}
 
 	small {
@@ -239,6 +237,24 @@
 
 .text-gray-dark {
 	color: var(--color-gray-dark);
+}
+
+/* Animation */
+.tracking-in-expand {
+	animation: tracking-in-expand 0.7s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+@keyframes tracking-in-expand {
+	0% {
+		letter-spacing: -0.5em;
+		opacity: 0;
+	}
+	40% {
+		opacity: 0.6;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 .heading-container {

@@ -13,5 +13,5 @@
 
 
 <button onclick={() => userMgr.signInWithGoogle()} class="google-signin">
-    <img src={googleSignInImage} alt="Sign in with Google" />
+    <img src={googleSignInImage} alt="Sign in with Google" loading="lazy"/>
 </button>

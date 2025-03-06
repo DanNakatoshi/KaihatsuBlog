@@ -1,6 +1,6 @@
 <script>
 	// Style
-	import '$lib/styles/wp-articles.css';
+	// import '$lib/styles/wp-articles.css';
 	import '$lib/styles/ToC.css';
 
 	// Icons

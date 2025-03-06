@@ -36,10 +36,10 @@
 		</div>
 	</Card.Header>
 	<Card.Content class="">
-		<p class=" text-gray-dark text-sm">
+		<div class=" text-gray-dark text-sm">
 			{post?.yoast_head_json?.description}
-		</p>
-		<div class="flex flex-wrap justify-start gap-2 pt-2">
+		</div>
+		<div class="flex flex-wrap justify-start gap-2 ">
 			{#if post?.tags}
 				{#each tagMgr.getTagNames(post?.tags) as tag (tag)}
 					<span class="text-xs font-bold">
