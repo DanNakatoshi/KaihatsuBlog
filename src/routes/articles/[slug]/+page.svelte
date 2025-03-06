@@ -290,7 +290,8 @@ function observeHeadings() {
 		<Card.Root class="col-span-12 md:col-span-9 ">
 			<Card.Header>
 				<div class="flex justify-between items-start gap-2">
-					<Card.Title class="mb-4">{post.title?.rendered}</Card.Title>
+					<h1 class="mb-2">{post.title?.rendered}</h1>
+					<!-- <Card.Title class="mb-4">{post.title?.rendered}</Card.Title> -->
 					<Bookmark postId={post?.id}/>
 				</div>
 					<div class="pb-2">
@@ -349,8 +350,9 @@ function observeHeadings() {
 						{/if}
 					</div>
 				{/if}
-
-				{@html post?.content?.rendered || ''}
+				<div class="wp-article">
+					{@html post?.content?.rendered || ''}
+				</div>
 			</Card.Content>
 		</Card.Root>
 	

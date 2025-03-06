@@ -148,7 +148,8 @@
 	}
 
 	h1 {
-		font-size: var(--font-size-3xl); /* Largest */
+		font-size: var(--font-size-2xl); /* Largest */
+		font-weight: bold;
 	}
 	h2 {
 		font-size: var(--font-size-2xl); /* Slightly smaller */
@@ -291,6 +292,15 @@ body.dark .heading-container::after {
 	margin: 1rem 0; /* Add spacing above and below */
 	background-color: var(--separator-color, #e5e5e5); /* Fallback for light theme */
 	border: none; /* Remove any default borders */
+}
+
+.wp-block-list li code {
+	vertical-align: middle;
+	padding: 2px 4px;
+	background-color: var(--code-bg, #f5f5f5); /* Light gray background */
+	color: var(--code-text, #333); /* Dark text */
+	border-radius: 4px;
+	font-size: 0.95em;
 }
 
 /* Light Theme */

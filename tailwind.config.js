@@ -4,7 +4,11 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
 	// darkMode: 'selector',
 	darkMode: ['class'],
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+	content: [
+		'./src/**/*.{html,js,svelte,ts}', // Include all Svelte, HTML, and JS files
+		'./components/**/*.{svelte,js,ts}', // Include component directory
+		'./pages/**/*.{svelte,js,ts}' // Include pages directory
+	],
 	safelist: ['dark'],
 	theme: {
 		container: {
@@ -50,8 +54,8 @@ const config = {
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				},
 				colors: {
-					yellow: 'hsl(50, 70%, 45%)', // Optional for fallback
-				},
+					yellow: 'hsl(50, 70%, 45%)' // Optional for fallback
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
