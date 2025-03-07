@@ -40,6 +40,7 @@
 	import Bio from '$lib/components/about/Bio.svelte';
 	import Bookmark from '$lib/components/ui/custom-article-card/bookmark.svelte';
 	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
+
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
