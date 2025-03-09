@@ -10,6 +10,7 @@
 	import 'highlight.js/styles/monokai.css';
 	import hljs from 'highlight.js/lib/core';
 	import javascript from 'highlight.js/lib/languages/javascript';
+	import typescript from 'highlight.js/lib/languages/typescript';
 	import python from 'highlight.js/lib/languages/python';
 	import css from 'highlight.js/lib/languages/css';
 	// import xml from 'highlight.js/lib/languages/xml';
@@ -237,6 +238,7 @@ function observeHeadings() {
 			toc = generateTableOfContents(post?.content?.rendered || '');
 
 			hljs.registerLanguage('javascript', javascript);
+			hljs.registerLanguage('typescript', typescript);
 			hljs.registerLanguage('python', python);
 			hljs.registerLanguage('css', css);
 			// hljs.registerLanguage('xml', xml);
