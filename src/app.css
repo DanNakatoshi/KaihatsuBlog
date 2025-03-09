@@ -624,3 +624,26 @@ a:hover {
 	overflow-x: auto;
 	display: block;
 }
+
+.wp-block-embed-youtube.wp-embed-aspect-16-9.wp-has-aspect-ratio {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+  }
+  
+  .wp-block-embed__wrapper {
+	position: relative;
+	padding-bottom: 56.25%; /* Maintains 16:9 aspect ratio */
+	height: 0;
+	overflow: hidden;
+  }
+  
+  .wp-block-embed__wrapper iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+  }
+  
