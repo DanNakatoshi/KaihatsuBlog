@@ -4,9 +4,18 @@
 	export { className as class };
 </script>
 
-<div
+<!-- <div
 	class={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
 	{...$$restProps}
 >
 	<slot />
-</div>
+</div> -->
+
+{#if typeof window !== 'undefined'}
+	<div
+		class={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+		{...$$restProps}
+	>
+		<slot />
+	</div>
+{/if}

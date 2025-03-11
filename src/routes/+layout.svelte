@@ -141,15 +141,10 @@
 			icon: LoadingIcon
 		});
 
-		// console.log('beforeNavigate triggered');
-		// console.log('Toast ID set:', loadingToastId);
 	});
 
 	// Track navigation only if user has consented
 	afterNavigate((navigation) => {
-		// console.log('afterNavigate triggered', navigation);
-		// console.log('Dismissing toast with ID:', loadingToastId);
-
 		if (loadingToastId !== null && typeof loadingToastId !== 'undefined') {
 			toast.dismiss(loadingToastId);
 			// console.log('Toast dismissed successfully');

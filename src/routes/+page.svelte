@@ -33,16 +33,14 @@
 	let searchInputValue = $state('');
 	let filterBookmarks = $state(false);
 
-	let displayedArticles = $state([...articleMgr.articleData]); 
-	let isLoading = $state(false); 
+	let displayedArticles = $state([...articleMgr.articleData]);
+	let isLoading = $state(false);
 	let hasMore = $state(true);
 	let isDebounced = false;
 
 	// Infinite Scroll Setup
 	let loadMoreTrigger = $state();
 	let observer = null; // ✅ Declare observer globally
-
-
 
 	function handleTabChange(newTab) {
 		activeTab = newTab; // Update the active tab
@@ -52,35 +50,33 @@
 	}
 
 	function filterPostsByCategory() {
-		return (
-			[...articleMgr.articleData]
-				.filter((post) => {
-					const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
-					return activeTab === 'ALL' || post.categories?.includes(categoryId);
-				})
-				.filter((post) => {
-					if (!searchInputValue) return true;
-					const searchTerm = searchInputValue.toLowerCase();
-					return (
-						post.title?.rendered?.toLowerCase().includes(searchTerm) ||
-						post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
-					);
-				})
-				.filter((post) => {
-					if (filterBookmarks) {
-						return userMgr?.bookmarks?.includes(post.id);
-					}
-					return true;
-				})
-				.sort((a, b) => {
-					if (sortByVal === '人気順') {
-						return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
-					} else {
-						const key = sortByVal === '公開日順' ? 'date' : 'modified';
-						return new Date(b[key]).getTime() - new Date(a[key]).getTime();
-					}
-				})
-		);
+		return [...articleMgr.articleData]
+			.filter((post) => {
+				const categoryId = mainCategoryInfo.find((cat) => cat.name === activeTab)?.id;
+				return activeTab === 'ALL' || post.categories?.includes(categoryId);
+			})
+			.filter((post) => {
+				if (!searchInputValue) return true;
+				const searchTerm = searchInputValue.toLowerCase();
+				return (
+					post.title?.rendered?.toLowerCase().includes(searchTerm) ||
+					post.yoast_head_json?.description?.toLowerCase().includes(searchTerm)
+				);
+			})
+			.filter((post) => {
+				if (filterBookmarks) {
+					return userMgr?.bookmarks?.includes(post.id);
+				}
+				return true;
+			})
+			.sort((a, b) => {
+				if (sortByVal === '人気順') {
+					return (b.view_count || 0) - (a.view_count || 0); // Sort by view_count (descending)
+				} else {
+					const key = sortByVal === '公開日順' ? 'date' : 'modified';
+					return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+				}
+			});
 	}
 
 	async function loadMoreArticles() {
@@ -123,7 +119,7 @@
 
 	function setupInfiniteScroll() {
 		if (observer) observer.disconnect(); // ✅ Prevent multiple observers
-		if (!loadMoreTrigger ) return; // ✅ Prevent re-creating observer
+		if (!loadMoreTrigger) return; // ✅ Prevent re-creating observer
 
 		observer = new IntersectionObserver((entries) => {
 			if (entries[0].isIntersecting) {
@@ -132,11 +128,10 @@
 		});
 
 		observer.observe(loadMoreTrigger);
-
 	}
 
 	onMount(() => {
-		displayedArticles = filterPostsByCategory();
+		// displayedArticles = filterPostsByCategory();
 		setupInfiniteScroll();
 	});
 
@@ -144,10 +139,17 @@
 		if (observer) {
 			observer.disconnect();
 			observer = null;
-		}	});
+		}
+	});
 
+	// $effect(() => {
+	// 	displayedArticles = filterPostsByCategory();
+	// });
 	$effect(() => {
-		displayedArticles = filterPostsByCategory();
+		const filtered = filterPostsByCategory();
+		if (JSON.stringify(filtered) !== JSON.stringify(displayedArticles)) {
+			displayedArticles = filtered;
+		}
 	});
 </script>
 
@@ -228,13 +230,27 @@
 	</div>
 </div>
 
-<Masonry items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
+<!-- <Masonry
+	items={displayedArticles}
+	gridGap={'0.2rem'}
+	stretchFirst={false}
+	colWidth={'minmax(22rem, 1fr)'}
+	reset
+>
+	{#each displayedArticles as post (post.id)}
+		<div class="p-2">
+			<ArticleCard {post} />
+		</div>
+	{/each}
+</Masonry> -->
+<Masonry key={displayedArticles.length} items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
 	{#each displayedArticles as post (post.id)}
 		<div class="p-2">
 			<ArticleCard {post} />
 		</div>
 	{/each}
 </Masonry>
+
 
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>
