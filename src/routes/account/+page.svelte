@@ -21,6 +21,7 @@
 
 {#if userMgr?.user}
 	<div>
+
 		<!-- <Button variant="destructive">アカウントを削除</Button> -->
 		<StatusCards />
 
@@ -50,14 +51,14 @@
 	</Dialog.Root>
 {:else}
 	<Card.Root>
-		<Card.Header class="justify-center items-center mt-4">
+		<Card.Header class="mt-4 items-center justify-center">
 			<Card.Title>🔓 Googleでサインインして、新機能を楽しもう！</Card.Title>
 			<Card.Description
 				>ログインすると、便利な機能がどんどん使えるようになります！✨</Card.Description
 			>
 		</Card.Header>
 		<Card.Content>
-			<div class="flex flex-col gap-4 p-4 justify-center items-center">
+			<div class="flex flex-col items-center justify-center gap-4 p-4">
 				<ul class=" space-y-2 text-sm">
 					<div>
 						<li class="flex items-center gap-2">
@@ -80,6 +81,7 @@
 				<div class="flex justify-center">
 					<GoogleSigninBtn class="w-full max-w-xs" />
 				</div>
-			</div>		</Card.Content>
+			</div>
+		</Card.Content>
 	</Card.Root>
 {/if}

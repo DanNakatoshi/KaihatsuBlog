@@ -8,6 +8,7 @@ function createUserData() {
     let user = $state(null);
     let session = $state(null);
     let bookmarks = $state([]); 
+    let userProfile = $state(null); 
 
     async function fetchUser() {
         const { data, error } = await supabase.auth.getUser();
@@ -19,11 +20,70 @@ function createUserData() {
         }
         user = data.user;
         session = await supabase.auth.getSession();
+
+        await fetchUserProfile(); 
         await fetchBookmarks(); 
 
         // console.log('✅ User:', user);
     }
 
+    async function fetchUserProfile() {
+        if (!user) {
+            userProfile = null;
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('user_profile')
+                .select('*')
+                .eq('user_id', user.id)
+                .single(); // Fetch a single user profile
+
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    console.warn('❌ User profile not found.');
+                } else {
+                    console.error('❌ Error fetching user profile:', error.message);
+                }
+                userProfile = null;
+                return;
+            }
+
+            userProfile = data;
+            console.log('✅ User profile fetched:', userProfile);
+        } catch (error) {
+            console.error('❌ Error fetching user profile:', error.message);
+            userProfile = null;
+        }
+    }
+
+    async function updateDisplayName(displayName) {
+        if (!user) {
+            console.warn('❌ User not logged in.');
+            return;
+        }
+    
+        try {
+            const userId = user.id;
+    
+            const { data, error } = await supabase
+                .from('user_profile')
+                .upsert(
+                    [{ user_id: userId, display_name: displayName }], 
+                    { onConflict: ['user_id'] } // ✅ Only update display_name, never touch user_id
+                );
+    
+            if (error) throw error;
+    
+            toast.success("ユーザー名を更新しました！");
+            await fetchUserProfile(); // Refresh user data
+        } catch (error) {
+            console.error("❌ Error updating display name:", error.message);
+            toast.error("更新に失敗しました");
+        }
+    }
+    
 
     /* BOOKMARK */
     async function fetchBookmarks() {
@@ -195,6 +255,11 @@ function createUserData() {
         signInWithGoogle,
         signOut,
         fetchUser,
+        // Profile
+        get userProfile() {
+            return userProfile;
+        },
+        updateDisplayName,
         // BOOKMARK
         get bookmarks() {
             return bookmarks;
