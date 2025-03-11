@@ -28,13 +28,6 @@
 
 <script>
 	import { cn } from "$lib/utils.js";
-	import { onMount } from "svelte";
-
-	let isClient = $state(false);
-	
-	onMount(() => {
-		isClient = true;
-	});
 
 	let {
 		class: className,
@@ -48,19 +41,17 @@
 	} = $props();
 </script>
 
-{#if isClient}
-	{#if href}
-		<a bind:this={ref} class={cn(buttonVariants({ variant, size }), className)} {href} {...restProps}>
-			{@render children?.()}
-		</a>
-	{:else}
-		<button
-			bind:this={ref}
-			class={cn(buttonVariants({ variant, size }), className)}
-			{type}
-			{...restProps}
-		>
-			{@render children?.()}
-		</button>
-	{/if}
+{#if href}
+	<a bind:this={ref} class={cn(buttonVariants({ variant, size }), className)} {href} {...restProps}>
+		{@render children?.()}
+	</a>
+{:else}
+	<button
+		bind:this={ref}
+		class={cn(buttonVariants({ variant, size }), className)}
+		{type}
+		{...restProps}
+	>
+		{@render children?.()}
+	</button>
 {/if}

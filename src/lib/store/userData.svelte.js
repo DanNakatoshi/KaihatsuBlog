@@ -51,7 +51,7 @@ function createUserData() {
             }
 
             userProfile = data;
-            console.log('✅ User profile fetched:', userProfile);
+            // console.log('✅ User profile fetched:', userProfile);
         } catch (error) {
             console.error('❌ Error fetching user profile:', error.message);
             userProfile = null;
