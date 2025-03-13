@@ -20,7 +20,7 @@
 
         if (!access_token || !refresh_token) {
             toast.error('❌ 無効なリセットリンクです。もう一度試してください。');
-            goto('/account');
+            // goto('/account');
             return;
         }
 
@@ -32,7 +32,7 @@
 
         if (error) {
             toast.error(`❌ セッションの設定に失敗しました: ${error.message}`);
-            goto('/account');
+            // goto('/account');
         }
     });
 
