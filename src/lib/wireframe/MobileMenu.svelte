@@ -1,5 +1,5 @@
 <script>
-	import { Home, User, BookOpen, MessageCircle } from 'lucide-svelte';
+	import { Home, User, BookOpen, MessageCircle, LogIn  } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { userMgr } from '$lib/store/userData.svelte.js';
@@ -8,8 +8,8 @@
 	import { toast } from 'svelte-sonner';
 
 	let { articleNavButtons } = $props();
-	let nowReading = (null);
-	let nowReadingURL = ('');
+	let nowReading = null;
+	let nowReadingURL = '';
 	// let isOnArticlesPage = $state(false);
 
 	function handleClick(path) {
@@ -52,7 +52,7 @@
 </script>
 
 <div
-	class="fixed bottom-0 left-1/2 -translate-x-1/2 flex w-full max-w-screen-sm items-center justify-around border border-border bg-background p-2 shadow-lg sm:mb-2 sm:rounded-md"
+	class="fixed bottom-0 left-1/2 flex w-full max-w-screen-sm -translate-x-1/2 items-center justify-around border border-border bg-background p-2 shadow-lg sm:mb-2 sm:rounded-md"
 >
 	<!-- Home -->
 	<Button
@@ -72,14 +72,19 @@
 		onclick={() => handleClick('/account')}
 		aria-label="my page"
 	>
-		<User size="20" />
-		<span class="text-xs">プロフィール</span>
+		{#if userMgr?.user}
+			<User size="20" />
+			<span class="text-xs">プロフィール</span>
+		{:else}
+			<LogIn size="20" />
+			<span class="text-xs">ログイン</span>
+		{/if}
 	</Button>
 
 	{#if !articleNavButtons}
 		<Button
 			variant="ghost"
-			class="flex flex-col items-center gap-1 transition-all jello-horizontal"
+			class="jello-horizontal flex flex-col items-center gap-1 transition-all"
 			onclick={navigateToReading}
 			aria-label="my page"
 		>
@@ -88,7 +93,7 @@
 		</Button>
 		<Button
 			variant="ghost"
-			class="flex flex-col items-center gap-1 transition-all jello-horizontal"
+			class="jello-horizontal flex flex-col items-center gap-1 transition-all"
 			onclick={handleMessage}
 			aria-label="my page"
 		>
