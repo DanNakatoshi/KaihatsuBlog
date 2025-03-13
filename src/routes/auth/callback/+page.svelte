@@ -6,7 +6,7 @@
 	onMount(async () => {
 		// ✅ Ensure session is updated
 		await userMgr?.fetchUser();
-
+		console.log(userMgr)
 		// ✅ Retrieve previous page from localStorage
 		const previousPage = localStorage.getItem('previousPage');
 		// console.log("🔄 Redirecting back to:", previousPage); // Debugging
