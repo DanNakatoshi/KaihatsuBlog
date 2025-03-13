@@ -17,7 +17,7 @@
 
         if (!token) {
             toast.error('❌ 無効なリセットリンクです。もう一度試してください。');
-            goto('/account');
+            // goto('/account');
         }
     });
 
