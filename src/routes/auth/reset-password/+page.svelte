@@ -6,17 +6,32 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import { Input } from '$lib/components/ui/input/index.js';
     import { Loader2 } from 'lucide-svelte';
+    import { supabase } from '$lib/api/supabaseClient.js';
 
     let newPassword = '';
     let isSubmitting = false;
-    let token = '';
+    let access_token = '';
+    let refresh_token = '';
 
-    onMount(() => {
+    onMount(async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        token = urlParams.get('token');
+        access_token = urlParams.get('access_token');
+        refresh_token = urlParams.get('refresh_token');
 
-        if (!token) {
+        if (!access_token || !refresh_token) {
             toast.error('❌ 無効なリセットリンクです。もう一度試してください。');
+            // goto('/account');
+            return;
+        }
+
+        // Set session with Supabase
+        const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+        });
+
+        if (error) {
+            toast.error(`❌ セッションの設定に失敗しました: ${error.message}`);
             // goto('/account');
         }
     });
@@ -28,7 +43,7 @@
         }
 
         isSubmitting = true;
-        const { error } = await userMgr.resetPassword(newPassword, token);
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
         isSubmitting = false;
 
         if (error) {
@@ -37,7 +52,7 @@
         }
 
         toast.success('✅ パスワードが変更されました！ログインしてください。');
-        goto('/account');
+        // goto('/account');
     }
 </script>
 

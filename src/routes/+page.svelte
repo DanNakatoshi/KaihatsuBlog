@@ -243,6 +243,7 @@
 		</div>
 	{/each}
 </Masonry> -->
+
 <Masonry key={displayedArticles.length} items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
 	{#each displayedArticles as post (post.id)}
 		<div class="p-2">
