@@ -196,7 +196,7 @@ function createUserData() {
     async function sendPasswordResetEmail(email) {
         try {
             const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                emailRedirectTo: 'https://asameshicode.com/auth/reset-password'
+                redirectTo: 'https://asameshicode.com/auth/reset-password'
             });
     
             if (error) {
