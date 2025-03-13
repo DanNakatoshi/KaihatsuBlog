@@ -18,7 +18,7 @@
 
 	// Svelte
 	import { onMount, onDestroy } from 'svelte';
-
+	import { goto } from '$app/navigation';
 	// Components
 	import ArticleCard from '$lib/components/ui/custom-article-card/article-card.svelte';
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
@@ -133,6 +133,23 @@
 	onMount(() => {
 		// displayedArticles = filterPostsByCategory();
 		setupInfiniteScroll();
+
+				// Extract token from hash fragment
+		const hashParams = new URLSearchParams(window.location.hash.substring(1));
+		const access_token = hashParams.get('access_token');
+		const refresh_token = hashParams.get('refresh_token');
+		const type = hashParams.get('type');
+
+		if (access_token && refresh_token && type === 'recovery') {
+			// Replace hash with proper query parameters and redirect
+			const newUrl = `/auth/reset-password?access_token=${access_token}&refresh_token=${refresh_token}`;
+			window.history.replaceState(null, '', newUrl);
+			goto(newUrl);
+		} else {
+			// toast.error('❌ 無効なリセットリンクです。もう一度試してください。');
+			goto('/account');
+		}
+
 	});
 
 	onDestroy(() => {

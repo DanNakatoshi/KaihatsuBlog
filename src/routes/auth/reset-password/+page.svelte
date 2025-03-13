@@ -5,13 +5,14 @@
     import { userMgr } from '$lib/store/userData.svelte.js';
     import Button from '$lib/components/ui/button/button.svelte';
     import { Input } from '$lib/components/ui/input/index.js';
-    import { Loader2 } from 'lucide-svelte';
-    import { supabase } from '$lib/api/supabaseClient.js';
+    import { Loader2, Eye, EyeOff } from 'lucide-svelte';
+    import { supabase } from '$lib/api/supabaseClient';
 
     let newPassword = '';
     let isSubmitting = false;
     let access_token = '';
     let refresh_token = '';
+    let showPassword = false;
 
     onMount(async () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -20,7 +21,7 @@
 
         if (!access_token || !refresh_token) {
             toast.error('❌ 無効なリセットリンクです。もう一度試してください。');
-            // goto('/account');
+            goto('/account');
             return;
         }
 
@@ -32,7 +33,7 @@
 
         if (error) {
             toast.error(`❌ セッションの設定に失敗しました: ${error.message}`);
-            // goto('/account');
+            goto('/account');
         }
     });
 
@@ -51,21 +52,33 @@
             return;
         }
 
-        toast.success('✅ パスワードが変更されました！ログインしてください。');
-        // goto('/account');
+        toast.success('✅ パスワードが変更されました！');
+        goto('/account');
     }
 </script>
 
 <form class="mx-auto flex max-w-md flex-col gap-4 p-4">
     <h2 class="text-xl font-bold">新しいパスワードを入力</h2>
-    <Input
-        type="password"
-        bind:value={newPassword}
-        placeholder="新しいパスワード"
-        class="max-w-xs"
-        required
-        autocomplete="new-password"
-    />
+    <div class="relative max-w-xs">
+        <Input
+            type={showPassword ? "text" : "password"}
+            bind:value={newPassword}
+            placeholder="新しいパスワード"
+            required
+            autocomplete="new-password"
+        />
+        <button
+            type="button"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2"
+            on:click={() => showPassword = !showPassword}
+        >
+            {#if showPassword}
+                <EyeOff size={20} />
+            {:else}
+                <Eye size={20} />
+            {/if}
+        </button>
+    </div>
     <Button onclick={handleResetPassword} disabled={isSubmitting}>
         {#if isSubmitting}
             <Loader2 size={20} stroke-width={2} class="animate-spin" />
