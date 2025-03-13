@@ -2,11 +2,10 @@
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { toast } from 'svelte-sonner';
-    import { userMgr } from '$lib/store/userData.svelte.js';
-    import Button from '$lib/components/ui/button/button.svelte';
-    import { Input } from '$lib/components/ui/input/index.js';
-    import { Loader2, Eye, EyeOff } from 'lucide-svelte';
     import { supabase } from '$lib/api/supabaseClient';
+    import { Input } from '$lib/components/ui/input/index.js';
+    import Button from '$lib/components/ui/button/button.svelte';
+    import { Loader2, Eye, EyeOff } from 'lucide-svelte';
 
     let newPassword = '';
     let isSubmitting = false;
@@ -25,7 +24,7 @@
             return;
         }
 
-        // Set session with Supabase
+        // Set Supabase session for the user before allowing password reset
         const { error } = await supabase.auth.setSession({
             access_token,
             refresh_token,
@@ -44,7 +43,9 @@
         }
 
         isSubmitting = true;
+
         const { error } = await supabase.auth.updateUser({ password: newPassword });
+
         isSubmitting = false;
 
         if (error) {
@@ -53,7 +54,7 @@
         }
 
         toast.success('✅ パスワードが変更されました！');
-        goto('/account');
+        goto('/account'); // Redirect to login/account page after reset
     }
 </script>
 
@@ -70,7 +71,7 @@
         <button
             type="button"
             class="absolute right-3 top-1/2 transform -translate-y-1/2"
-            on:click={() => showPassword = !showPassword}
+            onclick={() => showPassword = !showPassword}
         >
             {#if showPassword}
                 <EyeOff size={20} />
