@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
-	import { supabase } from '$lib/api/supabaseClient'
 	// UI
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -25,7 +24,7 @@
 
 	// LOGGED IN USER
 	// let isEmailUser = $state(false);
-// TODO: ADD PASSWORD UPDATE
+	// TODO: ADD PASSWORD UPDATE
 	let isEmailUser = $derived(userMgr.user?.identities?.[0]?.provider === 'email');
 
 	// GUEST
@@ -71,14 +70,39 @@
 	}
 
 	async function handleSendResetEmail() {
-		if (!emailLogin) {
+		const email = userMgr.user?.email || emailLogin;
+
+		if (!email) {
 			toast.error('⚠️ メールアドレスを入力してください。');
 			return;
 		}
 
 		isResetting = true;
-		await userMgr.sendPasswordResetEmail(emailLogin);
-		isResetting = false;
+
+		try {
+			const response = await userMgr.sendPasswordResetEmail(email);
+			// console.log('sendPasswordResetEmail response:', response); // Debug log
+
+			// ✅ Ensure response is an object before destructuring
+			if (!response || typeof response !== 'object') {
+				toast.success('✅ パスワードリセットのリンクが送信されました！');
+				return; // Exit to avoid destructuring error
+			}
+
+			const { error } = response;
+
+			if (error) {
+				console.error('Failed to send reset email:', error.message);
+				toast.error('❌ パスワードリセットの送信に失敗しました。');
+			} else {
+				toast.success('✅ パスワードリセットのリンクが送信されました！');
+			}
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			toast.error('❌ 予期しないエラーが発生しました。');
+		} finally {
+			isResetting = false;
+		}
 	}
 
 	function closeModal() {
@@ -90,18 +114,19 @@
 	}
 
 	async function sendPasswordResetEmail() {
-    if (!userMgr.user?.email) return;
-    
-    const { data, error } = await supabase.auth.resetPasswordForEmail(userMgr.user.email);
-    
-    if (error) {
-        console.error('Failed to send reset email:', error.message);
-    } else {
-        alert('パスワードリセットのリンクが送信されました。');
-    }
-}
+		if (!userMgr.user?.email) return;
+
+		const { data, error } = await supabase.auth.resetPasswordForEmail(userMgr.user.email);
+
+		if (error) {
+			console.error('Failed to send reset email:', error.message);
+		} else {
+			alert('パスワードリセットのリンクが送信されました。');
+		}
+	}
 </script>
 
+{isEmailUser}
 
 {#if userMgr?.user}
 	<div>
@@ -109,17 +134,32 @@
 		<StatusCards />
 
 		<div class="flex justify-end gap-2 p-2">
-			{#if isEmailUser}
-				<Button onclick={sendPasswordResetEmail}>パスワードを変更</Button>
-			{/if}
 			<Button
 				onclick={() => {
 					userMgr.signOut();
 				}}
+				aria-label="ログアウト"
 			>
 				<span>ログアウト</span>
 			</Button>
-			<Button variant="destructive" onclick={openModal}>アカウントを削除</Button>
+			{#if isEmailUser}
+				<Button
+					onclick={handleSendResetEmail}
+					disabled={isResetting}
+					variant="destructive"
+					aria-label="パスワードの変更"
+					class="min-w-20"
+				>
+					{#if isResetting}
+						<Loader2 size={20} stroke-width={2} class="animate-spin" />
+					{:else}
+						パスワードの変更
+					{/if}</Button
+				>
+			{/if}
+			<Button variant="destructive" onclick={openModal} aria-label="アカウント削除"
+				>アカウントを削除</Button
+			>
 		</div>
 	</div>
 
@@ -128,9 +168,11 @@
 			アカウントを削除するとブックマークの記録やコメントなどアカウントに関連するデータを含めてすべてのデータが削除され取り戻すことが不可能になります。
 			それでも、アカウントの削除をしますか？
 			<div class="flex justify-center gap-3">
-				<Button onclick={closeModal}>キャンセル</Button>
-				<Button variant="destructive" onclick={() => userMgr.deleteAccount()}
-					>アカウントを削除</Button
+				<Button onclick={closeModal} aria-label="キャンセル">キャンセル</Button>
+				<Button
+					variant="destructive"
+					onclick={() => userMgr.deleteAccount()}
+					aria-label="アカウント削除">アカウントを削除</Button
 				>
 			</div>
 		</Dialog.Content>
@@ -201,6 +243,7 @@
 											type="button"
 											class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-700"
 											onclick={() => (showPasswordLogin = !showPasswordLogin)}
+											aria-label="パスワードの表示"
 										>
 											{#if showPasswordLogin}
 												<EyeOff size={20} stroke-width={1.5} />
@@ -215,11 +258,12 @@
 										type="button"
 										class="text-sm text-blue-500 hover:underline"
 										onclick={() => (isResettingPassword = true)}
+										aria-label="パスワードを忘れた場合"
 									>
 										パスワードを忘れましたか？
 									</button>
 
-									<Button onclick={handleLogin} disabled={isLoggingIn}>
+									<Button onclick={handleLogin} disabled={isLoggingIn} aria-label="ログイン">
 										{#if isLoggingIn}
 											<Loader2 size={20} stroke-width={2} class="animate-spin" />
 										{:else}
@@ -229,7 +273,11 @@
 								{:else}
 									<!-- 🔥 Password Reset Section -->
 									<p class="text-gray text-sm">このメールアドレスにリセットリンクを送信します。</p>
-									<Button onclick={handleSendResetEmail} disabled={isResetting}>
+									<Button
+										onclick={handleSendResetEmail}
+										disabled={isResetting}
+										aria-label="リセットリンクを送信"
+									>
 										{#if isResetting}
 											<Loader2 size={20} stroke-width={2} class="animate-spin" />
 										{:else}
@@ -241,6 +289,7 @@
 										type="button"
 										class="text-gray mt-2 text-sm hover:underline"
 										onclick={() => (isResettingPassword = false)}
+										aria-label="戻る"
 									>
 										戻る
 									</button>
@@ -277,6 +326,7 @@
 										type="button"
 										class="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-700"
 										onclick={() => (showPasswordSignup = !showPasswordSignup)}
+										aria-label="パスワードの表示"
 									>
 										{#if showPasswordSignup}
 											<EyeOff size={20} stroke-width={1.5} />
@@ -285,7 +335,7 @@
 										{/if}
 									</button>
 								</div>
-								<Button onclick={handleSignup} disabled={isSigningUp}>
+								<Button onclick={handleSignup} disabled={isSigningUp} aria-label="登録">
 									{#if isSigningUp}
 										<Loader2 size={20} stroke-width={2} class="animate-spin" />
 									{:else}

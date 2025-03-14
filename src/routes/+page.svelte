@@ -143,9 +143,6 @@
 		}
 	});
 
-	// $effect(() => {
-	// 	displayedArticles = filterPostsByCategory();
-	// });
 	$effect(() => {
 		const filtered = filterPostsByCategory();
 		if (JSON.stringify(filtered) !== JSON.stringify(displayedArticles)) {
@@ -230,20 +227,6 @@
 		</div>
 	</div>
 </div>
-
-<!-- <Masonry
-	items={displayedArticles}
-	gridGap={'0.2rem'}
-	stretchFirst={false}
-	colWidth={'minmax(22rem, 1fr)'}
-	reset
->
-	{#each displayedArticles as post (post.id)}
-		<div class="p-2">
-			<ArticleCard {post} />
-		</div>
-	{/each}
-</Masonry> -->
 
 <Masonry key={displayedArticles.length} items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
 	{#each displayedArticles as post (post.id)}
