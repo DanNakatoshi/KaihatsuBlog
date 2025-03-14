@@ -1,7 +1,12 @@
 <script>
+	// Svelte
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+
+	import { supabase } from '$lib/api/supabaseClient'
+	// UI
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { toast } from 'svelte-sonner';
@@ -18,6 +23,12 @@
 
 	let isOpen = $state(false);
 
+	// LOGGED IN USER
+	// let isEmailUser = $state(false);
+// TODO: ADD PASSWORD UPDATE
+	let isEmailUser = $derived(userMgr.user?.identities?.[0]?.provider === 'email');
+
+	// GUEST
 	// Email Signup
 	let emailSignup = $state('');
 	let passwordSignup = $state('');
@@ -77,7 +88,20 @@
 	function openModal() {
 		isOpen = true;
 	}
+
+	async function sendPasswordResetEmail() {
+    if (!userMgr.user?.email) return;
+    
+    const { data, error } = await supabase.auth.resetPasswordForEmail(userMgr.user.email);
+    
+    if (error) {
+        console.error('Failed to send reset email:', error.message);
+    } else {
+        alert('パスワードリセットのリンクが送信されました。');
+    }
+}
 </script>
+
 
 {#if userMgr?.user}
 	<div>
@@ -85,6 +109,9 @@
 		<StatusCards />
 
 		<div class="flex justify-end gap-2 p-2">
+			{#if isEmailUser}
+				<Button onclick={sendPasswordResetEmail}>パスワードを変更</Button>
+			{/if}
 			<Button
 				onclick={() => {
 					userMgr.signOut();
@@ -201,9 +228,7 @@
 									</Button>
 								{:else}
 									<!-- 🔥 Password Reset Section -->
-									<p class="text-sm text-gray">
-										このメールアドレスにリセットリンクを送信します。
-									</p>
+									<p class="text-gray text-sm">このメールアドレスにリセットリンクを送信します。</p>
 									<Button onclick={handleSendResetEmail} disabled={isResetting}>
 										{#if isResetting}
 											<Loader2 size={20} stroke-width={2} class="animate-spin" />
@@ -214,7 +239,7 @@
 
 									<button
 										type="button"
-										class="mt-2 text-sm text-gray hover:underline"
+										class="text-gray mt-2 text-sm hover:underline"
 										onclick={() => (isResettingPassword = false)}
 									>
 										戻る
@@ -285,7 +310,7 @@
 
 	<div class="relative mt-4 flex w-full max-w-xs items-center">
 		<hr class="w-full border-t border-gray-300" />
-		<span class="absolute left-1/2 -translate-x-1/2 bg-secondary px-2 text-sm text-gray"
+		<span class="text-gray absolute left-1/2 -translate-x-1/2 bg-secondary px-2 text-sm"
 			>または</span
 		>
 	</div>

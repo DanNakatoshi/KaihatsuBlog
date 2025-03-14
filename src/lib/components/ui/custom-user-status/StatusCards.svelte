@@ -102,6 +102,24 @@
 			<Card.Header>
 				<Card.Title class="flex items-center space-x-2">
 					<Bookmark class="h-6 w-6 text-primary" />
+					<span class="text-lg font-bold">メールアドレス</span>
+				</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<div class="flex justify-center">
+					<div class="text-3xl font-bold">
+						{userMgr.user.email}
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+	</div>
+
+	<div class="col-span-12 sm:col-span-6">
+		<Card.Root class="mx-auto max-w-sm">
+			<Card.Header>
+				<Card.Title class="flex items-center space-x-2">
+					<Bookmark class="h-6 w-6 text-primary" />
 					<span class="text-lg font-bold">ブックマーク</span>
 				</Card.Title>
 			</Card.Header>

@@ -247,7 +247,6 @@ function createUserData() {
                 return;
             }
     
-            toast.success('✅ ログイン成功！');
             console.log('✅ Login successful:', data);
     
             return data;
