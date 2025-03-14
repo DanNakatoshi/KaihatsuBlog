@@ -80,42 +80,50 @@
 	}
 
 	async function loadMoreArticles() {
-		if (isLoading || !hasMore || isDebounced) return;
+    if (isLoading || !hasMore || isDebounced) return;
 
-		console.log('Loading more...');
-		isLoading = true;
-		isDebounced = true; // Prevent immediate subsequent calls
-		setTimeout(() => {
-			isDebounced = false;
-		}, 3000); // 3-second delay
+    console.log(`Loading more articles... Page: ${articleMgr.page}`);
+    isLoading = true;
+    isDebounced = true;
 
-		try {
-			const categoryId =
-				activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
+    setTimeout(() => {
+        isDebounced = false;
+    }, 3000);
 
-			const newArticles = await fetchWordPressData({
-				type: 'posts',
-				page: articleMgr.page,
-				limit: 12,
-				category: categoryId
-			});
+    try {
+        const categoryId =
+            activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
 
-			if (newArticles.length > 0) {
-				const uniqueArticles = newArticles.filter(
-					(article) => !articleMgr.articleData.some((existing) => existing.id === article.id)
-				);
+        const newArticles = await fetchWordPressData({
+            type: 'posts',
+            page: articleMgr.page + 1,
+            limit: 12,
+            category: categoryId
+        });
 
-				articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
-				displayedArticles = filterPostsByCategory();
-			} else {
-				hasMore = false; // No more articles to load
-			}
-		} catch (error) {
-			console.error('Error loading more articles:', error);
-		} finally {
-			isLoading = false; // Reset loading state
-		}
-	}
+        if (newArticles.length > 0) {
+            const uniqueArticles = newArticles.filter(article => 
+                article.id && !articleMgr.articleData.some(existing => existing.id === article.id)
+            );
+
+            if (uniqueArticles.length > 0) {
+                articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
+                displayedArticles = [...displayedArticles, ...uniqueArticles];
+
+				articleMgr.setPage(articleMgr.page + 1);
+            }
+        } else {
+            hasMore = false; // No more articles to load
+        }
+    } catch (error) {
+        console.error('Error loading more articles:', error);
+    } finally {
+        isLoading = false;
+    }
+}
+
+
+
 
 	function setupInfiniteScroll() {
 		if (observer) observer.disconnect(); // ✅ Prevent multiple observers
@@ -235,7 +243,6 @@
 		</div>
 	{/each}
 </Masonry>
-
 
 <!-- Infinite Scroll Trigger -->
 <div class="flex h-10 w-full items-center justify-center" bind:this={loadMoreTrigger}>

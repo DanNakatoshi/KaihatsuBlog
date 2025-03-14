@@ -7,7 +7,7 @@ import { fetchWordPressData } from '$lib/api/WPhandler.js';
  * @returns {Promise<{ posts: Array, series: Array, categories: Array, tags: Array, error?: string }>}.
  */
 export async function load() {
-	const postsPerPage = 10; // Default number of posts per page
+	const postsPerPage = 12; // Default number of posts per page
 
 	try {
 		// Fetch data from WordPress API using the updated fetchWordPressData

@@ -69,9 +69,13 @@ function createSeriesData() {
 }
 export const seriesMgr = createSeriesData();
 
+
+
+
 function createArticleData() {
 	let articleData = $state([]);
 	let selectedCategoryFilters = $state([]);
+    let page = $state(1);
 
 	function handleReadButton(slug, seriesId = null) {
 		const url = seriesId ? `/articles/${slug}?seriesId=${seriesId}` : `/articles/${slug}`;
@@ -80,25 +84,40 @@ function createArticleData() {
 
 	return {
 		handleReadButton,
-		// Getters
-		get articleData() {
-			return articleData;
-		},
-		get selectedCategoryFilters() {
-			return selectedCategoryFilters;
-		},
-		// Setters
-		setArticleData(newData) {
-			articleData = newData;
-		},
-		setCategoryData(newCategories) {
-			categoryData = newCategories;
-		},
+        // Getters
+        get articleData() {
+            return articleData;
+        },
+        get selectedCategoryFilters() {
+            return selectedCategoryFilters;
+        },
+        get page() {
+            return page; 
+        },
 
+        // Setters
+        setArticleData(newData) {
+            articleData = newData;
+        },
+        setCategoryData(newCategories) {
+            categoryData = newCategories;
+        },
+        setPage(newPage) {
+            page = newPage; 
+        },
 		// Methods for Article Management
 		addArticles(newArticle) {
 			articleData = [...articleData, newArticle];
 		},
+
+		incrementPage() {
+            page += 1; 
+        },
+
+        resetPage() {
+            page = 1; 
+        },
+
 		// removeArticle(articleId) {
 		// 	articleData = articleData.filter(article => article.id !== articleId);
 		// },
