@@ -126,8 +126,6 @@
 	}
 </script>
 
-{isEmailUser}
-
 {#if userMgr?.user}
 	<div>
 		<!-- <Button variant="destructive">アカウントを削除</Button> -->
