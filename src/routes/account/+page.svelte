@@ -20,7 +20,8 @@
 	// Icon
 	import { Eye, EyeOff, Loader2 } from 'lucide-svelte';
 
-	let isOpen = $state(false);
+	let isAccoutModalOpen = $state(false);
+	let isPasswordResetModalOpen = $state(false);
 
 	// LOGGED IN USER
 	// let isEmailUser = $state(false);
@@ -105,12 +106,20 @@
 		}
 	}
 
-	function closeModal() {
-		isOpen = false;
+	function closeAccountModal() {
+		isAccoutModalOpen = false;
 	}
 
-	function openModal() {
-		isOpen = true;
+	function openAccountModal() {
+		isAccoutModalOpen = true;
+	}
+
+	function closePasswordResetModal() {
+		isPasswordResetModalOpen = false;
+	}
+
+	function openPasswordResetModal() {
+		isPasswordResetModalOpen = true;
 	}
 
 	async function sendPasswordResetEmail() {
@@ -142,36 +151,52 @@
 			</Button>
 			{#if isEmailUser}
 				<Button
-					onclick={handleSendResetEmail}
+					onclick={openPasswordResetModal}
 					disabled={isResetting}
 					variant="destructive"
 					aria-label="パスワードの変更"
-					class="min-w-20"
-				>
-					{#if isResetting}
-						<Loader2 size={20} stroke-width={2} class="animate-spin" />
-					{:else}
-						パスワードの変更
-					{/if}</Button
+					class="min-w-20">パスワードの変更</Button
 				>
 			{/if}
-			<Button variant="destructive" onclick={openModal} aria-label="アカウント削除"
+			<Button variant="destructive" onclick={openAccountModal} aria-label="アカウント削除"
 				>アカウントを削除</Button
 			>
 		</div>
 	</div>
 
-	<Dialog.Root bind:open={isOpen}>
+	<Dialog.Root bind:open={isAccoutModalOpen}>
 		<Dialog.Content>
 			アカウントを削除するとブックマークの記録やコメントなどアカウントに関連するデータを含めてすべてのデータが削除され取り戻すことが不可能になります。
 			それでも、アカウントの削除をしますか？
 			<div class="flex justify-center gap-3">
-				<Button onclick={closeModal} aria-label="キャンセル">キャンセル</Button>
+				<Button onclick={closeAccountModal} aria-label="キャンセル">キャンセル</Button>
 				<Button
 					variant="destructive"
 					onclick={() => userMgr.deleteAccount()}
 					aria-label="アカウント削除">アカウントを削除</Button
 				>
+			</div>
+		</Dialog.Content>
+	</Dialog.Root>
+
+	<Dialog.Root bind:open={isPasswordResetModalOpen}>
+		<Dialog.Content>
+			パスワードリセットのリンクが {userMgr?.user?.email} に送信されます。しばらくしても届かない場合はスパムフォルダを確認してください。
+			<div class="flex justify-center gap-3">
+				<Button onclick={closePasswordResetModal} aria-label="キャンセル">キャンセル</Button>
+				<Button
+					variant="destructive"
+					onclick={handleSendResetEmail}
+					aria-label="パスワードをリセットする"
+					disabled={isResetting}
+					class="min-w-24"
+				>
+					{#if isResetting}
+						<Loader2 size={20} stroke-width={2} class="animate-spin" />
+					{:else}
+						パスワードをリセットする
+					{/if}
+				</Button>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>
