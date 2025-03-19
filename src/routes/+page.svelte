@@ -80,50 +80,48 @@
 	}
 
 	async function loadMoreArticles() {
-    if (isLoading || !hasMore || isDebounced) return;
+		if (isLoading || !hasMore || isDebounced) return;
 
-    console.log(`Loading more articles... Page: ${articleMgr.page}`);
-    isLoading = true;
-    isDebounced = true;
+		console.log(`Loading more articles... Page: ${articleMgr.page}`);
+		isLoading = true;
+		isDebounced = true;
 
-    setTimeout(() => {
-        isDebounced = false;
-    }, 3000);
+		setTimeout(() => {
+			isDebounced = false;
+		}, 1000);
 
-    try {
-        const categoryId =
-            activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
+		try {
+			const categoryId =
+				activeTab !== 'ALL' ? mainCategoryInfo.find((cat) => cat.name === activeTab)?.id : null;
 
-        const newArticles = await fetchWordPressData({
-            type: 'posts',
-            page: articleMgr.page + 1,
-            limit: 12,
-            category: categoryId
-        });
+			const newArticles = await fetchWordPressData({
+				type: 'posts',
+				page: articleMgr.page + 1,
+				limit: 12,
+				category: categoryId
+			});
 
-        if (newArticles.length > 0) {
-            const uniqueArticles = newArticles.filter(article => 
-                article.id && !articleMgr.articleData.some(existing => existing.id === article.id)
-            );
+			if (newArticles.length > 0) {
+				const uniqueArticles = newArticles.filter(
+					(article) =>
+						article.id && !articleMgr.articleData.some((existing) => existing.id === article.id)
+				);
 
-            if (uniqueArticles.length > 0) {
-                articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
-                displayedArticles = [...displayedArticles, ...uniqueArticles];
+				if (uniqueArticles.length > 0) {
+					articleMgr.setArticleData([...articleMgr.articleData, ...uniqueArticles]);
+					displayedArticles = [...displayedArticles, ...uniqueArticles];
 
-				articleMgr.setPage(articleMgr.page + 1);
-            }
-        } else {
-            hasMore = false; // No more articles to load
-        }
-    } catch (error) {
-        console.error('Error loading more articles:', error);
-    } finally {
-        isLoading = false;
-    }
-}
-
-
-
+					articleMgr.setPage(articleMgr.page + 1);
+				}
+			} else {
+				hasMore = false; // No more articles to load
+			}
+		} catch (error) {
+			console.error('Error loading more articles:', error);
+		} finally {
+			isLoading = false;
+		}
+	}
 
 	function setupInfiniteScroll() {
 		if (observer) observer.disconnect(); // ✅ Prevent multiple observers
@@ -141,7 +139,6 @@
 	onMount(() => {
 		// displayedArticles = filterPostsByCategory();
 		setupInfiniteScroll();
-
 	});
 
 	onDestroy(() => {
@@ -187,6 +184,21 @@
 	/>
 	<meta name="twitter:image" content="https://asameshicode.com/og-image.png" />
 </svelte:head>
+
+<div class="flex items-center justify-center px-4">
+	<h2 class="flex flex-wrap justify-center py-10 text-center font-bold text-2xl  md:text-4xl leading-tight ">
+		<div>
+			<span class="text-cyan-500 dark:text-cyan-300 whitespace-nowrap">アメリカ</span ><span class="text-gray-dark text-lg md:text-2xl">から</span>
+		</div>
+	  <br class="block sm:hidden">
+	  <div>
+		  <span class="text-pink-500 dark:text-pink-400 whitespace-nowrap">ウェブ開発情報</span><span class="text-gray-dark text-lg md:text-2xl">をお届け</span>
+		</div>
+	</h2>
+  </div>
+  
+  
+  
 
 <div id="searchbox" class="flex flex-col items-center gap-2">
 	<Tabs.Root bind:value={activeTab} class="">
@@ -236,7 +248,14 @@
 	</div>
 </div>
 
-<Masonry key={displayedArticles.length} items={displayedArticles} gridGap={'0.2rem'} stretchFirst={false} colWidth={'minmax(22rem, 1fr)'} reset>
+<Masonry
+	key={displayedArticles.length}
+	items={displayedArticles}
+	gridGap={'0.2rem'}
+	stretchFirst={false}
+	colWidth={'minmax(22rem, 1fr)'}
+	reset
+>
 	{#each displayedArticles as post (post.id)}
 		<div class="p-2">
 			<ArticleCard {post} />
@@ -250,3 +269,7 @@
 		<LoadingIcon />
 	{/if}
 </div>
+
+<style>
+
+</style>
