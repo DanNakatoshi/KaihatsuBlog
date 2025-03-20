@@ -99,9 +99,9 @@ function createArticleData() {
         setArticleData(newData) {
             articleData = newData;
         },
-        setCategoryData(newCategories) {
-            categoryData = newCategories;
-        },
+        // setCategoryData(newCategories) {
+        //     categoryData = newCategories;
+        // },
         setPage(newPage) {
             page = newPage; 
         },
@@ -140,9 +140,9 @@ export function createFilterData() {
 			return selectedCategoryFilters;
 		},
 		// Setters
-		setCategoryData(newCategories) {
-			categoryData = newCategories;
-		},
+		// setCategoryData(newCategories) {
+		// 	categoryData = newCategories;
+		// },
 
 		// Methods for Article Management
 		filterArticlesByCategory(category) {
