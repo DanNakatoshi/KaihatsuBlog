@@ -4,8 +4,9 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
+	import UserLogin from '$lib/components/ui/custom-auth/userLogin.svelte';
 
+	
 	let { postId, size = '36', isCircleBtn = false, hasShowLable = false,  } = $props();
 	let isBookmarked = $derived(userMgr?.bookmarks?.includes(postId) ?? false);
 	let isOpen = $state(false); // Controls the login dialog
@@ -18,6 +19,10 @@
 		await userMgr.toggleBookmark(postId);
 	}
 
+	$effect(()=>{
+		userMgr?.user ? isOpen = false : ''
+	})
+	
 </script>
 
 <Button
@@ -37,10 +42,7 @@
 </Button>
 
 <Dialog.Root bind:open={isOpen}>
-	<Dialog.Content>
-		Googleでサインインしてブックマーク機能やコメント機能を使ってみましょう!
-		<div class="flex justify-center">
-			<GoogleSigninBtn />
-		</div>
+	<Dialog.Content class="flex justify-center">
+		<UserLogin/>
 	</Dialog.Content>
 </Dialog.Root>

@@ -21,8 +21,8 @@
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
 	// components
-	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
-
+	// import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
+	import UserLoginModal from '$lib/components/ui/custom-auth/UserLoginModal.svelte';
 	// let user = $state(userMgr?.user || null);
 	let isMenuOpen = $state(false);
 
@@ -95,8 +95,7 @@
 			aria-label="close menu"
 			onclick={closeMenu}><X size="12" strokeWidth={6} /></Button
 		>
-		<h2 class="text-lg font-semibold">Menu</h2>
-		<div class="mt-6 flex flex-col items-start gap-3">
+		<div class="mt-8 flex flex-col items-start gap-3 ">
 			<Button
 				class="w-full max-w-full"
 				onclick={() => {
@@ -144,7 +143,8 @@
 				</div>
 			{:else}
 				<div class="flex w-full items-center justify-center">
-					<GoogleSigninBtn />
+					<!-- <GoogleSigninBtn /> -->
+					 <UserLoginModal/>
 				</div>
 			{/if}
 
