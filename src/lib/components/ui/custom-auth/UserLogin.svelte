@@ -21,6 +21,7 @@
 	// GUEST
 	// Email Signup
 	let emailSignup = $state('');
+	let confirmPasswordSignup = $state('');
 	let passwordSignup = $state('');
 	let showPasswordSignup = $state(false);
 	let isSigningUp = $state(false);
@@ -35,6 +36,16 @@
 	let isResetting = $state(false);
 
 	async function handleSignup() {
+		if (!emailSignup.includes('@')) {
+			toast.error('⚠️ 有効なメールアドレスを入力してください。');
+			return;
+		}
+
+		if (passwordSignup !== confirmPasswordSignup) {
+			toast.error('❌ パスワードが一致しません。');
+			return;
+		}
+
 		isSigningUp = true;
 		const result = await userMgr.signUpWithEmail(emailSignup, passwordSignup);
 		isSigningUp = false;
@@ -42,11 +53,17 @@
 		if (result) {
 			emailSignup = '';
 			passwordSignup = '';
+			confirmPasswordSignup = '';
 			toast.success('✅ 登録成功！メールを確認してください。');
 		}
 	}
 
 	async function handleLogin() {
+		if (!emailLogin.includes('@')) {
+			toast.error('⚠️ 有効なメールアドレスを入力してください。');
+			return;
+		}
+
 		isLoggingIn = true;
 		const result = await userMgr.loginWithEmail(emailLogin, passwordLogin);
 		isLoggingIn = false;
@@ -63,8 +80,8 @@
 	async function handleSendResetEmail() {
 		const email = userMgr.user?.email || emailLogin;
 
-		if (!email) {
-			toast.error('⚠️ メールアドレスを入力してください。');
+		if (!email || !email.includes('@')) {
+			toast.error('⚠️ 有効なメールアドレスを入力してください。');
 			return;
 		}
 
@@ -155,7 +172,11 @@
 						</button>
 					</div>
 
-					<Button onclick={handleLogin} disabled={isLoggingIn} aria-label="ログイン">
+					<Button
+						onclick={handleLogin}
+						disabled={isLoggingIn || !emailLogin || !passwordLogin}
+						aria-label="ログイン"
+					>
 						{#if isLoggingIn}
 							<Loader2 size={20} stroke-width={2} class="animate-spin" />
 						{:else}
@@ -175,7 +196,7 @@
 					<p class="text-gray text-sm">このメールアドレスにリセットリンクを送信します。</p>
 					<Button
 						onclick={handleSendResetEmail}
-						disabled={isResetting}
+						disabled={isResetting || !emailLogin}
 						aria-label="リセットリンクを送信"
 					>
 						{#if isResetting}
@@ -236,7 +257,22 @@
 					</button>
 				</div>
 
-				<Button class="" onclick={handleSignup} disabled={isSigningUp} aria-label="登録">
+				<!-- ✅ Confirm Password Field -->
+				<Input
+					type="password"
+					bind:value={confirmPasswordSignup}
+					placeholder="パスワード（確認用）"
+					class="w-full"
+					required
+					autocomplete="new-password"
+				/>
+
+				<Button
+					class=""
+					onclick={handleSignup}
+					disabled={isSigningUp || !emailSignup || !passwordSignup || !confirmPasswordSignup}
+					aria-label="登録"
+				>
 					{#if isSigningUp}
 						<Loader2 size={20} stroke-width={2} class="animate-spin" />
 					{:else}
@@ -253,9 +289,9 @@
 
 	<GoogleSigninBtn class="w-full max-w-xs " />
 
-    <div class="relative mt-4 flex w-full max-w-xs items-center gap-2">
-        <hr class="flex-grow border-t border-[color:var(--muted-foreground)]" />
-        <span class="text-sm text-[color:var(--muted-foreground)]">または</span>
-        <hr class="flex-grow border-t border-[color:var(--muted-foreground)]" />
-    </div>
+	<div class="relative mt-4 flex w-full max-w-xs items-center gap-2">
+		<hr class="flex-grow border-t border-[color:var(--muted-foreground)]" />
+		<span class="text-sm text-[color:var(--muted-foreground)]">または</span>
+		<hr class="flex-grow border-t border-[color:var(--muted-foreground)]" />
+	</div>
 {/snippet}

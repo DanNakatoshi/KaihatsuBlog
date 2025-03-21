@@ -53,8 +53,13 @@
 
 
 <div
-	class="fixed bottom-0 left-1/2 flex w-full max-w-screen-sm -translate-x-1/2 items-center justify-around  border-primary border   bg-background p-2 shadow-lg sm:mb-2 sm:rounded-md"
+	class="fixed bottom-0 left-1/2 flex w-full max-w-screen-sm -translate-x-1/2 items-center justify-around 
+	border-t border-primary 
+	rounded-t-md 
+	bg-background p-2 shadow-lg 
+	sm:mb-2 sm:rounded-md sm:border sm:border-primary"
 >
+
 
 	<!-- Home -->
 	<Button
