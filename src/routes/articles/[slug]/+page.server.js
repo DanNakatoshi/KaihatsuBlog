@@ -1,4 +1,5 @@
 import { fetchWordPressData } from '$lib/api/WPhandler.js';
+import { getCached, setCache } from '$lib/api/cache.js';
 
 /**
  * Load function to fetch a single post and associated series data.
@@ -7,9 +8,18 @@ import { fetchWordPressData } from '$lib/api/WPhandler.js';
  * @param {object} url - URL object to retrieve query parameters.
  * @returns {Promise<{ post: object, seriesData: object | null, seriesId: string | null, error?: string }>}
  */
+
 export async function load({ params, url }) {
 	const { slug } = params;
 	const seriesId = url.searchParams.get('seriesId');
+	const cacheKey = `post-${slug}-series-${seriesId ?? 'none'}`;
+
+
+	// Try cache first
+	const cached = await getCached(cacheKey);
+	if (cached) {
+		return cached;
+	}
 
 	try {
 		// console.log(`Fetching post with slug: "${slug}"`);
