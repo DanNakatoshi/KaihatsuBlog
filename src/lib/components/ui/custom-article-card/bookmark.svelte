@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import UserLogin from '$lib/components/ui/custom-auth/userLogin.svelte';
+	import UserLogin from '$lib/components/ui/custom-auth/UserLogin.svelte';
 
 	
 	let { postId, size = '36', isCircleBtn = false, hasShowLable = false,  } = $props();
