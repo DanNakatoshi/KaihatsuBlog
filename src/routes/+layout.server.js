@@ -1,34 +1,37 @@
 import { fetchWordPressData } from '$lib/api/WPhandler.js';
+import { getCached, setCache } from '$lib/api/cache.js';
 
-/**
- * Load function to fetch WordPress data on the server.
- * Fetches posts, series, categories, and tags from WordPress API.
- *
- * @returns {Promise<{ posts: Array, series: Array, categories: Array, tags: Array, error?: string }>}.
- */
+/** @type {import('./$types').LayoutServerLoad} */
 export async function load() {
-	const postsPerPage = 12; // Default number of posts per page
+	const cacheKey = 'layout-wordpress-data';
+	const cached = getCached(cacheKey);
+
+	if (cached) {
+		return cached;
+	}
+
+	const postsPerPage = 12;
 
 	try {
-		// Fetch data from WordPress API using the updated fetchWordPressData
-		const posts = await fetchWordPressData({ type: 'posts', limit: postsPerPage });
-		const series = await fetchWordPressData({ type: 'series' });
-		const categories = await fetchWordPressData({ type: 'categories' });
-		const tags = await fetchWordPressData({ type: 'tags' });
+		const [posts, series, categories, tags] = await Promise.all([
+			fetchWordPressData({ type: 'posts', limit: postsPerPage }),
+			fetchWordPressData({ type: 'series' }),
+			fetchWordPressData({ type: 'categories' }),
+			fetchWordPressData({ type: 'tags' })
+		]);
 
-		return {
-			posts,
-			series,
-			categories,
-			tags
-		};
+		const result = { posts, series, categories, tags };
+
+		// Cache for 5 minutes
+		setCache(cacheKey, result, 1000 * 60 * 5);
+
+		return result;
 	} catch (error) {
 		console.error('Error loading data in +layout.server.js:', {
 			message: error.message,
 			stack: error.stack
 		});
 
-		// Return fallback data and an error message for the client
 		return {
 			posts: [],
 			series: [],
