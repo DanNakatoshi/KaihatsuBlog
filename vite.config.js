@@ -18,11 +18,11 @@ export default defineConfig({
 		})
 	],
 
-	css: {
-		preprocessorOptions: {
-			scss: { additionalData: `@import "src/styles/global.scss";` }
-		}
-	},
+	// css: {
+	// 	preprocessorOptions: {
+	// 		scss: { additionalData: `@import "src/styles/global.scss";` }
+	// 	}
+	// },
 
 	build: {
 		target: 'esnext', // Target modern browsers
@@ -33,5 +33,9 @@ export default defineConfig({
 
 	server: {
 		strictPort: true
+	},
+
+	preview: {
+		allowedHosts: ['asameshicode.com'] 
 	}
 });
