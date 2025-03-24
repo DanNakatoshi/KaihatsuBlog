@@ -42,7 +42,9 @@
 	import Bio from '$lib/components/about/Bio.svelte';
 	import Bookmark from '$lib/components/ui/custom-article-card/bookmark.svelte';
 	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
+	import CommentSection from '$lib/components/thread/CommentSection.svelte';
 
+	
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -380,6 +382,11 @@ function observeHeadings() {
 		<div class="col-span-12 md:col-span-9 ">
 			<Bio/>
 		</div>
+
+		<div class="col-span-12 md:col-span-9 ">
+			<CommentSection articleId={post?.id}/>
+		</div>
+
 	</div>
 {/if}
 

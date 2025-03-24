@@ -21,7 +21,6 @@
 
 	// LOGGED IN USER
 	// let isEmailUser = $state(false);
-	// TODO: ADD PASSWORD UPDATE
 	let isEmailUser = $derived(userMgr.user?.identities?.[0]?.provider === 'email');
 
 	// GUEST
