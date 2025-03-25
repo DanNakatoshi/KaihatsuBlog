@@ -173,11 +173,19 @@
 		text-align: justify;
 	}
 
+	/* a {
+		color: var(--link-color);
+		text-decoration: underline;
+		transition: color 0.3s;
+	} */
 	a {
 		color: var(--link-color);
 		text-decoration: underline;
 		transition: color 0.3s;
+		word-break: break-word;
+		overflow-wrap: anywhere;
 	}
+	
 
 	a:hover {
 		color: var(--link-hover-color);

@@ -195,19 +195,19 @@
 		<Card.Root class="mt-2">
 			<Card.Content>
 				<div class="comment">
-					<div class="text-sm font-medium">{comment?.display_name || '(deleted)'}</div>
+					<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'}</div>
 					{@render editComment(comment)}
 
 					<!-- Replies -->
 					{#each comment.replies as reply (reply.id)}
 						<div class="comment ml-4 mt-2 border-l border-gray-200 pl-4">
-							<div class="text-sm font-medium">{reply?.display_name || '(deleted)'}</div>
+							<div class="text-sm font-medium">{reply?.display_name || 'ゲスト'}</div>
 							{@render editComment(reply)}
 						</div>
 					{/each}
 
 					<!-- Reply button -->
-					{#if parentId !== comment.id}
+					{#if parentId !== comment.id && editingCommentId !== comment.id}
 						<Button
 							class="ml-2"
 							variant="link"
@@ -321,7 +321,7 @@
 	{:else}
 		<div>{comment?.content}</div>
 		<div class="text-xs">{new Date(comment?.created_at).toLocaleDateString()}</div>
-		{#if comment.is_owner}
+		{#if comment.is_owner && parentId !== comment.id}
 			<Button
 				size="xs"
 				variant="link"

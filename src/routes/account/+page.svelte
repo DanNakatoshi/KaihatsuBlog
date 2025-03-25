@@ -7,6 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 
 	import { userMgr } from '$lib/store/userData.svelte.js';
 	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
@@ -39,6 +40,13 @@
 	let isResettingPassword = $state(false);
 	let isResetting = $state(false);
 
+	// Account Delete
+	let confirmAnonymousComments = $state(false);
+	let confirmDataDeletion = $state(false);
+
+	let isAccountDeleteConfirmed = $derived(
+		confirmAnonymousComments && confirmDataDeletion
+	);
 	async function handleSignup() {
 		isSigningUp = true;
 		const result = await userMgr.signUpWithEmail(emailSignup, passwordSignup);
@@ -160,15 +168,35 @@
 
 	<Dialog.Root bind:open={isAccoutModalOpen}>
 		<Dialog.Content>
-			アカウントを削除するとブックマークの記録やコメントなどアカウントに関連するデータを含めてすべてのデータが削除され取り戻すことが不可能になります。
-			それでも、アカウントの削除をしますか？
+			<div class="my-4 flex items-start space-x-2">
+				<Checkbox id="confirm-anonymous" bind:checked={confirmAnonymousComments} />
+				<Label
+					for="confirm-anonymous"
+					class="text-sm font-medium leading-snug peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+				>
+					コメントはアカウントを削除しても匿名で残ることを理解し、不要なコメントは削除しました。
+				</Label>
+			</div>
+			
+			<div class="my-4 flex items-start space-x-2">
+				<Checkbox id="confirm-deletion" bind:checked={confirmDataDeletion} />
+				<Label
+					for="confirm-deletion"
+					class="text-sm font-medium leading-snug peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+				>
+					アカウントを削除するとブックマークの記録やアカウントに関連するデータを含めてすべてのデータが削除され復元できないことを理解しました。
+				</Label>
+			</div>
 			<div class="flex justify-center gap-3">
 				<Button onclick={closeAccountModal} aria-label="キャンセル">キャンセル</Button>
 				<Button
 					variant="destructive"
 					onclick={() => userMgr.deleteAccount()}
-					aria-label="アカウント削除">アカウントを削除</Button
+					aria-label="アカウント削除"
+					disabled={!isAccountDeleteConfirmed}
 				>
+					アカウントを削除
+				</Button>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>
@@ -195,8 +223,7 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {:else}
-	<div class="flex justify-center mt-4 ">
-		<UserLogin/>
+	<div class="mt-4 flex justify-center">
+		<UserLogin />
 	</div>
 {/if}
-
