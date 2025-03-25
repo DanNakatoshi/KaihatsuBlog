@@ -154,10 +154,9 @@
 	{#if parentId === null}
 		<div class="text-gray-dark mb-2 ml-2 mt-6 font-bold">記事にコメント</div>
 		<div class="mb-4">
-
-            <div>
-                {userMgr?.userProfile?.display_name || "ゲスト"}
-            </div>
+			<div>
+				{userMgr?.userProfile?.display_name || 'ゲスト'}
+			</div>
 			<Textarea
 				placeholder="コメントを書く..."
 				bind:value={content}
@@ -169,7 +168,8 @@
 					}
 				}}
 			/>
-			<div class="text-right text-xs text-gray-500">{content.length}/500</div>
+            {@render commentCounter(content)}
+			{@render commentPolicy()}
 
 			<div class="my-2 flex justify-end">
 				<Button
@@ -195,13 +195,11 @@
 		<Card.Root class="mt-2">
 			<Card.Content>
 				<div class="comment">
-					<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'}</div>
 					{@render editComment(comment)}
 
 					<!-- Replies -->
 					{#each comment.replies as reply (reply.id)}
 						<div class="comment ml-4 mt-2 border-l border-gray-200 pl-4">
-							<div class="text-sm font-medium">{reply?.display_name || 'ゲスト'}</div>
 							{@render editComment(reply)}
 						</div>
 					{/each}
@@ -233,9 +231,8 @@
 								bind:value={replyContentMap[comment.id]}
 								maxlength="500"
 							/>
-							<div class="text-right text-xs text-gray-500">
-								{replyContentMap[comment.id]?.length ?? 0}/500
-							</div>
+                            {@render commentCounter(replyContentMap[comment.id])}
+							{@render commentPolicy()}
 
 							<div class="mt-3 flex justify-end gap-2">
 								<Button
@@ -277,10 +274,8 @@
 {#snippet editComment(comment)}
 	{#if editingCommentId === comment.id}
 		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
-		<div class="text-right text-xs text-gray-500">
-			{editContentMap[comment.id]?.length ?? 0}/500
-		</div>
-
+        {@render commentCounter(editContentMap[comment.id])}
+		{@render commentPolicy()}
 		<div class="mt-2 flex justify-end gap-2">
 			<Button
 				size="xs"
@@ -294,7 +289,6 @@
 			</Button>
 
 			{#if deleteConfirmId === comment.id}
-				<!-- Confirm deletion button -->
 				<Button
 					size="xs"
 					variant="destructive"
@@ -304,7 +298,6 @@
 					<span class="px-2 py-1">本当に削除しますか？</span>
 				</Button>
 			{:else}
-				<!-- Show "削除" button first -->
 				<Button size="xs" variant="destructive" onclick={() => (deleteConfirmId = comment.id)}>
 					<span class="px-2 py-1">削除</span>
 				</Button>
@@ -319,8 +312,13 @@
 			</Button>
 		</div>
 	{:else}
-		<div>{comment?.content}</div>
-		<div class="text-xs">{new Date(comment?.created_at).toLocaleDateString()}</div>
+		<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'}</div>
+		{comment?.is_edited}
+		<div>
+			{comment?.content}
+			<span class="text-gray text-xs">{comment?.is_edited ? '(編集済み)' : ''}</span>
+		</div>
+		<div class="text-gray text-xs">{new Date(comment?.created_at).toLocaleDateString()}</div>
 		{#if comment.is_owner && parentId !== comment.id}
 			<Button
 				size="xs"
@@ -334,4 +332,14 @@
 			</Button>
 		{/if}
 	{/if}
+{/snippet}
+
+{#snippet commentPolicy()}
+	<div class="text-xs flex justify-center flex-wrap">
+		誹謗中傷や公序良俗に反するコメントは削除される場合があり、悪質な場合はアカウントの停止などの措置を取ることがあります。
+	</div>
+{/snippet}
+
+{#snippet commentCounter(content)}
+	<div class="text-right text-xs text-gray-500">{content?.length}/500</div>
 {/snippet}
