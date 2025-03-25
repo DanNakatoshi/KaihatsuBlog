@@ -425,7 +425,6 @@ function observeHeadings() {
 {/snippet}
 
 
-
 <!-- Table of Contents Snippet -->
 {#snippet tocSnippet()}
 	<div id="toc" class="flex max-w-full flex-col items-start">
