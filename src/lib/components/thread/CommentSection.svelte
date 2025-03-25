@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/api/supabaseClient.js';
 	import { userMgr } from '$lib/store/userData.svelte';
+	import { loginModalManager } from '$lib/store/pageControl.svelte.js';
 
 	// Chadcn
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
@@ -148,18 +149,33 @@
 
 	onMount(fetchComments);
 </script>
+
 <div>
 	{#if parentId === null}
 		<div class="text-gray-dark mb-2 ml-2 mt-6 font-bold">記事にコメント</div>
 		<div class="mb-4">
-			<Textarea placeholder="コメントを書く..." bind:value={content} maxlength="500" />
-            <div class="text-xs text-right text-gray-500">{content.length}/500</div>
+
+            <div>
+                {userMgr?.userProfile?.display_name || "ゲスト"}
+            </div>
+			<Textarea
+				placeholder="コメントを書く..."
+				bind:value={content}
+				maxlength="500"
+				onfocus={(e) => {
+					if (!userMgr?.user) {
+						e.target.blur(); // prevent typing
+						loginModalManager.open();
+					}
+				}}
+			/>
+			<div class="text-right text-xs text-gray-500">{content.length}/500</div>
 
 			<div class="my-2 flex justify-end">
 				<Button
 					size="xs"
 					onclick={() => submitComment({ content, parentId: null })}
-					disabled={isSubmitting}
+					disabled={isSubmitting || content.length === 0}
 				>
 					<span class="px-2 py-1">
 						{#if isSubmitting}
@@ -197,6 +213,10 @@
 							variant="link"
 							size="xs"
 							onclick={() => {
+								if (!userMgr?.user) {
+									loginModalManager.open();
+									return;
+								}
 								parentId = comment.id;
 								replyContentMap[comment.id] ??= '';
 							}}
@@ -213,10 +233,10 @@
 								bind:value={replyContentMap[comment.id]}
 								maxlength="500"
 							/>
-                            <div class="text-xs text-right text-gray-500">
-                                {replyContentMap[comment.id]?.length ?? 0}/500
-                            </div>
-                            
+							<div class="text-right text-xs text-gray-500">
+								{replyContentMap[comment.id]?.length ?? 0}/500
+							</div>
+
 							<div class="mt-3 flex justify-end gap-2">
 								<Button
 									size="md"
@@ -257,10 +277,10 @@
 {#snippet editComment(comment)}
 	{#if editingCommentId === comment.id}
 		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
-        <div class="text-xs text-right text-gray-500">
-            {editContentMap[comment.id]?.length ?? 0}/500
-        </div>
-        
+		<div class="text-right text-xs text-gray-500">
+			{editContentMap[comment.id]?.length ?? 0}/500
+		</div>
+
 		<div class="mt-2 flex justify-end gap-2">
 			<Button
 				size="xs"

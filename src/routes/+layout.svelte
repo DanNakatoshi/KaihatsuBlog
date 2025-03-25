@@ -16,13 +16,14 @@
 	import { page } from '$app/stores';
 
 	// Store
-	import { privacyDrawerManager } from '$lib/store/pageContorol.svelte';
+	import { privacyDrawerManager } from '$lib/store/pageControl.svelte';
 	import { supabase } from '$lib/api/supabaseClient';
 	import { userMgr } from '$lib/store/userData.svelte.js';
 
 	// Components
 	import LoadingIcon from '$lib/components/ui/custom-spin-icon/LoadingIcon.svelte';
 	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
+	import UserLoginModal from '$lib/components/ui/custom-auth/UserLoginModal.svelte';
 
 	let { children, data } = $props();
 
@@ -174,6 +175,7 @@
 <!-- Toaster for mobile (hidden on md and larger) -->
 <Toaster position="bottom-left" style="bottom: 4rem;" />
 
+<UserLoginModal/>
 <!-- Privacy Consent Drawer -->
 <Drawer.Root
 	bind:open={privacyDrawerManager.isDrawerOpen}

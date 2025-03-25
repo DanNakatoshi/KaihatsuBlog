@@ -22,7 +22,9 @@
 
 	// components
 	// import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
-	import UserLoginModal from '$lib/components/ui/custom-auth/UserLoginModal.svelte';
+	// import UserLoginModal from '$lib/components/ui/custom-auth/UserLoginModal.svelte';
+	import { loginModalManager } from '$lib/store/pageControl.svelte.js';
+
 	// let user = $state(userMgr?.user || null);
 	let isMenuOpen = $state(false);
 
@@ -144,7 +146,9 @@
 			{:else}
 				<div class="flex w-full items-center justify-center">
 					<!-- <GoogleSigninBtn /> -->
-					 <UserLoginModal/>
+					<Button onclick={() => loginModalManager.open()} class="w-full">ログイン</Button>
+
+					 <!-- <UserLoginModal/> -->
 				</div>
 			{/if}
 

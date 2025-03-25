@@ -18,3 +18,28 @@ function createPrivacyDrawerManager() {
 }
 
 export const privacyDrawerManager = createPrivacyDrawerManager();
+
+
+let _isModalOpen = $state(false);
+
+function createLoginModalManager() {
+	return {
+		get isModalOpen() {
+			return _isModalOpen;
+		},
+		set isModalOpen(val) {
+			_isModalOpen = val;
+		},
+		open() {
+			_isModalOpen = true;
+		},
+		close() {
+			_isModalOpen = false;
+		},
+		toggle() {
+			_isModalOpen = !_isModalOpen;
+		}
+	};
+}
+
+export const loginModalManager = createLoginModalManager();

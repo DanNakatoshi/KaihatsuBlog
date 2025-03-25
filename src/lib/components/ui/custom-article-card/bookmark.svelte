@@ -4,25 +4,21 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import UserLogin from '$lib/components/ui/custom-auth/UserLogin.svelte';
+	import { loginModalManager } from '$lib/store/pageControl.svelte.js';
 
-	
+
 	let { postId, size = '36', isCircleBtn = false, hasShowLable = false,  } = $props();
 	let isBookmarked = $derived(userMgr?.bookmarks?.includes(postId) ?? false);
-	let isOpen = $state(false); // Controls the login dialog
 
 	async function handleBookmark() {
 		if (!userMgr?.user) {
-			isOpen = true; // Open login dialog
+			loginModalManager.open()
 			return;
 		}
 		await userMgr.toggleBookmark(postId);
 	}
 
-	$effect(()=>{
-		userMgr?.user ? isOpen = false : ''
-	})
-	
+
 </script>
 
 <Button
@@ -41,8 +37,3 @@
 	{/if}
 </Button>
 
-<Dialog.Root bind:open={isOpen}>
-	<Dialog.Content class="flex justify-center">
-		<UserLogin/>
-	</Dialog.Content>
-</Dialog.Root>
