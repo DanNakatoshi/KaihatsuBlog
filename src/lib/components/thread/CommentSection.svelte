@@ -168,7 +168,7 @@
 					}
 				}}
 			/>
-            {@render commentCounter(content)}
+			{@render commentCounter(content)}
 			{@render commentPolicy()}
 
 			<div class="my-2 flex justify-end">
@@ -231,7 +231,7 @@
 								bind:value={replyContentMap[comment.id]}
 								maxlength="500"
 							/>
-                            {@render commentCounter(replyContentMap[comment.id])}
+							{@render commentCounter(replyContentMap[comment.id])}
 							{@render commentPolicy()}
 
 							<div class="mt-3 flex justify-end gap-2">
@@ -274,7 +274,7 @@
 {#snippet editComment(comment)}
 	{#if editingCommentId === comment.id}
 		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
-        {@render commentCounter(editContentMap[comment.id])}
+		{@render commentCounter(editContentMap[comment.id])}
 		{@render commentPolicy()}
 		<div class="mt-2 flex justify-end gap-2">
 			<Button
@@ -313,7 +313,6 @@
 		</div>
 	{:else}
 		<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'}</div>
-		{comment?.is_edited}
 		<div>
 			{comment?.content}
 			<span class="text-gray text-xs">{comment?.is_edited ? '(編集済み)' : ''}</span>
@@ -335,7 +334,7 @@
 {/snippet}
 
 {#snippet commentPolicy()}
-	<div class="text-xs flex justify-center flex-wrap">
+	<div class="flex flex-wrap justify-center text-xs">
 		誹謗中傷や公序良俗に反するコメントは削除される場合があり、悪質な場合はアカウントの停止などの措置を取ることがあります。
 	</div>
 {/snippet}
