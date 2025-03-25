@@ -6,22 +6,24 @@
 	// components
 	import UserLogin from '$lib/components/ui/custom-auth/UserLogin.svelte';
 
-    let isOpen = $state(false)
+	let { loginModalButton } = $props();
+	let isOpen = $state(false);
 
-    const openModal = () => isOpen = true
+	const openModal = () => (isOpen = true);
 
-	$effect(()=>{
-		userMgr?.user ? isOpen = false : ''
-	})
-
-
+	$effect(() => {
+		userMgr?.user ? (isOpen = false) : '';
+	});
 </script>
-<Button onclick={openModal} class="w-full" >ログイン</Button>
 
-
+{#if loginModalButton}
+	{@render loginModalButton()}
+{:else}
+	<Button onclick={openModal} class="w-full">ログイン</Button>
+{/if}
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Content class="flex justify-center">
-        <UserLogin />
+		<UserLogin />
 	</Dialog.Content>
 </Dialog.Root>

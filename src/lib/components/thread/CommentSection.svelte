@@ -22,16 +22,14 @@
 	let parentId = $state(null);
 	let replyContentMap = $state({});
 	let isSubmitting = $state(false);
+	let editingCommentId = $state(null);
+	let editContentMap = $state({});
+	let deleteConfirmId = $state(null);
 
 	async function fetchComments() {
 		const { data, error } = await supabase
-			.from('comment_thread')
-			.select(`
-            *,
-            user_profile: user_id (
-            display_name
-            )
-            `)
+			.from('view_comment_thread')
+			.select('*')
 			.eq('article_id', articleId)
 			.order('created_at', { ascending: true });
 
@@ -61,13 +59,19 @@
 			return;
 		}
 
+		if (submittedContent.length > 500) {
+			toast.warning('コメントは500文字以内で入力してください');
+			isSubmitting = false;
+			return;
+		}
+
 		isSubmitting = true; // ⛔ Disable buttons
 
 		const { error } = await supabase.from('comment_thread').insert({
 			article_id: articleId,
 			content: submittedContent,
 			parent_id: parentId ?? null,
-			user_id: userMgr.user.id
+			fk_user_id: userMgr.user.id
 		});
 
 		if (error) {
@@ -90,14 +94,67 @@
 		isSubmitting = false; // ✅ Re-enable buttons
 	}
 
+	async function updateComment(commentId, newContent) {
+		if (!newContent.trim()) {
+			toast.warning('編集内容が空です');
+			return;
+		}
+
+		isSubmitting = true;
+
+		if (newContent.length > 500) {
+			toast.warning('コメントは500文字以内で入力してください');
+			isSubmitting = false;
+			return;
+		}
+
+		const { error } = await supabase
+			.from('comment_thread')
+			.update({ content: newContent, is_edited: true })
+			.eq('id', commentId);
+
+		if (error) {
+			toast.error('コメントの更新に失敗しました');
+			console.error(error);
+			isSubmitting = false;
+			return;
+		}
+
+		toast.success('コメントを更新しました');
+		editingCommentId = null;
+		await fetchComments();
+		isSubmitting = false;
+	}
+
+	async function deleteComment(commentId) {
+		// const confirmDelete = confirm('本当にコメントを削除しますか？');
+		// if (!confirmDelete) return;
+
+		isSubmitting = true;
+
+		const { error } = await supabase.from('comment_thread').delete().eq('id', commentId);
+
+		if (error) {
+			toast.error('コメントの削除に失敗しました');
+			console.error(error);
+			isSubmitting = false;
+			return;
+		}
+
+		toast.success('コメントを削除しました');
+		await fetchComments();
+		isSubmitting = false;
+	}
+
 	onMount(fetchComments);
 </script>
-
 <div>
 	{#if parentId === null}
 		<div class="text-gray-dark mb-2 ml-2 mt-6 font-bold">記事にコメント</div>
 		<div class="mb-4">
-			<Textarea placeholder="コメントを書く..." bind:value={content} />
+			<Textarea placeholder="コメントを書く..." bind:value={content} maxlength="500" />
+            <div class="text-xs text-right text-gray-500">{content.length}/500</div>
+
 			<div class="my-2 flex justify-end">
 				<Button
 					size="xs"
@@ -122,18 +179,14 @@
 		<Card.Root class="mt-2">
 			<Card.Content>
 				<div class="comment">
-					<div class="text-sm font-medium">{comment?.author_display_name || '(deleted)'}</div>
-					<div>{comment?.content}</div>
-					<div class="text-xs">{new Date(comment?.created_at).toLocaleDateString()}</div>
+					<div class="text-sm font-medium">{comment?.display_name || '(deleted)'}</div>
+					{@render editComment(comment)}
 
 					<!-- Replies -->
 					{#each comment.replies as reply (reply.id)}
 						<div class="comment ml-4 mt-2 border-l border-gray-200 pl-4">
-							<div class="text-sm font-medium">{reply?.author_display_name || '(deleted)'}</div>
-							<div class="whitespace-pre-wrap">{reply.content}</div>
-							<div class="text-xs text-gray-400">
-								{new Date(reply.created_at).toLocaleDateString()}
-							</div>
+							<div class="text-sm font-medium">{reply?.display_name || '(deleted)'}</div>
+							{@render editComment(reply)}
 						</div>
 					{/each}
 
@@ -155,7 +208,15 @@
 					<!-- Reply box -->
 					{#if parentId === comment.id}
 						<div class="mt-4">
-							<Textarea placeholder="返信を書く..." bind:value={replyContentMap[comment.id]} />
+							<Textarea
+								placeholder="返信を書く..."
+								bind:value={replyContentMap[comment.id]}
+								maxlength="500"
+							/>
+                            <div class="text-xs text-right text-gray-500">
+                                {replyContentMap[comment.id]?.length ?? 0}/500
+                            </div>
+                            
 							<div class="mt-3 flex justify-end gap-2">
 								<Button
 									size="md"
@@ -192,3 +253,65 @@
 		</Card.Root>
 	{/each}
 </div>
+
+{#snippet editComment(comment)}
+	{#if editingCommentId === comment.id}
+		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
+        <div class="text-xs text-right text-gray-500">
+            {editContentMap[comment.id]?.length ?? 0}/500
+        </div>
+        
+		<div class="mt-2 flex justify-end gap-2">
+			<Button
+				size="xs"
+				variant="ghost"
+				onclick={() => {
+					editingCommentId = null;
+					deleteConfirmId = null;
+				}}
+			>
+				<span class="px-2 py-1"> キャンセル </span>
+			</Button>
+
+			{#if deleteConfirmId === comment.id}
+				<!-- Confirm deletion button -->
+				<Button
+					size="xs"
+					variant="destructive"
+					onclick={() => deleteComment(comment.id)}
+					disabled={isSubmitting}
+				>
+					<span class="px-2 py-1">本当に削除しますか？</span>
+				</Button>
+			{:else}
+				<!-- Show "削除" button first -->
+				<Button size="xs" variant="destructive" onclick={() => (deleteConfirmId = comment.id)}>
+					<span class="px-2 py-1">削除</span>
+				</Button>
+			{/if}
+
+			<Button
+				size="xs"
+				onclick={() => updateComment(comment.id, editContentMap[comment.id])}
+				disabled={isSubmitting}
+			>
+				<span class="px-2 py-1"> 保存 </span>
+			</Button>
+		</div>
+	{:else}
+		<div>{comment?.content}</div>
+		<div class="text-xs">{new Date(comment?.created_at).toLocaleDateString()}</div>
+		{#if comment.is_owner}
+			<Button
+				size="xs"
+				variant="link"
+				onclick={() => {
+					editingCommentId = comment.id;
+					editContentMap[comment.id] = comment.content;
+				}}
+			>
+				<span class="px-2 py-1"> 編集 </span>
+			</Button>
+		{/if}
+	{/if}
+{/snippet}
