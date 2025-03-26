@@ -42,15 +42,22 @@
 	function threaded(comments) {
 		const map = {};
 		comments.forEach((c) => (map[c.id] = { ...c, replies: [] }));
+
 		const roots = [];
 
 		for (const c of comments) {
-			if (c.parent_id) {
-				map[c.parent_id]?.replies.push(map[c.id]);
+			if (c.parent_id && map[c.parent_id]) {
+				// Regular reply, parent exists
+				map[c.parent_id].replies.push(map[c.id]);
+			} else if (c.parent_id && !map[c.parent_id]) {
+				// Reply whose parent is deleted — treat as pseudo-root
+				roots.push(map[c.id]);
 			} else {
+				// Top-level comment
 				roots.push(map[c.id]);
 			}
 		}
+
 		return roots;
 	}
 
@@ -317,7 +324,11 @@
 			</Button>
 		</div>
 	{:else}
-		<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'}</div>
+		{#if comment.parent_id && !comments.find((c) => c.id === comment.parent_id)}
+			<div class="ml-4 text-xs italic text-gray-400">※ 親コメントは削除されました</div>
+		{/if}
+		<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'} <span class="opacity-50 text-xs">_{comment?.user_id_suffix}</span></div>
+
 		<div>
 			{comment?.content}
 			<span class="text-gray text-xs">{comment?.is_edited ? '(編集済み)' : ''}</span>
