@@ -152,10 +152,13 @@
 
 <div>
 	{#if parentId === null}
-		<div class="text-gray-dark mb-2 ml-2 mt-6 font-bold">記事にコメント</div>
 		<div class="mb-4">
-			<div>
-				{userMgr?.userProfile?.display_name || 'ゲスト'}
+			<div class="p-1 text-xs">
+				{#if userMgr.user}
+					{userMgr?.userProfile?.display_name || 'ゲスト'}
+				{:else}
+					ログインして記事にコメントしよう
+				{/if}
 			</div>
 			<Textarea
 				placeholder="コメントを書く..."
@@ -171,21 +174,23 @@
 			{@render commentCounter(content)}
 			{@render commentPolicy()}
 
-			<div class="my-2 flex justify-end">
-				<Button
-					size="xs"
-					onclick={() => submitComment({ content, parentId: null })}
-					disabled={isSubmitting || content.length === 0}
-				>
-					<span class="px-2 py-1">
-						{#if isSubmitting}
-							<Loader2 size={24} stroke-width={2} class="animate-spin" />
-						{:else}
-							投稿
-						{/if}
-					</span></Button
-				>
-			</div>
+			{#if userMgr.user}
+				<div class="my-2 flex justify-end">
+					<Button
+						size="xs"
+						onclick={() => submitComment({ content, parentId: null })}
+						disabled={isSubmitting || content.length === 0}
+					>
+						<span class="px-2 py-1">
+							{#if isSubmitting}
+								<Loader2 size={24} stroke-width={2} class="animate-spin" />
+							{:else}
+								投稿
+							{/if}
+						</span></Button
+					>
+				</div>
+			{/if}
 		</div>
 	{/if}
 

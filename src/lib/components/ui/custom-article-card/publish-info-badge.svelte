@@ -19,9 +19,9 @@
 			更新日：{modifiedDate}
 		</Badge>
 	{/if}
-	{#if viewCount}
+	<!-- {#if viewCount}
 		<Badge variant="secondary">
 			<Eye size="12"/> <span class="ml-2">{viewCount}</span>
 		</Badge>
-	{/if}
+	{/if} -->
 </div>
