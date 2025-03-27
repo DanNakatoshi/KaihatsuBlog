@@ -17,7 +17,6 @@
 	import { toast } from 'svelte-sonner'; // add this to your imports
 
 	// Components
-	// import CommentItem from '$lib/components/thread/CommentItem.svelte';
 
 	let { articleId } = $props();
 	let comments = $state([]);
@@ -300,8 +299,8 @@
 {#snippet editComment(comment)}
 	{#if editingCommentId === comment.id}
 		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
-		{@render commentPolicy('edit')}
 		{@render commentCounter(editContentMap[comment.id])}
+		{@render commentPolicy('edit')}
 		<div class="mt-2 flex justify-end gap-2">
 			<Button
 				size="xs"
@@ -379,17 +378,17 @@
 			{#if section === 'main'}
 				<Checkbox id="main-policy" bind:checked={hasAgreedToMain} aria-labelledby="label-main" />
 				<Label id="label-main" for="main-policy" class="text-sm font-medium leading-none">
-					コメントポリシーに同意します。
+					上記に同意します。
 				</Label>
 			{:else if section === 'reply'}
 				<Checkbox id="reply-policy" bind:checked={hasAgreedToReply} aria-labelledby="label-reply" />
 				<Label id="label-reply" for="reply-policy" class="text-sm font-medium leading-none">
-					コメントポリシーに同意します。
+					上記に同意します。
 				</Label>
 			{:else if section === 'edit'}
 				<Checkbox id="edit-policy" bind:checked={hasAgreedToEdit} aria-labelledby="label-edit" />
 				<Label id="label-edit" for="edit-policy" class="text-sm font-medium leading-none">
-					コメントポリシーに同意します。
+					上記に同意します。
 				</Label>
 			{/if}
 		</div>

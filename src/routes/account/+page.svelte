@@ -1,4 +1,8 @@
 <script>
+	// Svelte
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/api/supabaseClient';
 	// UI
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -15,7 +19,7 @@
 	import StatusCards from '$lib/components/ui/custom-user-status/StatusCards.svelte';
 	import UserLogin from '$lib/components/ui/custom-auth/UserLogin.svelte';
 	// Icon
-	import { Eye, EyeOff, Loader2 } from 'lucide-svelte';
+	import { Eye, EyeOff, Loader2, SquareArrowOutUpRight } from 'lucide-svelte';
 
 	let isAccoutModalOpen = $state(false);
 	let isPasswordResetModalOpen = $state(false);
@@ -44,9 +48,10 @@
 	let confirmAnonymousComments = $state(false);
 	let confirmDataDeletion = $state(false);
 
-	let isAccountDeleteConfirmed = $derived(
-		confirmAnonymousComments && confirmDataDeletion
-	);
+	// Comments
+	let userComments = $state([]);
+
+	let isAccountDeleteConfirmed = $derived(confirmAnonymousComments && confirmDataDeletion);
 	async function handleSignup() {
 		isSigningUp = true;
 		const result = await userMgr.signUpWithEmail(emailSignup, passwordSignup);
@@ -136,11 +141,60 @@
 			alert('パスワードリセットのリンクが送信されました。');
 		}
 	}
+
+	// Commnet
+	async function fetchUserComments() {
+		if (!userMgr?.user?.id) return;
+
+		const { data, error } = await supabase
+			.from('view_comment_thread')
+			.select('*')
+			.eq('is_owner', true)
+			.order('created_at', { ascending: false });
+
+		if (error) {
+			console.error('❌ Error fetching user comments:', error.message);
+			return;
+		}
+
+		userComments = data;
+	}
+
+	onMount(() => {
+		fetchUserComments();
+	});
 </script>
 
 {#if userMgr?.user}
 	<div>
 		<StatusCards />
+
+		<!-- COMMENT SECTION -->
+
+		{#if userComments.length > 0}
+			<div class="mt-6 space-y-4">
+				<h2 class="text-lg font-semibold">自分のコメント一覧</h2>
+				{#each userComments as comment (comment.id)}
+					<Card.Root>
+						<Card.Content class="flex flex-col gap-1">
+							<div class="break-words text-sm text-foreground">{comment.content}</div>
+							<div class="flex items-center justify-between text-xs text-muted-foreground">
+								<span>{new Date(comment.created_at).toLocaleString()}</span>
+								<button
+									onclick={() => goto(`/articles/${comment.article_id}`)}
+									class="flex items-center gap-1 hover:underline"
+								>
+									<span>記事を見る</span>
+									<SquareArrowOutUpRight size={16} />
+								</button>
+							</div>
+						</Card.Content>
+					</Card.Root>
+				{/each}
+			</div>
+		{:else}
+			<p class="mt-4 text-sm text-gray-500">まだコメントがありません。</p>
+		{/if}
 
 		<div class="flex justify-end gap-2 p-2">
 			<Button
@@ -177,7 +231,7 @@
 					コメントはアカウントを削除しても匿名で残ることを理解し、不要なコメントは削除しました。
 				</Label>
 			</div>
-			
+
 			<div class="my-4 flex items-start space-x-2">
 				<Checkbox id="confirm-deletion" bind:checked={confirmDataDeletion} />
 				<Label
@@ -224,6 +278,8 @@
 	</Dialog.Root>
 {:else}
 	<div class="mt-4 flex justify-center">
-		<UserLogin />
+		<div class="rounded-md bg-background px-8 py-3">
+			<UserLogin />
+		</div>
 	</div>
 {/if}

@@ -9,7 +9,7 @@ function createUserData() {
 	let session = $state(null);
 	let bookmarks = $state([]);
 	let userProfile = $state(null);
-    
+
 	async function fetchUser() {
 		const { data, error } = await supabase.auth.getUser();
 		if (error) {
