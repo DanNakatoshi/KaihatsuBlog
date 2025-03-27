@@ -17,6 +17,7 @@ async function fetchWordPressAPI(endpoint, params = {}) {
 }
 
 // Generalized function to fetch WordPress data
+
 export async function fetchWordPressData({
 	type,
 	page = 1,
@@ -35,7 +36,8 @@ export async function fetchWordPressData({
 	};
 
 	const fieldsMap = {
-		posts: 'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories,view_count',
+		posts:
+			'id,title,slug,date,modified,yoast_head_json.description,series,tags,categories,view_count',
 		singlePost:
 			'id,title,slug,date,modified,content.rendered,excerpt.rendered,categories,tags,series,yoast_head_json.description,view_count'
 	};

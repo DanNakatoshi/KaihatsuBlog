@@ -3,6 +3,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/api/supabaseClient';
+	import { fetchWordPressData } from '$lib/api/WPhandler.js';
+
 	// UI
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -50,6 +52,7 @@
 
 	// Comments
 	let userComments = $state([]);
+	let commentPostsMap = $state({}); // article_id -> { title, slug }
 
 	let isAccountDeleteConfirmed = $derived(confirmAnonymousComments && confirmDataDeletion);
 	async function handleSignup() {
@@ -158,6 +161,27 @@
 		}
 
 		userComments = data;
+
+		// Collect unique article_ids
+		const articleIds = [...new Set(data.map((c) => c.article_id))];
+
+		// Fetch post info for each article_id
+		await Promise.all(
+			articleIds.map(async (id) => {
+				try {
+					const postData = await fetchWordPressData({ type: 'posts', limit: 1, page: 1 });
+					const matching = postData.find((p) => p.id === id);
+					if (matching) {
+						commentPostsMap[id] = {
+							title: matching.title.rendered,
+							slug: matching.slug
+						};
+					}
+				} catch (err) {
+					console.error(`Error fetching post for ID ${id}:`, err);
+				}
+			})
+		);
 	}
 
 	onMount(() => {
@@ -180,13 +204,17 @@
 							<div class="break-words text-sm text-foreground">{comment.content}</div>
 							<div class="flex items-center justify-between text-xs text-muted-foreground">
 								<span>{new Date(comment.created_at).toLocaleString()}</span>
-								<button
-									onclick={() => goto(`/articles/${comment.article_id}`)}
-									class="flex items-center gap-1 hover:underline"
-								>
-									<span>記事を見る</span>
-									<SquareArrowOutUpRight size={16} />
-								</button>
+								{#if commentPostsMap[comment.article_id]}
+									<button
+										onclick={() => goto(`/articles/${commentPostsMap[comment.article_id].slug}`)}
+										class="flex items-center gap-1 hover:underline"
+									>
+										<span>
+											{commentPostsMap[comment.article_id].title || '記事を見る'}
+										</span>
+										<SquareArrowOutUpRight size={16} />
+									</button>
+								{/if}
 							</div>
 						</Card.Content>
 					</Card.Root>
