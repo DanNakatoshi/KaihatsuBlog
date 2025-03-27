@@ -8,6 +8,8 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 
 	// Icon
 	import { Loader2 } from 'lucide-svelte';
@@ -26,6 +28,9 @@
 	let editingCommentId = $state(null);
 	let editContentMap = $state({});
 	let deleteConfirmId = $state(null);
+	let hasAgreedToMain = $state(false);
+	let hasAgreedToReply = $state(false);
+	let hasAgreedToEdit = $state(false);
 
 	async function fetchComments() {
 		const { data, error } = await supabase
@@ -158,48 +163,51 @@
 </script>
 
 <div>
-	{#if parentId === null}
-		<div class="mb-4">
-			<div class="p-1 text-xs">
-				{#if userMgr.user}
-					{userMgr?.userProfile?.display_name || 'ゲスト'}
-				{:else}
-					ログインして記事にコメントしよう
-				{/if}
-			</div>
-			<Textarea
-				placeholder="コメントを書く..."
-				bind:value={content}
-				maxlength="500"
-				onfocus={(e) => {
-					if (!userMgr?.user) {
-						e.target.blur(); // prevent typing
-						loginModalManager.open();
-					}
-				}}
-			/>
-			{@render commentCounter(content)}
-			{@render commentPolicy()}
-
+	<div class="mb-4">
+		<div class="p-1 text-xs">
 			{#if userMgr.user}
-				<div class="my-2 flex justify-end">
-					<Button
-						size="xs"
-						onclick={() => submitComment({ content, parentId: null })}
-						disabled={isSubmitting || content.length === 0}
-					>
-						<span class="px-2 py-1">
-							{#if isSubmitting}
-								<Loader2 size={24} stroke-width={2} class="animate-spin" />
-							{:else}
-								投稿
-							{/if}
-						</span></Button
-					>
-				</div>
+				{userMgr?.userProfile?.display_name || 'ゲスト'}
+			{:else}
+				ログインして記事にコメントしよう
 			{/if}
 		</div>
-	{/if}
+		<Textarea
+			placeholder="コメントを書く..."
+			bind:value={content}
+			maxlength="500"
+			onfocus={(e) => {
+				if (!userMgr?.user) {
+					e.target.blur(); // prevent typing
+					loginModalManager.open();
+				}
+			}}
+		/>
+		{@render commentCounter(content)}
+
+		{#if userMgr.user}
+			{#if content.length > 0}
+				{@render commentPolicy('main')}
+			{/if}
+			<div class="my-2 flex justify-end">
+				<Button
+					size="xs"
+					onclick={async () => {
+						await submitComment({ content, parentId: null });
+						hasAgreedToMain = false;
+					}}
+					disabled={isSubmitting || content.length === 0 || !hasAgreedToMain}
+				>
+					<span class="px-2 py-1">
+						{#if isSubmitting}
+							<Loader2 size={24} stroke-width={2} class="animate-spin" />
+						{:else}
+							投稿
+						{/if}
+					</span>
+				</Button>
+			</div>
+		{/if}
+	</div>
 
 	<!-- New comment -->
 
@@ -229,6 +237,7 @@
 								}
 								parentId = comment.id;
 								replyContentMap[comment.id] ??= '';
+								hasAgreedToReply = false;
 							}}
 						>
 							返信
@@ -244,7 +253,7 @@
 								maxlength="500"
 							/>
 							{@render commentCounter(replyContentMap[comment.id])}
-							{@render commentPolicy()}
+							{@render commentPolicy('reply')}
 
 							<div class="mt-3 flex justify-end gap-2">
 								<Button
@@ -253,18 +262,23 @@
 									onclick={() => {
 										parentId = null;
 										replyContentMap[comment.id] = '';
+										hasAgreedToReply = false;
 									}}
 								>
 									<span class="p-1"> キャンセル </span>
 								</Button>
 								<Button
 									size="md"
-									disabled={isSubmitting}
-									onclick={() =>
-										submitComment({
+									disabled={isSubmitting ||
+										replyContentMap[comment.id].length === 0 ||
+										!hasAgreedToReply}
+									onclick={async () => {
+										await submitComment({
 											content: replyContentMap[comment.id],
 											parentId: comment.id
-										})}
+										});
+										hasAgreedToReply = false;
+									}}
 								>
 									<span class="p-1">
 										{#if isSubmitting}
@@ -286,8 +300,8 @@
 {#snippet editComment(comment)}
 	{#if editingCommentId === comment.id}
 		<Textarea bind:value={editContentMap[comment.id]} maxlength="500" />
+		{@render commentPolicy('edit')}
 		{@render commentCounter(editContentMap[comment.id])}
-		{@render commentPolicy()}
 		<div class="mt-2 flex justify-end gap-2">
 			<Button
 				size="xs"
@@ -318,7 +332,7 @@
 			<Button
 				size="xs"
 				onclick={() => updateComment(comment.id, editContentMap[comment.id])}
-				disabled={isSubmitting}
+				disabled={isSubmitting || editContentMap[comment.id].length === 0 || !hasAgreedToEdit}
 			>
 				<span class="px-2 py-1"> 保存 </span>
 			</Button>
@@ -327,7 +341,10 @@
 		{#if comment.parent_id && !comments.find((c) => c.id === comment.parent_id)}
 			<div class="ml-4 text-xs italic text-gray-400">※ 親コメントは削除されました</div>
 		{/if}
-		<div class="text-sm font-medium">{comment?.display_name || 'ゲスト'} <span class="opacity-50 text-xs">_{comment?.user_id_suffix}</span></div>
+		<div class="text-sm font-medium">
+			{comment?.display_name || 'ゲスト'}
+			<span class="text-xs opacity-50">_{comment?.user_id_suffix}</span>
+		</div>
 
 		<div>
 			{comment?.content}
@@ -341,6 +358,7 @@
 				onclick={() => {
 					editingCommentId = comment.id;
 					editContentMap[comment.id] = comment.content;
+					hasAgreedToEdit = false;
 				}}
 			>
 				<span class="px-2 py-1"> 編集 </span>
@@ -349,9 +367,32 @@
 	{/if}
 {/snippet}
 
-{#snippet commentPolicy()}
-	<div class="flex flex-wrap justify-center text-xs">
-		誹謗中傷や公序良俗に反するコメントは削除される場合があり、悪質な場合はアカウントの停止などの措置を取ることがあります。
+{#snippet commentPolicy(section)}
+	<div class="fade-in ">
+		<div class="mx-1 flex flex-wrap justify-center p-2 text-xs">
+			誹謗中傷や公序良俗に反するコメントは削除される場合があります。悪質な行為が確認された場合、アカウントの停止などの対応を行うことがあります。<br
+			/>
+			また、ソーシャルメディアのアカウントなどの公開情報を除き、メールアドレスなどの個人情報が含まれるコメントは運営側で削除されることがあります。
+		</div>
+
+		<div class="flex items-center space-x-2 ml-2">
+			{#if section === 'main'}
+				<Checkbox id="main-policy" bind:checked={hasAgreedToMain} aria-labelledby="label-main" />
+				<Label id="label-main" for="main-policy" class="text-sm font-medium leading-none">
+					コメントポリシーに同意します。
+				</Label>
+			{:else if section === 'reply'}
+				<Checkbox id="reply-policy" bind:checked={hasAgreedToReply} aria-labelledby="label-reply" />
+				<Label id="label-reply" for="reply-policy" class="text-sm font-medium leading-none">
+					コメントポリシーに同意します。
+				</Label>
+			{:else if section === 'edit'}
+				<Checkbox id="edit-policy" bind:checked={hasAgreedToEdit} aria-labelledby="label-edit" />
+				<Label id="label-edit" for="edit-policy" class="text-sm font-medium leading-none">
+					コメントポリシーに同意します。
+				</Label>
+			{/if}
+		</div>
 	</div>
 {/snippet}
 
