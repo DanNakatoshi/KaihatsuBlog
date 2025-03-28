@@ -17,7 +17,7 @@ export const GET = async () => {
 		})),
 		...posts.map((post) => ({
 			loc: `${baseUrl}/articles/${post.slug}`,
-			lastmod: post.modified || post.date,
+			lastmod: new Date(post.modified || post.date).toISOString(),
 			priority: 0.9
 		}))
 	];
@@ -32,10 +32,9 @@ ${sitemapRoutes
 		<lastmod>${route.lastmod}</lastmod>
 		<changefreq>weekly</changefreq>
 		<priority>${route.priority}</priority>
-	</url>
-`
+	</url>`
 	)
-	.join('')}
+	.join('\n')}
 </urlset>`.trim();
 
 	return new Response(sitemap, {
