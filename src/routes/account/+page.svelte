@@ -14,14 +14,18 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+	import * as Pagination from '$lib/components/ui/pagination/index.js';
 
 	import { userMgr } from '$lib/store/userData.svelte.js';
 	import GoogleSigninBtn from '$lib/components/ui/custom-google-login/GoogleSigninBtn.svelte';
+
 	// Components
 	import StatusCards from '$lib/components/ui/custom-user-status/StatusCards.svelte';
 	import UserLogin from '$lib/components/ui/custom-auth/UserLogin.svelte';
+
 	// Icon
 	import { Eye, EyeOff, Loader2, SquareArrowOutUpRight } from 'lucide-svelte';
+	import { json } from '@sveltejs/kit';
 
 	let isAccoutModalOpen = $state(false);
 	let isPasswordResetModalOpen = $state(false);
@@ -51,8 +55,19 @@
 	let confirmDataDeletion = $state(false);
 
 	// Comments
-	let userComments = $state([]);
-	let commentPostsMap = $state({}); // article_id -> { title, slug }
+	// const count = 50; // total number of items
+	// let userComments = $state([]);
+	// let commentPostsMap = $state({});
+	// let currentPage = $state(1);
+	// const perPage = 5;
+
+	// const totalPages = $derived(Math.ceil(count / perPage));
+
+	// let totalPages = $derived(Math.ceil(userComments.length / perPage));
+	// let paginatedComments = $state([]);
+	// $effect(() => {
+	// 	paginatedComments = userComments.slice((currentPage - 1) * perPage, currentPage * perPage);
+	// });
 
 	let isAccountDeleteConfirmed = $derived(confirmAnonymousComments && confirmDataDeletion);
 	async function handleSignup() {
@@ -146,47 +161,52 @@
 	}
 
 	// Commnet
-	async function fetchUserComments() {
-		if (!userMgr?.user?.id) return;
+	// async function fetchUserComments() {
+	// 	if (!userMgr?.user?.id) return;
 
-		const { data, error } = await supabase
-			.from('view_comment_thread')
-			.select('*')
-			.eq('is_owner', true)
-			.order('created_at', { ascending: false });
+	// 	const { data, error } = await supabase
+	// 		.from('view_comment_thread')
+	// 		.select('*')
+	// 		.eq('is_owner', true)
+	// 		.order('created_at', { ascending: false });
 
-		if (error) {
-			console.error('❌ Error fetching user comments:', error.message);
-			return;
-		}
+	// 	if (error) {
+	// 		console.error('❌ Error fetching user comments:', error.message);
+	// 		return;
+	// 	}
 
-		userComments = data;
+	// 	userComments = data;
 
-		// Collect unique article_ids
-		const articleIds = [...new Set(data.map((c) => c.article_id))];
+	// 	// Collect unique article_ids
+	// 	const articleIds = [...new Set(data.map((c) => c.article_id))];
 
-		// Fetch post info for each article_id
-		await Promise.all(
-			articleIds.map(async (id) => {
-				try {
-					const postData = await fetchWordPressData({ type: 'posts', limit: 1, page: 1 });
-					const matching = postData.find((p) => p.id === id);
-					if (matching) {
-						commentPostsMap[id] = {
-							title: matching.title.rendered,
-							slug: matching.slug
-						};
-					}
-				} catch (err) {
-					console.error(`Error fetching post for ID ${id}:`, err);
-				}
-			})
-		);
-	}
+	// 	// Fetch post info for each article_id
+	// 	await Promise.all(
+	// 		articleIds.map(async (id) => {
+	// 			try {
+	// 				// Fetch first 100 posts once
+	// 				const posts = await fetchWordPressData({ type: 'posts', limit: 100, page: 1 });
 
-	onMount(() => {
-		fetchUserComments();
-	});
+	// 				// Map them by ID
+	// 				for (const id of articleIds) {
+	// 					const matching = posts.find((p) => p.id === id);
+	// 					if (matching) {
+	// 						commentPostsMap[id] = {
+	// 							title: matching.title.rendered,
+	// 							slug: matching.slug
+	// 						};
+	// 					}
+	// 				}
+	// 			} catch (err) {
+	// 				console.error('❌ Error fetching posts:', err);
+	// 			}
+	// 		})
+	// 	);
+	// }
+
+	// onMount(() => {
+	// 	fetchUserComments();
+	// });
 </script>
 
 {#if userMgr?.user}
@@ -194,11 +214,11 @@
 		<StatusCards />
 
 		<!-- COMMENT SECTION -->
-
-		{#if userComments.length > 0}
+		<!-- {JSON.stringify(userComments)} -->
+		<!-- {#if userComments.length > 0}
 			<div class="mt-6 space-y-4">
 				<h2 class="text-lg font-semibold">自分のコメント一覧</h2>
-				{#each userComments as comment (comment.id)}
+				{#each paginatedComments as comment (comment.id)}
 					<Card.Root>
 						<Card.Content class="flex flex-col gap-1">
 							<div class="break-words text-sm text-foreground">{comment.content}</div>
@@ -209,9 +229,7 @@
 										onclick={() => goto(`/articles/${commentPostsMap[comment.article_id].slug}`)}
 										class="flex items-center gap-1 hover:underline"
 									>
-										<span>
-											{commentPostsMap[comment.article_id].title || '記事を見る'}
-										</span>
+										<span>{commentPostsMap[comment.article_id].title || '記事を見る'}</span>
 										<SquareArrowOutUpRight size={16} />
 									</button>
 								{/if}
@@ -219,10 +237,35 @@
 						</Card.Content>
 					</Card.Root>
 				{/each}
+				{#if totalPages > 1}
+					<Pagination.Root count={userComments.length} {perPage} bind:page={currentPage}>
+						{#snippet children({ pages, currentPage })}
+							<Pagination.Content class="mt-4 justify-center">
+								<Pagination.Item>
+									<Pagination.PrevButton />
+								</Pagination.Item>
+								{#each pages as page (page.key)}
+									{#if page.type === 'ellipsis'}
+										<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+									{:else}
+										<Pagination.Item isVisible={currentPage === page.value}>
+											<Pagination.Link {page} isActive={currentPage === page.value}>
+												{page.value}
+											</Pagination.Link>
+										</Pagination.Item>
+									{/if}
+								{/each}
+								<Pagination.Item>
+									<Pagination.NextButton />
+								</Pagination.Item>
+							</Pagination.Content>
+						{/snippet}
+					</Pagination.Root>
+				{/if}
 			</div>
 		{:else}
 			<p class="mt-4 text-sm text-gray-500">まだコメントがありません。</p>
-		{/if}
+		{/if} -->
 
 		<div class="flex justify-end gap-2 p-2">
 			<Button

@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /private/
 Allow: /
 
-Sitemap: https://asameshicode.com/
+Sitemap: https://asameshicode.com/sitemap.xml
