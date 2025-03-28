@@ -3,13 +3,12 @@ import { fetchWordPressData } from '$lib/api/WPhandler.js';
 export const GET = async () => {
 	const baseUrl = 'https://asameshicode.com';
 
-	// Fetch article data from WordPress
-	const { posts } = await fetchWordPressData();
-
 	// Static routes
-	const staticRoutes = ['', 'about', 'privacy-policy', 'contact'];
+	const staticRoutes = ['', 'about', 'contact', 'account', 'articles', 'privacy-policy', 'siteupdates'];
 
-	// Combine static routes and dynamic article routes
+	// Fetch WordPress posts directly as array
+	const posts = await fetchWordPressData({ type: 'posts', limit: 100 });
+
 	const sitemapRoutes = [
 		...staticRoutes.map((route) => ({
 			loc: `${baseUrl}/${route}`,
@@ -23,24 +22,21 @@ export const GET = async () => {
 		}))
 	];
 
-	// Generate the XML content for the sitemap
-	const sitemap = `
-      <?xml version="1.0" encoding="UTF-8"?>
-      <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        ${sitemapRoutes
-					.map(
-						(route) => `
-              <url>
-                <loc>${route.loc}</loc>
-                <lastmod>${route.lastmod}</lastmod>
-                <changefreq>weekly</changefreq>
-                <priority>${route.priority}</priority>
-              </url>
-            `
-					)
-					.join('')}
-      </urlset>
-    `.trim();
+	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapRoutes
+	.map(
+		(route) => `
+	<url>
+		<loc>${route.loc}</loc>
+		<lastmod>${route.lastmod}</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>${route.priority}</priority>
+	</url>
+`
+	)
+	.join('')}
+</urlset>`.trim();
 
 	return new Response(sitemap, {
 		headers: {
