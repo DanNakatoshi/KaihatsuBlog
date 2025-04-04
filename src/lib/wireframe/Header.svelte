@@ -97,7 +97,7 @@
 			aria-label="close menu"
 			onclick={closeMenu}><X size="12" strokeWidth={6} /></Button
 		>
-		<div class="mt-8 flex flex-col items-start gap-3 ">
+		<div class="mt-8 flex flex-col items-start gap-3">
 			<Button
 				class="w-full max-w-full"
 				onclick={() => {
@@ -118,6 +118,14 @@
 					goto('/siteupdates');
 					closeMenu();
 				}}>サイト更新情報</Button
+			>
+
+			<Button
+				class="w-full max-w-full"
+				onclick={() => {
+					goto('/contact');
+					closeMenu();
+				}}>コンタクト</Button
 			>
 			<Separator />
 
@@ -148,7 +156,7 @@
 					<!-- <GoogleSigninBtn /> -->
 					<Button onclick={() => loginModalManager.open()} class="w-full">ログイン</Button>
 
-					 <!-- <UserLoginModal/> -->
+					<!-- <UserLoginModal/> -->
 				</div>
 			{/if}
 

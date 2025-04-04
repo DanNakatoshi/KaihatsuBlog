@@ -36,11 +36,13 @@
 	let isResetting = $state(false);
 
 	async function handleSignup() {
-		if (!emailSignup.includes('@')) {
+
+		const isValidEmail = emailSignup.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+		if (!isValidEmail) {
 			toast.error('⚠️ 有効なメールアドレスを入力してください。');
 			return;
 		}
-
+        
 		if (passwordSignup !== confirmPasswordSignup) {
 			toast.error('❌ パスワードが一致しません。');
 			return;
