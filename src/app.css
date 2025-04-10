@@ -688,3 +688,31 @@ a:hover {
 	width: 100%;
 	height: 100%;
 }
+
+.pano-360 canvas {
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+
+.pano-360 {
+	width: 100%;
+	aspect-ratio: 2 / 1;
+	max-height: 80vh;
+
+	display: block;
+	position: relative;
+	background: #000;
+	border: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	/* box-sizing: border-box; */
+
+	/* Optional enhancement */
+	/* border-radius: 1rem; */
+}

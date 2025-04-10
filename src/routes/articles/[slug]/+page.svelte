@@ -43,6 +43,11 @@
 	import MobileMenu from '$lib/wireframe/MobileMenu.svelte';
 	import CommentSection from '$lib/components/thread/CommentSection.svelte';
 
+
+	// Pano images
+	import { initPano360 } from '$lib/helper/initPano360.svelte.js';
+
+
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -56,6 +61,8 @@
 	let isOpenDrawer = $state(false);
 	let observer;
 	let isOpenLoginModal = $state(false);
+
+
 
 	// Mobile Menu
 	function openMobileToc() {
@@ -250,8 +257,10 @@
 
 			// userMgr.setNowReadingArticle($page.params.slug, $page.url.searchParams.get('seriesId'));
 			// console.log(userMgr.getNowReadingArticle())
+			observeHeadings();
+			initPano360(); // ✨ clean one-liner
+
 		}
-		observeHeadings();
 	});
 
 	onDestroy(() => {
@@ -435,3 +444,4 @@
 		{/each}
 	</div>
 {/snippet}
+
