@@ -4,6 +4,9 @@ async function fetchWordPressAPI(endpoint, params = {}) {
 	const url = new URL(`${baseUrl}/wp-json${endpoint}`);
 	Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
 
+	// console.log('🔍 Fetching from WordPress API:', url.toString()); // ← ✅ Add this line
+
+
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {

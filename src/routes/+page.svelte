@@ -186,19 +186,22 @@
 </svelte:head>
 
 <div class="flex items-center justify-center px-4">
-	<h2 class="flex flex-wrap justify-center py-10 text-center font-bold text-2xl  md:text-4xl leading-tight ">
+	<h2
+		class="flex flex-wrap justify-center py-10 text-center text-2xl font-bold leading-tight md:text-4xl"
+	>
 		<div>
-			<span class="text-cyan-500 dark:text-cyan-300 whitespace-nowrap">アメリカ</span ><span class="text-gray-dark text-lg md:text-2xl">から</span>
+			<span class="whitespace-nowrap text-cyan-500 dark:text-cyan-300">アメリカ</span><span
+				class="text-gray-dark text-lg md:text-2xl">から</span
+			>
 		</div>
-	  <br class="block sm:hidden">
-	  <div>
-		  <span class="text-pink-500 dark:text-pink-400 whitespace-nowrap">ウェブ開発情報</span><span class="text-gray-dark text-lg md:text-2xl">をお届け</span>
+		<br class="block sm:hidden" />
+		<div>
+			<span class="whitespace-nowrap text-pink-500 dark:text-pink-400">ウェブ開発情報</span><span
+				class="text-gray-dark text-lg md:text-2xl">をお届け</span
+			>
 		</div>
 	</h2>
-  </div>
-  
-  
-  
+</div>
 
 <div id="searchbox" class="flex flex-col items-center gap-2">
 	<Tabs.Root bind:value={activeTab} class="">
@@ -271,5 +274,4 @@
 </div>
 
 <style>
-
 </style>
