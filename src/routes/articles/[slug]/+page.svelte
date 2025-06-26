@@ -44,10 +44,6 @@
 	import CommentSection from '$lib/components/thread/CommentSection.svelte';
 
 
-	// Pano images
-	import { initPano360 } from '$lib/helper/initPano360.svelte.js';
-
-
 	// Initalize data
 	let { data } = $props();
 	let isClient = $state(false);
@@ -258,7 +254,6 @@
 			// userMgr.setNowReadingArticle($page.params.slug, $page.url.searchParams.get('seriesId'));
 			// console.log(userMgr.getNowReadingArticle())
 			observeHeadings();
-			initPano360(); // ✨ clean one-liner
 
 		}
 	});
