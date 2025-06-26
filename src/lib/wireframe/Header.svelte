@@ -36,9 +36,6 @@
 
 	function toggleTheme() {
 		const isDark = document.documentElement.classList.contains('dark');
-		const root = document.documentElement; // ✅ THIS NEEDS TO BE INSIDE
-		root.classList.add('theme-transition');
-
 		if (isDark) {
 			document.documentElement.classList.remove('dark');
 			localStorage.setItem('theme', 'light');
@@ -48,10 +45,6 @@
 			localStorage.setItem('theme', 'dark');
 			currentTheme = 'dark';
 		}
-
-		setTimeout(() => {
-			root.classList.remove('theme-transition');
-		}, 400);
 	}
 
 	onMount(() => {

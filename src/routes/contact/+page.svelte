@@ -86,7 +86,7 @@
 		</div>
 		<p class="mt-4 text-sm text-gray-500">
 			もしくはSNS経由でもご連絡いただけます：
-			<a href="https://x.com/asameshicode" class="link">X / Twitter</a> /
+			<a href="https://twitter.com/your_account" class="link">X / Twitter</a> /
 		</p>
 	</div>
 {/if}

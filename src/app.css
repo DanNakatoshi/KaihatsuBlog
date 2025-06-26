@@ -17,20 +17,6 @@
 	font-display: swap;
 }
 
-html.theme-transition,
-body.theme-transition,
-html.theme-transition *,
-body.theme-transition * {
-	transition:
-		background-color 0.3s ease,
-		color 0.3s ease,
-		border-color 0.3s ease,
-		text-shadow 0.3s ease,
-		fill 0.3s ease,
-		stroke 0.3s ease;
-}
-
-
 @layer base {
 	:root {
 		--font-primary: 'Noto Sans JP', sans-serif;

@@ -164,7 +164,7 @@
 </script>
 
 <!-- Layout -->
-<div class="mb-4 sm:container ">
+<div class="mb-4 sm:container">
 	<Header />
 	<div class="pb-16">{@render children(data)}</div>
 	{#if !isOnArticlesPage}
