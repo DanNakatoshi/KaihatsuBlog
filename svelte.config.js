@@ -1,15 +1,9 @@
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	kit: {
-		adapter: adapter({
-			// default options for the Node adapter
-			out: 'build', // output directory
-			precompress: false, // enable gzip precompression
-			envPrefix: 'SVELTEKIT_' // environment variable prefix
-		})
-	}
+export default {
+  preprocess: vitePreprocess(),
+  kit: {
+    adapter: adapter()
+  }
 };
-
-export default config;
