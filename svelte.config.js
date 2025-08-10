@@ -18,15 +18,9 @@
 import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
+export default {
   preprocess: vitePreprocess(),
   kit: {
-    // For standard Serverless Functions on Vercel:
-    adapter: adapter({ runtime: 'nodejs20.x' })
-    // If you want Edge Functions instead, use:
-    // adapter: adapter({ runtime: 'edge' })
+    adapter: adapter() // or adapter({ runtime: 'nodejs20.x' })
   }
 };
-
-export default config;
