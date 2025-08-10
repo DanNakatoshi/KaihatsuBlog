@@ -42,15 +42,7 @@
 
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import compression from 'vite-plugin-compression';
-
-const isVercel = process.env.VERCEL === '1';
 
 export default defineConfig({
-  plugins: [
-    sveltekit(),
-    !isVercel && compression({ algorithm: 'gzip', ext: '.gz', deleteOriginFile: false }),
-    !isVercel && compression({ algorithm: 'brotliCompress', ext: '.br' })
-  ].filter(Boolean),
-  build: { target: 'esnext' }
+	plugins: [sveltekit()]
 });
